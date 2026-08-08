@@ -1,5 +1,4 @@
 // Supabase İstemcisi Başlatma
-// window.supabaseClient index.html veya config üzerinde tanımlanmış olmalıdır.
 const supabase = window.supabaseClient;
 
 let mevcutReceteId = null;
@@ -51,7 +50,7 @@ async function otomatikReceteNoOlustur() {
         if (!data || data.length === 0 || !data[0].no) {
             receteNoInput.value = "REC-001";
         } else {
-            const sonNo = data[0].no; // Örn: REC-005
+            const sonNo = data[0].no;
             const sayiKismi = parseInt(sonNo.replace("REC-", ""), 10);
             if (!isNaN(sayiKismi)) {
                 const yeniSayi = sayiKismi + 1;
@@ -88,24 +87,19 @@ function uretimAyarlariniDoldur(ayarlar) {
     });
 }
 
-// Formu Temizleme
+// Formu Temizleme (Tüm Giriş Alanlarını Sıfırlar)
 function formuTemizle() {
     mevcutReceteId = null;
 
-    // Ana alanları temizle
-    const anaAlanlar = ["recete_no", "urun_adi", "makine_adi", "hiz", "sicaklik", "basinc", "notlar"];
-    anaAlanlar.forEach((id) => {
-        const el = document.getElementById(id);
-        if (el) el.value = "";
+    // Sayfadaki tüm input ve textarea alanlarını boşalt
+    const tumInputs = document.querySelectorAll("input, textarea");
+    tumInputs.forEach((el) => {
+        if (el.id !== "arama") { // Arama kutusunu hariç tut
+            el.value = "";
+        }
     });
 
-    // Üretim ayarları alanlarını temizle
-    const ayarElemanlari = document.querySelectorAll('[id^="ayar_"]');
-    ayarElemanlari.forEach((el) => {
-        el.value = "";
-    });
-
-    // Yeni reçete nosu getir
+    // Otomatik yeni reçete numarasını yazdır
     otomatikReceteNoOlustur();
 }
 
@@ -113,7 +107,7 @@ function formuTemizle() {
 async function receteKaydet() {
     const no = document.getElementById("recete_no")?.value;
     const urun = document.getElementById("urun_adi")?.value;
-    const miktarVal = document.getElementById("hiz")?.value || 0; // Hız veya uygun miktar alanı
+    const miktarVal = document.getElementById("hiz")?.value || 0;
     const uretim_ayarlari = uretimAyarlariniTopla();
     const tarih = new Date().toISOString().split("T")[0];
 
@@ -227,7 +221,6 @@ async function receteDetayGoster(id) {
     if (document.getElementById("detay_recete_no")) document.getElementById("detay_recete_no").innerText = data.no || "";
     if (document.getElementById("detay_urun_adi")) document.getElementById("detay_urun_adi").innerText = data.urun || "";
 
-    // Üretim ayarlarını detay modalına doldurmak isterseniz ekstra alanlar eşlenebilir.
     if (modal) modal.style.display = "block";
 }
 
@@ -255,8 +248,8 @@ async function receteDuzenle(id) {
 // Reçete Kopyalama
 async function receteKopyala(id) {
     await receteDuzenle(id);
-    mevcutReceteId = null; // Yeni kayıt olmasını sağlamak için ID'yi sıfırla
-    await otomatikReceteNoOlustur(); // Yeni reçete no ata
+    mevcutReceteId = null;
+    await otomatikReceteNoOlustur();
     alert("Reçete kopyalandı. Yeni reçete numarası atandı. Değişiklikleri yapıp kaydedebilirsiniz.");
 }
 
