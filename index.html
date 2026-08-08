@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Bünyamin Reçete Sistemi</title>
+
+<link rel="stylesheet" href="css/style.css">
+
+</head>
+
+
+<body>
+
+<div class="container">
+
+    <h1>Üretim Reçete Sistemi</h1>
+
+
+    <div class="ust-panel">
+
+        <button type="button" id="yeniReceteBtn">
+            + Yeni Reçete
+        </button>
+
+        <div class="recete-sayisi">
+
+            Toplam Reçete:
+
+            <strong id="toplamRecete">0</strong>
+
+        </div>
+
+    </div>
+
+
+    <div class="form">
+
+        <input id="recete_no" placeholder="Reçete No">
+
+        <input id="urun_adi" placeholder="Ürün Adı">
+
+        <input id="makine_adi" placeholder="Makine Adı">
+
+        <input id="hiz" placeholder="Hız">
+
+        <input id="sicaklik" placeholder="Sıcaklık">
+
+        <input id="basinc" placeholder="Basınç">
+
+        <textarea id="notlar" placeholder="Notlar"></textarea>
+
+
+        <button
+            type="button"
+            id="kaydetBtn"
+            onclick="kaydet()">
+
+            Kaydet
+
+        </button>
+
+
+        <button
+            type="button"
+            id="btnTemizle"
+            onclick="temizle()">
+
+            Temizle
+
+        </button>
+
+    </div>
+
+
+    <hr>
+
+
+    <input
+        id="arama"
+        placeholder="Reçete ara..."
+        onkeyup="ara()">
+
+
+    <div class="liste">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>No</th>
+                    <th>Ürün</th>
+                    <th>Makine</th>
+                    <th>Hız</th>
+                    <th>Sıcaklık</th>
+                    <th>Basınç</th>
+                    <th>İşlem</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody id="liste"></tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+
+<!-- =================================
+     DETAY PENCERESİ
+================================= -->
+
+<div
+    id="detayModal"
+    class="modal"
+    style="
+        display:none;
+        position:fixed;
+        z-index:99999;
+        left:0;
+        top:0;
+        width:100%;
+        height:100%;
+        background:rgba(0,0,0,0.60);
+        align-items:center;
+        justify-content:center;
+        padding:15px;
+    ">
+
+
+    <div
+        class="modal-icerik"
+        style="
+            background:white;
+            width:100%;
+            max-width:600px;
+            max-height:90vh;
+            overflow-y:auto;
+            border-radius:16px;
+            padding:20px;
+        ">
+
+
+        <div
+            style="
+                display:flex;
+                justify-content:space-between;
+                align-items:center;
+                margin-bottom:15px;
+                border-bottom:1px solid #ddd;
+                padding-bottom:10px;
+            ">
+
+            <div>
+
+                <h2 style="margin:0;">
+                    Reçete Detayı
+                </h2>
+
+                <small id="detay_baslik_no"></small>
+
+            </div>
+
+
+            <button
+                type="button"
+                onclick="detayKapat()"
+                style="
+                    background:#dc2626;
+                    color:white;
+                    width:40px;
+                    height:40px;
+                    padding:0;
+                    margin:0;
+                    font-size:20px;
+                ">
+
+                ✕
+
+            </button>
+
+        </div>
+
+
+
+        <div id="detayBilgi">
+
+
+            <div class="detay-satir">
+
+                <span>Reçete No</span>
+
+                <strong id="detay_recete_no"></strong>
+
+            </div>
+
+
+            <div class="detay-satir">
+
+                <span>Ürün Adı</span>
+
+                <strong id="detay_urun_adi"></strong>
+
+            </div>
+
+
+            <div class="detay-satir">
+
+                <span>Makine Adı</span>
+
+                <strong id="detay_makine_adi"></strong>
+
+            </div>
+
+
+            <div class="detay-satir">
+
+                <span>Hız</span>
+
+                <strong id="detay_hiz"></strong>
+
+            </div>
+
+
+            <div class="detay-satir">
+
+                <span>Sıcaklık</span>
+
+                <strong id="detay_sicaklik"></strong>
+
+            </div>
+
+
+            <div class="detay-satir">
+
+                <span>Basınç</span>
+
+                <strong id="detay_basinc"></strong>
+
+            </div>
+
+
+            <div class="detay-satir">
+
+                <span>Notlar</span>
+
+                <p id="detay_notlar"></p>
+
+            </div>
+
+
+        </div>
+
+
+
+        <!-- DETAY BUTONLARI -->
+
+        <div
+            style="
+                display:flex;
+                gap:8px;
+                margin-top:20px;
+                flex-wrap:wrap;
+            ">
+
+
+            <button
+                type="button"
+                onclick="detayKopyala()"
+                style="
+                    background:#2563eb;
+                    color:white;
+                    flex:1;
+                ">
+
+                📋 Kopyala
+
+            </button>
+
+
+            <button
+                type="button"
+                onclick="detaydanDuzenle()"
+                style="
+                    background:#f59e0b;
+                    color:white;
+                    flex:1;
+                ">
+
+                ✏️ Düzenle
+
+            </button>
+
+
+            <button
+                type="button"
+                onclick="detayYazdir()"
+                style="
+                    background:#374151;
+                    color:white;
+                    flex:1;
+                ">
+
+                🖨️ Yazdır
+
+            </button>
+
+
+        </div>
+
+
+
+        <button
+            type="button"
+            onclick="detayKapat()"
+            style="
+                width:100%;
+                background:#e5e7eb;
+                color:#222;
+                margin-top:10px;
+            ">
+
+            Kapat
+
+        </button>
+
+
+    </div>
+
+</div>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="js/supabase.js"></script>
+
+<script src="js/Script.js"></script>
+
+
+</body>
+
+</html>
