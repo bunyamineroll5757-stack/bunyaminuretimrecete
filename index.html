@@ -934,6 +934,20 @@
 
 <script src="js/Script.js"></script>
 
+<!-- Supabase Kütüphanesi -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+    // Supabase Bağlantı Ayarları
+    const SUPABASE_URL = 'https://sizin-proje-id.supabase.co';
+    const SUPABASE_KEY = 'sizin-anon-key-bilginiz';
+    
+    // Global Supabase İstemcisi
+    window.sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+</script>
+
+<!-- Kendi JS dosyanız -->
+<script src="js/Script.js"></script>
 
 </body>
 
