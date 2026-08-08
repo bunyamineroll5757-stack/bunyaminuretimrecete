@@ -1,5 +1,5 @@
-// Supabase İstemcisi Başlatma
-const supabase = window.supabaseClient;
+// Supabase İstemcisi Değişken Çakışmasını Önleme
+var supabase = window.supabaseClient || window.supabase;
 
 let mevcutReceteId = null;
 
@@ -87,14 +87,14 @@ function uretimAyarlariniDoldur(ayarlar) {
     });
 }
 
-// Formu Temizleme (Tüm Giriş Alanlarını Sıfırlar)
+// Formu Temizleme
 function formuTemizle() {
     mevcutReceteId = null;
 
     // Sayfadaki tüm input ve textarea alanlarını boşalt
     const tumInputs = document.querySelectorAll("input, textarea");
     tumInputs.forEach((el) => {
-        if (el.id !== "arama") { // Arama kutusunu hariç tut
+        if (el.id !== "arama") {
             el.value = "";
         }
     });
