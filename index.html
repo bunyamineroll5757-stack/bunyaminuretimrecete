@@ -1,179 +1,940 @@
 <!DOCTYPE html>
 <html lang="tr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Üretim Reçete Yönetim Sistemi</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
     <style>
-        body { font-family: sans-serif; padding: 15px; background-color: #f4f6f9; margin: 0; }
-        .container { max-width: 1000px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-        h1, h2, h3 { color: #333; }
-        .section { background: #fafafa; border: 1px solid #e0e0e0; padding: 15px; border-radius: 6px; margin-bottom: 20px; }
-        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
-        .form-group { margin-bottom: 10px; }
-        label { display: block; font-size: 12px; font-weight: bold; margin-bottom: 4px; color: #555; }
-        input, textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-        button { padding: 10px 15px; cursor: pointer; background-color: #28a745; color: white; border: none; border-radius: 4px; font-weight: bold; margin-right: 5px; }
-        button:hover { opacity: 0.9; }
-        .btn-blue { background-color: #007bff; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; font-size: 14px; }
-        th { background-color: #343a40; color: white; }
-        .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
-        .modal-content { background: white; margin: 10% auto; padding: 20px; width: 80%; max-width: 600px; border-radius: 8px; max-height: 80vh; overflow-y: auto; }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: #f4f6f8;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 15px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .panel {
+            background: white;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+        }
+
+        .ayar-group {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 15px;
+        }
+
+        .ayar-group h3 {
+            margin-top: 0;
+            text-align: center;
+            background: #ffe600;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .ayar-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        input,
+        textarea,
+        button {
+            box-sizing: border-box;
+            font-size: 15px;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+        }
+
+        textarea {
+            min-height: 100px;
+        }
+
+        button {
+            padding: 10px 15px;
+            border: 0;
+            border-radius: 7px;
+            cursor: pointer;
+            margin: 3px;
+        }
+
+        .btn {
+            background: #1976d2;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #d32f2f;
+            color: white;
+        }
+
+        .btn-success {
+            background: #2e7d32;
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #666;
+            color: white;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background: #ffe600;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, .6);
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            z-index: 9999;
+        }
+
+        .modal-content {
+            background: white;
+            max-width: 700px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        .detay-satir {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .durum {
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .ayar-baslik {
+            margin-top: 25px;
+        }
+
+        @media (max-width: 600px) {
+
+            .ayar-grid {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+
+            th,
+            td {
+                font-size: 13px;
+            }
+
+        }
+
     </style>
+
 </head>
+
+
 <body>
 
+
 <div class="container">
-    <h1>Üretim Reçete Yönetim Sistemi</h1>
 
+
+    <h1>
+        Üretim Reçete Yönetim Sistemi
+    </h1>
+
+
+    <!-- ================================================= -->
+    <!-- DURUM -->
+    <!-- ================================================= -->
+
+    <div
+        id="durum"
+        class="durum">
+    </div>
+
+
+    <!-- ================================================= -->
     <!-- REÇETE BİLGİLERİ -->
-    <div class="section">
-        <h2>Reçete Bilgileri</h2>
-        <div class="grid-3">
-            <div class="form-group">
-                <label>Reçete No:</label>
-                <input type="text" id="recete_no" readonly placeholder="REC-001">
-            </div>
-            <div class="form-group">
-                <label>Ürün Adı:</label>
-                <input type="text" id="urun_adi" placeholder="Ürün adını giriniz">
-            </div>
-            <div class="form-group">
-                <label>Makine Adı:</label>
-                <input type="text" id="makine_adi">
-            </div>
-            <div class="form-group">
-                <label>Hız:</label>
-                <input type="text" id="hiz">
-            </div>
-            <div class="form-group">
-                <label>Sıcaklık:</label>
-                <input type="text" id="sicaklik">
-            </div>
-            <div class="form-group">
-                <label>Basınç:</label>
-                <input type="text" id="basinc">
-            </div>
+    <!-- ================================================= -->
+
+    <div class="panel">
+
+        <h2>
+            Reçete Bilgileri
+        </h2>
+
+
+        <div class="ayar-grid">
+
+
+            <input
+                id="recete_no"
+                placeholder="Reçete No (boş bırakılırsa otomatik)">
+
+
+            <input
+                id="urun_adi"
+                placeholder="Ürün Adı">
+
+
+            <input
+                id="miktar"
+                type="number"
+                step="any"
+                placeholder="Miktar">
+
+
+            <input
+                id="tarih"
+                type="date">
+
+
+            <input
+                id="makine_adi"
+                placeholder="Makine Adı">
+
+
+            <input
+                id="hiz"
+                placeholder="Hız">
+
+
+            <input
+                id="sicaklik"
+                placeholder="Sıcaklık">
+
+
+            <input
+                id="basinc"
+                placeholder="Basınç">
+
+
         </div>
-        <div class="form-group">
-            <label>Notlar:</label>
-            <textarea id="notlar" rows="2"></textarea>
-        </div>
-        <button id="kaydetBtn">Kaydet</button>
-        <button id="yeniReceteBtn" class="btn-blue">Yeni Reçete</button>
+
+
+        <br>
+
+
+        <textarea
+            id="notlar"
+            placeholder="Notlar"></textarea>
+
+
+        <br>
+
+
+        <button
+            id="kaydetBtn"
+            class="btn-success"
+            type="button"
+            onclick="kaydet()">
+
+            Kaydet
+
+        </button>
+
+
+        <button
+            id="yeniReceteBtn"
+            class="btn-secondary"
+            type="button">
+
+            Yeni Reçete
+
+        </button>
+
+
     </div>
 
+
+    <!-- ================================================= -->
     <!-- ÜRETİM AYARLARI -->
-    <div class="section">
-        <h2>Üretim Ayarları</h2>
-        <div class="grid-3">
-            <div class="form-group"><label>Gram:</label><input type="text" id="ayar_gram"></div>
-            <div class="form-group"><label>Renk:</label><input type="text" id="ayar_renk"></div>
-            <div class="form-group"><label>Tarih:</label><input type="text" id="ayar_tarih"></div>
-            <div class="form-group"><label>Servo Lap:</label><input type="text" id="ayar_servolap"></div>
-            <div class="form-group"><label>Tarak Hızı:</label><input type="text" id="ayar_tarak_hizi"></div>
-            <div class="form-group"><label>Firma Adı:</label><input type="text" id="ayar_firma_adi"></div>
+    <!-- ================================================= -->
 
-            <div class="form-group"><label>Ana Tambur:</label><input type="text" id="ayar_ana_tambur"></div>
-            <div class="form-group"><label>Alt Ara Dofer:</label><input type="text" id="ayar_alt_ara_dofer"></div>
-            <div class="form-group"><label>Sıyırıcı:</label><input type="text" id="ayar_siyirici"></div>
-            <div class="form-group"><label>Üst Ara Dofer:</label><input type="text" id="ayar_ust_ara_dofer"></div>
-            <div class="form-group"><label>İşçi:</label><input type="text" id="ayar_isci"></div>
-            <div class="form-group"><label>Üst Sevk Doferi:</label><input type="text" id="ayar_ust_sevk_doferi"></div>
-            <div class="form-group"><label>Alt Sevk Doferi:</label><input type="text" id="ayar_alt_sevk_doferi"></div>
-            <div class="form-group"><label>Üst Dofer Alıcı:</label><input type="text" id="ayar_ust_dofer_alici"></div>
-            <div class="form-group"><label>Alt Dofer Alıcı:</label><input type="text" id="ayar_alt_dofer_alici"></div>
-            <div class="form-group"><label>Üst Sevk Bandı:</label><input type="text" id="ayar_ust_sevk_bandi"></div>
-            <div class="form-group"><label>Alt Sevk Bandı:</label><input type="text" id="ayar_alt_sevk_bandi"></div>
+    <div class="panel">
 
-            <div class="form-group"><label>Tülbent Katı:</label><input type="text" id="ayar_tulbent_kati"></div>
-            <div class="form-group"><label>Besleme Çekim:</label><input type="text" id="ayar_besleme_cekim"></div>
-            <div class="form-group"><label>Serme Eni Ön:</label><input type="text" id="ayar_serme_eni_on"></div>
-            <div class="form-group"><label>Bant Çekim:</label><input type="text" id="ayar_bant_cekim"></div>
-            <div class="form-group"><label>Serme Eni Arka:</label><input type="text" id="ayar_serme_eni_arka"></div>
-            <div class="form-group"><label>Araba Çekim:</label><input type="text" id="ayar_araba_cekim"></div>
-            <div class="form-group"><label>Çıkış Yüksekliği Sağ:</label><input type="text" id="ayar_cikis_yuksekligi_sag"></div>
-            <div class="form-group"><label>Çıkış Hafıza:</label><input type="text" id="ayar_cikis_hafiza"></div>
-            <div class="form-group"><label>Ön Çıkış Hafıza:</label><input type="text" id="ayar_on_cikis_hafiza"></div>
-            <div class="form-group"><label>Çıkış Yüksekliği Sol:</label><input type="text" id="ayar_cikis_yuksekligi_sol"></div>
-            <div class="form-group"><label>Arka Çıkış Hafıza:</label><input type="text" id="ayar_arka_cikis_hafiza"></div>
 
-            <div class="form-group"><label>Trio 1:</label><input type="text" id="ayar_trio1"></div>
-            <div class="form-group"><label>Trio 2:</label><input type="text" id="ayar_trio2"></div>
-            <div class="form-group"><label>Trio 3:</label><input type="text" id="ayar_trio3"></div>
-            <div class="form-group"><label>Trio 4:</label><input type="text" id="ayar_trio4"></div>
-            <div class="form-group"><label>Trio 5:</label><input type="text" id="ayar_trio5"></div>
-            <div class="form-group"><label>Trio 6:</label><input type="text" id="ayar_trio6"></div>
+        <h2>
+            Üretim Ayarları
+        </h2>
 
-            <div class="form-group"><label>Pompa 1:</label><input type="text" id="ayar_pompa1"></div>
-            <div class="form-group"><label>Pompa 2:</label><input type="text" id="ayar_pompa2"></div>
-            <div class="form-group"><label>Pompa 3:</label><input type="text" id="ayar_pompa3"></div>
-            <div class="form-group"><label>Pompa 4:</label><input type="text" id="ayar_pompa4"></div>
-            <div class="form-group"><label>Pompa 5:</label><input type="text" id="ayar_pompa5"></div>
-            <div class="form-group"><label>Pompa 6:</label><input type="text" id="ayar_pompa6"></div>
 
-            <div class="form-group"><label>Besleme 1:</label><input type="text" id="ayar_besleme1"></div>
-            <div class="form-group"><label>Tambur 1:</label><input type="text" id="ayar_tambur1"></div>
-            <div class="form-group"><label>Tambur 2:</label><input type="text" id="ayar_tambur2"></div>
-            <div class="form-group"><label>Tambur 3:</label><input type="text" id="ayar_tambur3"></div>
-            <div class="form-group"><label>Besleme 2:</label><input type="text" id="ayar_besleme2"></div>
-            <div class="form-group"><label>Sıkma Fular:</label><input type="text" id="ayar_sikma_fular"></div>
-            <div class="form-group"><label>Fırın:</label><input type="text" id="ayar_firin"></div>
+        <!-- ================================================= -->
+        <!-- GENEL -->
+        <!-- ================================================= -->
 
-            <div class="form-group"><label>Balkan 1:</label><input type="text" id="ayar_balkan1"></div>
-            <div class="form-group"><label>Balkan 2:</label><input type="text" id="ayar_balkan2"></div>
-            <div class="form-group"><label>Balkan 3:</label><input type="text" id="ayar_balkan3"></div>
-            <div class="form-group"><label>Hammadde:</label><input type="text" id="ayar_hammadde"></div>
+        <div class="ayar-group">
 
-            <div class="form-group"><label>Kesim Eni:</label><input type="text" id="ayar_kesim_eni"></div>
-            <div class="form-group"><label>Çap:</label><input type="text" id="ayar_cap"></div>
-            <div class="form-group"><label>Sarım Metresi:</label><input type="text" id="ayar_sarim_metresi"></div>
-            <div class="form-group"><label>Saatlik KG:</label><input type="text" id="ayar_saatlik_kg"></div>
-            <div class="form-group"><label>Fırın Isısı:</label><input type="text" id="ayar_firin_isisi"></div>
-            <div class="form-group"><label>Hat Hızı:</label><input type="text" id="ayar_hat_hizi"></div>
+            <h3>
+                Genel
+            </h3>
+
+
+            <div class="ayar-grid">
+
+                <input
+                    id="ayar_gram"
+                    placeholder="Gram">
+
+                <input
+                    id="ayar_renk"
+                    placeholder="Renk">
+
+                <input
+                    id="ayar_tarih"
+                    placeholder="Tarih">
+
+                <input
+                    id="ayar_servolap"
+                    placeholder="Servolap">
+
+                <input
+                    id="ayar_tarak_hizi"
+                    placeholder="Tarak Hızı">
+
+                <input
+                    id="ayar_firma_adi"
+                    placeholder="Firma Adı">
+
+            </div>
+
         </div>
+
+
+        <!-- ================================================= -->
+        <!-- TARAK -->
+        <!-- ================================================= -->
+
+        <div class="ayar-group">
+
+            <h3>
+                Tarak Ayarları
+            </h3>
+
+
+            <div class="ayar-grid">
+
+                <input
+                    id="ayar_ana_tambur"
+                    placeholder="Ana Tambur">
+
+                <input
+                    id="ayar_alt_ara_dofer"
+                    placeholder="Alt Ara Dofer">
+
+                <input
+                    id="ayar_siyirici"
+                    placeholder="Sıyırıcı">
+
+                <input
+                    id="ayar_ust_ara_dofer"
+                    placeholder="Üst Ara Dofer">
+
+                <input
+                    id="ayar_isci"
+                    placeholder="İşçi">
+
+                <input
+                    id="ayar_ust_sevk_doferi"
+                    placeholder="Üst Sevk Doferi">
+
+                <input
+                    id="ayar_alt_sevk_doferi"
+                    placeholder="Alt Sevk Doferi">
+
+                <input
+                    id="ayar_ust_dofer_alici"
+                    placeholder="Üst Dofer Alıcı">
+
+                <input
+                    id="ayar_alt_dofer_alici"
+                    placeholder="Alt Dofer Alıcı">
+
+                <input
+                    id="ayar_ust_sevk_bandi"
+                    placeholder="Üst Sevk Bandı">
+
+                <input
+                    id="ayar_alt_sevk_bandi"
+                    placeholder="Alt Sevk Bandı">
+
+            </div>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- SERİCİ -->
+        <!-- ================================================= -->
+
+        <div class="ayar-group">
+
+            <h3>
+                Serici Ayarları
+            </h3>
+
+
+            <div class="ayar-grid">
+
+                <input
+                    id="ayar_tulbent_kati"
+                    placeholder="Tülbent Katı">
+
+                <input
+                    id="ayar_besleme_cekim"
+                    placeholder="Besleme Çekim">
+
+                <input
+                    id="ayar_serme_eni_on"
+                    placeholder="Serme Eni Ön">
+
+                <input
+                    id="ayar_bant_cekim"
+                    placeholder="Bant Çekim">
+
+                <input
+                    id="ayar_serme_eni_arka"
+                    placeholder="Serme Eni Arka">
+
+                <input
+                    id="ayar_araba_cekim"
+                    placeholder="Araba Çekim">
+
+                <input
+                    id="ayar_cikis_yuksekligi_sag"
+                    placeholder="Çıkış Yüksekliği Sağ">
+
+                <input
+                    id="ayar_cikis_hafiza"
+                    placeholder="Çıkış Hafıza Faktörü">
+
+                <input
+                    id="ayar_on_cikis_hafiza"
+                    placeholder="Ön Çıkış Hafıza Faktörü">
+
+                <input
+                    id="ayar_cikis_yuksekligi_sol"
+                    placeholder="Çıkış Yüksekliği Sol">
+
+                <input
+                    id="ayar_arka_cikis_hafiza"
+                    placeholder="Arka Çıkış Hafıza Faktörü">
+
+            </div>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- ÇEKTİRME -->
+        <!-- ================================================= -->
+
+        <div class="ayar-group">
+
+            <h3>
+                Çektirme Ayarları
+            </h3>
+
+
+            <div class="ayar-grid">
+
+                <input
+                    id="ayar_trio1"
+                    placeholder="Trio 1 Çekim">
+
+                <input
+                    id="ayar_trio2"
+                    placeholder="Trio 2 Çekim">
+
+                <input
+                    id="ayar_trio3"
+                    placeholder="Trio 3 Çekim">
+
+                <input
+                    id="ayar_trio4"
+                    placeholder="Trio 4 Çekim">
+
+                <input
+                    id="ayar_trio5"
+                    placeholder="Trio 5 Çekim">
+
+                <input
+                    id="ayar_trio6"
+                    placeholder="Trio 6 Çekim">
+
+            </div>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- SU JETİ -->
+        <!-- ================================================= -->
+
+        <div class="ayar-group">
+
+            <h3>
+                Su Jeti Ayarları
+            </h3>
+
+
+            <div class="ayar-grid">
+
+                <input
+                    id="ayar_pompa1"
+                    placeholder="Pompa 1">
+
+                <input
+                    id="ayar_pompa2"
+                    placeholder="Pompa 2">
+
+                <input
+                    id="ayar_pompa3"
+                    placeholder="Pompa 3">
+
+                <input
+                    id="ayar_pompa4"
+                    placeholder="Pompa 4">
+
+                <input
+                    id="ayar_pompa5"
+                    placeholder="Pompa 5">
+
+                <input
+                    id="ayar_pompa6"
+                    placeholder="Pompa 6">
+
+                <input
+                    id="ayar_besleme1"
+                    placeholder="Besleme 1">
+
+                <input
+                    id="ayar_tambur1"
+                    placeholder="Tambur 1">
+
+                <input
+                    id="ayar_tambur2"
+                    placeholder="Tambur 2">
+
+                <input
+                    id="ayar_tambur3"
+                    placeholder="Tambur 3">
+
+                <input
+                    id="ayar_besleme2"
+                    placeholder="Besleme 2">
+
+                <input
+                    id="ayar_sikma_fular"
+                    placeholder="Sıkma Fular">
+
+                <input
+                    id="ayar_firin"
+                    placeholder="Fırın">
+
+            </div>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- HAMMADDE -->
+        <!-- ================================================= -->
+
+        <div class="ayar-group">
+
+            <h3>
+                Hammadde Ayarları
+            </h3>
+
+
+            <div class="ayar-grid">
+
+                <input
+                    id="ayar_balkan1"
+                    placeholder="Balkan 1">
+
+                <input
+                    id="ayar_balkan2"
+                    placeholder="Balkan 2">
+
+                <input
+                    id="ayar_balkan3"
+                    placeholder="Balkan 3">
+
+                <input
+                    id="ayar_hammadde"
+                    placeholder="Hammadde">
+
+            </div>
+
+        </div>
+
+
+        <!-- ================================================= -->
+        <!-- KESİM -->
+        <!-- ================================================= -->
+
+        <div class="ayar-group">
+
+            <h3>
+                Kesim Ebatları
+            </h3>
+
+
+            <div class="ayar-grid">
+
+                <input
+                    id="ayar_kesim_eni"
+                    placeholder="Kesim Eni">
+
+                <input
+                    id="ayar_cap"
+                    placeholder="Çap">
+
+                <input
+                    id="ayar_sarim_metresi"
+                    placeholder="Sarım Metresi">
+
+                <input
+                    id="ayar_saatlik_kg"
+                    placeholder="Saatlik KG">
+
+                <input
+                    id="ayar_firin_isisi"
+                    placeholder="Fırın Isısı">
+
+                <input
+                    id="ayar_hat_hizi"
+                    placeholder="Hat Hızı">
+
+            </div>
+
+        </div>
+
+
     </div>
 
-    <!-- KAYITLI REÇETELER -->
-    <div class="section">
-        <h3>Kayıtlı Reçeteler (Toplam: <span id="toplamRecete">0</span>)</h3>
-        <input type="text" id="arama" placeholder="Reçete veya Ürün Ara..." style="margin-bottom: 10px;">
-        <table>
-            <thead>
-                <tr>
-                    <th>Reçete No</th>
-                    <th>Ürün Adı</th>
-                    <th>Tarih</th>
-                    <th>İşlemler</th>
-                </tr>
-            </thead>
-            <tbody id="liste"></tbody>
-        </table>
+
+    <!-- ================================================= -->
+    <!-- REÇETE LİSTESİ -->
+    <!-- ================================================= -->
+
+    <div class="panel">
+
+
+        <h2>
+
+            Kayıtlı Reçeteler:
+
+            <span id="toplamRecete">
+                0
+            </span>
+
+        </h2>
+
+
+        <input
+            id="arama"
+            placeholder="Reçete ara..."
+            oninput="ara()">
+
+
+        <br>
+        <br>
+
+
+        <div class="table-wrap">
+
+
+            <table>
+
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Reçete No
+                        </th>
+
+                        <th>
+                            Ürün
+                        </th>
+
+                        <th>
+                            Makine
+                        </th>
+
+                        <th>
+                            Miktar
+                        </th>
+
+                        <th>
+                            Tarih
+                        </th>
+
+                        <th>
+                            Üretim Ayarları
+                        </th>
+
+                        <th>
+                            İşlem
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="liste">
+
+                </tbody>
+
+
+            </table>
+
+
+        </div>
+
+
     </div>
+
+
 </div>
 
-<!-- DETAY MODALI -->
-<div id="detayModal" class="modal">
+
+<!-- ================================================= -->
+<!-- DETAY PENCERESİ -->
+<!-- ================================================= -->
+
+<div
+    id="detayModal"
+    class="modal">
+
+
     <div class="modal-content">
-        <h3>Reçete Detayı: <span id="detay_recete_no"></span></h3>
-        <p><strong>Ürün Adı:</strong> <span id="detay_urun_adi"></span></p>
-        <hr>
-        <h4>Üretim Ayarları</h4>
-        <div id="detay_ayarlar_icerik"></div>
-        <button onclick="detayModalKapat()" style="margin-top: 15px;">Kapat</button>
+
+
+        <h2>
+            Üretim Reçetesi
+        </h2>
+
+
+        <div class="detay-satir">
+
+            <b>
+                Reçete No:
+            </b>
+
+            <span id="detay_recete_no">
+                -
+            </span>
+
+        </div>
+
+
+        <div class="detay-satir">
+
+            <b>
+                Başlık:
+            </b>
+
+            <span id="detay_baslik_no">
+            </span>
+
+        </div>
+
+
+        <div class="detay-satir">
+
+            <b>
+                Ürün Adı:
+            </b>
+
+            <span id="detay_urun_adi">
+                -
+            </span>
+
+        </div>
+
+
+        <div class="detay-satir">
+
+            <b>
+                Makine Adı:
+            </b>
+
+            <span id="detay_makine_adi">
+                -
+            </span>
+
+        </div>
+
+
+        <div class="detay-satir">
+
+            <b>
+                Hız:
+            </b>
+
+            <span id="detay_hiz">
+                -
+            </span>
+
+        </div>
+
+
+        <div class="detay-satir">
+
+            <b>
+                Sıcaklık:
+            </b>
+
+            <span id="detay_sicaklik">
+                -
+            </span>
+
+        </div>
+
+
+        <div class="detay-satir">
+
+            <b>
+                Basınç:
+            </b>
+
+            <span id="detay_basinc">
+                -
+            </span>
+
+        </div>
+
+
+        <div class="detay-satir">
+
+            <b>
+                Notlar:
+            </b>
+
+            <div id="detay_notlar">
+                Not yok
+            </div>
+
+        </div>
+
+
+        <br>
+
+
+        <button
+            class="btn"
+            type="button"
+            onclick="detaydanDuzenle()">
+
+            Düzenle
+
+        </button>
+
+
+        <button
+            class="btn-success"
+            type="button"
+            onclick="detayKopyala()">
+
+            Kopyala
+
+        </button>
+
+
+        <button
+            class="btn"
+            type="button"
+            onclick="detayYazdir()">
+
+            Yazdır
+
+        </button>
+
+
+        <button
+            class="btn-secondary"
+            type="button"
+            onclick="detayKapat()">
+
+            Kapat
+
+        </button>
+
+
     </div>
+
+
 </div>
 
-<!-- SUPABASE KÜTÜPHANESİ VE BAĞLANTISI -->
+
+<!-- ================================================= -->
+<!-- JAVASCRIPT -->
+<!-- ================================================= -->
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-    const SUPABASE_URL = ;https://ihsetoxxggiaeulpqhzg.supabase.co/rest/v1/;
-    const SUPABASE_KEY = ;sb_publishable_HoqAcz7S0ANBNyQTj6fjew_YCa_71nb';
-    window.sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-</script>
+
+<script src="js/supabase.js"></script>
 
 <script src="js/Script.js"></script>
+
+
 </body>
+
 </html>
