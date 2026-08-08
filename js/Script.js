@@ -1,4 +1,4 @@
-const sbClient = window.supabaseClient || window.supabase;
+const sbClient = window.sbClient;
 let mevcutReceteId = null;
 
 document.addEventListener("DOMContentLoaded", () => {
