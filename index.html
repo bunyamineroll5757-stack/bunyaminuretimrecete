@@ -926,25 +926,18 @@
 
 <!-- ================================================= -->
 <!-- JAVASCRIPT -->
-<!-- ================================================= -->
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script src="js/supabase.js"></script>
-
-<script src="js/Script.js"></script>
-
-<!-- Supabase Kütüphanesi -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-    // Supabase Bağlantı Ayarları
-    const SUPABASE_URL = 'https://sizin-proje-id.supabase.co';
-    const SUPABASE_KEY = 'sizin-anon-key-bilginiz';
-    
-    // Global Supabase İstemcisi
-    window.sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    if (typeof SUPABASE_URL === 'undefined') {
+        var SUPABASE_URL = ;https://ihsetoxxggiaeulpqhzg.supabase.co/rest/v1/;
+        var SUPABASE_KEY = ;sb_publishable_HoqAcz7S0ANBNyQTj6fjew_YCa_71nb;
+        window.sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    }
 </script>
+
+<script src="js/Script.js"></script>
+
 
 </body>
 
