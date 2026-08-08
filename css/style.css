@@ -1,1 +1,842 @@
+/* ===============================
+   GENEL
+================================ */
 
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background: #f3f5f8;
+    color: #222;
+}
+
+.container {
+    width: 100%;
+    max-width: 1100px;
+    margin: auto;
+    padding: 20px;
+}
+
+
+/* ===============================
+   BAŞLIK
+================================ */
+
+h1 {
+    text-align: center;
+    margin: 5px 0 22px;
+    font-size: 28px;
+    color: #111827;
+}
+
+
+/* ===============================
+   ÜST PANEL
+================================ */
+
+.ust-panel {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+#yeniReceteBtn {
+    background: #16a34a;
+    color: white;
+    font-weight: bold;
+    padding: 13px 20px;
+}
+
+#yeniReceteBtn:hover {
+    background: #15803d;
+}
+
+.recete-sayisi {
+    background: white;
+    padding: 12px 18px;
+    border-radius: 10px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+    font-size: 15px;
+}
+
+.recete-sayisi strong {
+    font-size: 18px;
+    color: #2563eb;
+}
+
+
+/* ===============================
+   FORM
+================================ */
+
+.form {
+    background: white;
+    padding: 20px;
+    border-radius: 14px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+}
+
+.form input,
+.form textarea {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 12px;
+    border: 1px solid #d5d9df;
+    border-radius: 9px;
+    font-size: 16px;
+    outline: none;
+    background: #fff;
+}
+
+.form input:focus,
+.form textarea:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37,99,235,0.10);
+}
+
+.form textarea {
+    min-height: 90px;
+    resize: vertical;
+}
+
+
+/* ===============================
+   BUTONLAR
+================================ */
+
+button {
+    border: none;
+    border-radius: 9px;
+    padding: 12px 18px;
+    font-size: 15px;
+    cursor: pointer;
+    margin: 4px;
+    transition: 0.2s;
+}
+
+button:active {
+    transform: scale(0.97);
+}
+
+#kaydetBtn {
+    background: #2563eb;
+    color: white;
+    font-weight: bold;
+}
+
+#kaydetBtn:hover {
+    background: #1d4ed8;
+}
+
+#btnTemizle {
+    background: #e5e7eb;
+    color: #222;
+}
+
+#btnTemizle:hover {
+    background: #d1d5db;
+}
+
+
+/* ===============================
+   AYIRICI
+================================ */
+
+hr {
+    border: none;
+    border-top: 1px solid #ddd;
+    margin: 25px 0;
+}
+
+
+/* ===============================
+   ARAMA
+================================ */
+
+#arama {
+    width: 100%;
+    padding: 14px;
+    border: 1px solid #d5d9df;
+    border-radius: 10px;
+    font-size: 16px;
+    margin-bottom: 15px;
+    outline: none;
+    background: white;
+}
+
+#arama:focus {
+    border-color: #2563eb;
+}
+
+
+/* ===============================
+   LİSTE
+================================ */
+
+.liste {
+    width: 100%;
+    overflow-x: auto;
+    background: white;
+    border-radius: 14px;
+    box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 750px;
+}
+
+th {
+    background: #1f2937;
+    color: white;
+    padding: 13px;
+    text-align: left;
+    white-space: nowrap;
+}
+
+td {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+    white-space: nowrap;
+}
+
+tr:hover {
+    background: #f8fafc;
+}
+
+
+/* ===============================
+   TABLO BUTONLARI
+================================ */
+
+td button {
+    padding: 8px 12px;
+    font-size: 14px;
+}
+
+td button:first-child {
+    background: #f59e0b;
+    color: white;
+}
+
+td button:first-child:hover {
+    background: #d97706;
+}
+
+td button:last-child {
+    background: #dc2626;
+    color: white;
+}
+
+td button:last-child:hover {
+    background: #b91c1c;
+}
+
+
+/* ===============================
+   TELEFON
+================================ */
+
+@media (max-width: 600px) {
+
+    .container {
+        padding: 10px;
+    }
+
+    h1 {
+        font-size: 22px;
+        margin: 5px 0 18px;
+    }
+
+    .ust-panel {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    #yeniReceteBtn {
+        width: 100%;
+        margin: 0 0 8px 0;
+        padding: 14px;
+    }
+
+    .recete-sayisi {
+        text-align: center;
+        padding: 11px;
+    }
+
+    .form {
+        padding: 15px;
+        border-radius: 12px;
+    }
+
+    .form input,
+    .form textarea {
+        font-size: 16px;
+        padding: 14px;
+    }
+
+    button {
+        padding: 13px 8px;
+    }
+
+    #kaydetBtn,
+    #btnTemizle {
+        width: calc(50% - 10px);
+    }
+
+    #arama {
+        font-size: 16px;
+        padding: 14px;
+    }
+
+    .liste {
+        border-radius: 12px;
+    }
+
+    table {
+        min-width: 750px;
+    }
+
+}
+
+
+/* ===============================
+   ÇOK KÜÇÜK TELEFON
+================================ */
+
+@media (max-width: 380px) {
+
+    .container {
+        padding: 8px;
+    }
+
+    h1 {
+        font-size: 20px;
+    }
+
+    .form {
+        padding: 12px;
+    }
+
+    #kaydetBtn,
+    #btnTemizle {
+        width: 100%;
+        margin: 4px 0;
+    }
+
+}
+/* ===============================
+   REÇETE DETAY PENCERESİ
+================================ */
+
+#detayModal {
+    display: none;
+    position: fixed;
+
+    top: 0;
+    left: 0;
+
+    width: 100%;
+    height: 100%;
+
+    background: rgba(0, 0, 0, 0.55);
+
+    z-index: 99999;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 15px;
+}
+
+
+#detayModal .modal-icerik {
+
+    width: 100%;
+    max-width: 500px;
+
+    background: white;
+
+    border-radius: 16px;
+
+    padding: 20px;
+
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.30);
+
+    max-height: 90vh;
+
+    overflow-y: auto;
+}
+
+
+/* BAŞLIK */
+
+#detayModal .modal-baslik {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    margin-bottom: 15px;
+}
+
+
+#detayModal .modal-baslik h2 {
+
+    margin: 0;
+
+    font-size: 22px;
+
+    color: #111827;
+}
+
+
+/* X BUTONU */
+
+#detayModal .modal-kapat {
+
+    width: 40px;
+    height: 40px;
+
+    margin: 0;
+
+    padding: 0;
+
+    background: #e5e7eb;
+
+    color: #111827;
+
+    font-size: 20px;
+
+    border-radius: 8px;
+}
+
+
+/* BİLGİLER */
+
+#detayModal .detay-bilgi > div {
+
+    padding: 12px 0;
+
+    border-bottom: 1px solid #eeeeee;
+}
+
+
+#detayModal .detay-bilgi span {
+
+    display: block;
+
+    font-size: 13px;
+
+    color: #6b7280;
+
+    margin-bottom: 4px;
+}
+
+
+#detayModal .detay-bilgi strong {
+
+    display: block;
+
+    font-size: 17px;
+
+    color: #111827;
+
+    word-break: break-word;
+}
+
+
+/* NOTLAR */
+
+#detayModal .detay-not p {
+
+    margin: 6px 0 0;
+
+    font-size: 16px;
+
+    line-height: 1.5;
+
+    white-space: pre-wrap;
+}
+
+
+/* KAPAT */
+
+#detayModal .detay-kapat-btn {
+
+    width: 100%;
+
+    margin: 18px 0 0;
+
+    background: #374151;
+
+    color: white;
+
+    font-weight: bold;
+}
+
+
+/* TELEFON */
+
+@media (max-width: 600px) {
+
+    #detayModal {
+
+        padding: 10px;
+
+    }
+
+    #detayModal .modal-icerik {
+
+        padding: 16px;
+
+        border-radius: 14px;
+
+    }
+
+}
+/* ===============================
+   DETAY PENCERESİ
+================================ */
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.55);
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+}
+
+.modal-icerik {
+    width: 100%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+}
+
+.modal-baslik {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 12px;
+    margin-bottom: 15px;
+}
+
+.modal-baslik h2 {
+    margin: 0;
+}
+
+.modal-baslik small {
+    color: #2563eb;
+}
+
+.modal-kapat {
+    width: 40px;
+    height: 40px;
+    margin: 0;
+    padding: 0;
+    background: #ef4444;
+    color: white;
+    font-size: 20px;
+}
+
+.detay-bilgi > div {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+}
+
+.detay-bilgi span {
+    display: block;
+    font-size: 13px;
+    color: #6b7280;
+    margin-bottom: 5px;
+}
+
+.detay-bilgi strong {
+    font-size: 17px;
+}
+
+.detay-not p {
+    white-space: pre-wrap;
+    margin: 5px 0 0;
+}
+
+.detay-butonlar {
+    display: flex;
+    gap: 8px;
+    margin-top: 18px;
+    flex-wrap: wrap;
+}
+
+.detay-butonlar button {
+    flex: 1;
+    margin: 0;
+    min-width: 120px;
+}
+
+.detay-kopyala-btn {
+    background: #2563eb;
+    color: white;
+}
+
+.detay-duzenle-btn {
+    background: #f59e0b;
+    color: white;
+}
+
+.detay-yazdir-btn {
+    background: #374151;
+    color: white;
+}
+
+.detay-kapat-btn {
+    width: 100%;
+    margin: 12px 0 0;
+    background: #e5e7eb;
+    color: #222;
+}
+
+@media (max-width: 600px) {
+
+    .modal {
+        padding: 10px;
+    }
+
+    .modal-icerik {
+        max-height: 94vh;
+        padding: 15px;
+        border-radius: 14px;
+    }
+
+    .detay-butonlar {
+        flex-direction: column;
+    }
+
+    .detay-butonlar button {
+        width: 100%;
+    }
+}
+/* =====================================
+   TELEFON GÖRÜNÜMÜ - GELİŞTİRİLMİŞ
+===================================== */
+
+@media (max-width: 600px) {
+
+    body {
+        background: #f1f5f9;
+    }
+
+    .container {
+        padding: 10px;
+        width: 100%;
+    }
+
+    h1 {
+        font-size: 21px;
+        margin: 5px 0 15px;
+    }
+
+
+    /* ÜST PANEL */
+
+    .ust-panel {
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+
+    #yeniReceteBtn {
+        width: 100%;
+        font-size: 16px;
+        padding: 14px;
+        border-radius: 12px;
+    }
+
+    .recete-sayisi {
+        width: 100%;
+        text-align: center;
+        padding: 11px;
+        border-radius: 12px;
+    }
+
+
+    /* FORM */
+
+    .form {
+        padding: 14px;
+        border-radius: 14px;
+    }
+
+    .form input,
+    .form textarea {
+        font-size: 16px;
+        padding: 14px;
+        margin-bottom: 10px;
+        border-radius: 10px;
+    }
+
+    .form textarea {
+        min-height: 100px;
+    }
+
+
+    /* FORM BUTONLARI */
+
+    #kaydetBtn,
+    #btnTemizle {
+        width: calc(50% - 8px);
+        margin: 4px;
+        padding: 14px 5px;
+        font-size: 15px;
+    }
+
+
+    /* ARAMA */
+
+    #arama {
+        font-size: 16px;
+        padding: 14px;
+        border-radius: 12px;
+        margin-bottom: 12px;
+    }
+
+
+    /* TABLO */
+
+    .liste {
+        border-radius: 12px;
+        overflow-x: auto;
+    }
+
+    table {
+        min-width: 720px;
+    }
+
+    th {
+        padding: 11px;
+        font-size: 14px;
+    }
+
+    td {
+        padding: 10px;
+        font-size: 14px;
+    }
+
+
+    /* TABLO BUTONLARI */
+
+    td button {
+        padding: 9px 11px;
+        font-size: 13px;
+    }
+
+
+    /* =================================
+       DETAY PENCERESİ
+    ================================= */
+
+    .modal {
+        padding: 8px !important;
+        align-items: flex-end !important;
+    }
+
+    .modal-icerik {
+        width: 100% !important;
+        max-width: 100% !important;
+        max-height: 92vh !important;
+        border-radius: 18px 18px 0 0 !important;
+        padding: 16px !important;
+        margin: 0 !important;
+    }
+
+
+    .modal-icerik h2 {
+        font-size: 21px;
+    }
+
+
+    .detay-satir {
+        background: #f8fafc;
+        padding: 12px;
+        margin-bottom: 7px;
+        border-radius: 10px;
+    }
+
+
+    .detay-satir span {
+        display: block;
+        color: #64748b;
+        font-size: 13px;
+        margin-bottom: 4px;
+    }
+
+
+    .detay-satir strong {
+        display: block;
+        font-size: 16px;
+        color: #111827;
+    }
+
+
+    .detay-satir p {
+        margin: 5px 0 0;
+        line-height: 1.5;
+        white-space: pre-wrap;
+    }
+
+
+    /* DETAY BUTONLARI */
+
+    .modal-icerik button {
+        min-height: 44px;
+        border-radius: 10px;
+        font-size: 14px;
+    }
+
+}
+
+
+/* =====================================
+   ÇOK KÜÇÜK TELEFONLAR
+===================================== */
+
+@media (max-width: 380px) {
+
+    h1 {
+        font-size: 19px;
+    }
+
+    .form {
+        padding: 11px;
+    }
+
+    #kaydetBtn,
+    #btnTemizle {
+        width: 100%;
+        margin: 4px 0;
+    }
+
+    .modal-icerik {
+        padding: 13px !important;
+    }
+
+}
