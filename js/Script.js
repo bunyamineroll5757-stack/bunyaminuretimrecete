@@ -1,5 +1,5 @@
-// Supabase İstemcisi Değişken Çakışmasını Önleme
-var supabase = window.supabaseClient || window.supabase;
+// Çakışmayı önlemek için değişken adını sbClient yaptık
+const sbClient = window.supabaseClient || window.supabase;
 
 let mevcutReceteId = null;
 
@@ -35,7 +35,7 @@ async function otomatikReceteNoOlustur() {
         const receteNoInput = document.getElementById("recete_no");
         if (!receteNoInput) return;
 
-        const { data, error } = await supabase
+        const { data, error } = await sbClient
             .from("receteler")
             .select("no")
             .order("id", { ascending: false })
@@ -91,7 +91,6 @@ function uretimAyarlariniDoldur(ayarlar) {
 function formuTemizle() {
     mevcutReceteId = null;
 
-    // Sayfadaki tüm input ve textarea alanlarını boşalt
     const tumInputs = document.querySelectorAll("input, textarea");
     tumInputs.forEach((el) => {
         if (el.id !== "arama") {
@@ -99,7 +98,6 @@ function formuTemizle() {
         }
     });
 
-    // Otomatik yeni reçete numarasını yazdır
     otomatikReceteNoOlustur();
 }
 
@@ -129,14 +127,14 @@ async function receteKaydet() {
 
         if (mevcutReceteId) {
             // Güncelleme
-            const res = await supabase
+            const res = await sbClient
                 .from("receteler")
                 .update(payload)
                 .eq("id", mevcutReceteId);
             error = res.error;
         } else {
             // Yeni Kayıt
-            const res = await supabase
+            const res = await sbClient
                 .from("receteler")
                 .insert([payload]);
             error = res.error;
@@ -163,7 +161,7 @@ async function receteleriListele(aramaMetni = "") {
     if (!listeEl) return;
 
     try {
-        let query = supabase.from("receteler").select("*").order("id", { ascending: false });
+        let query = sbClient.from("receteler").select("*").order("id", { ascending: false });
 
         if (aramaMetni.trim() !== "") {
             query = query.or(`urun.ilike.%${aramaMetni}%,no.ilike.%${aramaMetni}%`);
@@ -211,7 +209,7 @@ async function receteleriListele(aramaMetni = "") {
 
 // Reçete Detay Gösterme
 async function receteDetayGoster(id) {
-    const { data, error } = await supabase.from("receteler").select("*").eq("id", id).single();
+    const { data, error } = await sbClient.from("receteler").select("*").eq("id", id).single();
     if (error || !data) {
         alert("Detay verisi alınamadı!");
         return;
@@ -226,7 +224,7 @@ async function receteDetayGoster(id) {
 
 // Reçete Düzenleme
 async function receteDuzenle(id) {
-    const { data, error } = await supabase.from("receteler").select("*").eq("id", id).single();
+    const { data, error } = await sbClient.from("receteler").select("*").eq("id", id).single();
     if (error || !data) {
         alert("Reçete bilgisi alınamadı!");
         return;
@@ -257,7 +255,7 @@ async function receteKopyala(id) {
 async function receteSil(id) {
     if (!confirm("Bu reçeteyi silmek istediğinize emin misiniz?")) return;
 
-    const { error } = await supabase.from("receteler").delete().eq("id", id);
+    const { error } = await sbClient.from("receteler").delete().eq("id", id);
     if (error) {
         alert("Silme hatası: " + error.message);
     } else {
