@@ -11,6 +11,79 @@
 
 <link rel="stylesheet" href="css/style.css">
 
+<style>
+
+/* ===============================
+   ÜRETİM AYARLARI
+================================ */
+
+.ayarlar-panel {
+    margin-top: 25px;
+    padding: 15px;
+    border-radius: 12px;
+    background: #f5f7fa;
+    border: 1px solid #ddd;
+}
+
+.ayarlar-panel > h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.ayar-grup {
+    margin-bottom: 20px;
+    background: white;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+}
+
+.ayar-grup h3 {
+    margin: -12px -12px 12px -12px;
+    padding: 10px;
+    text-align: center;
+    background: #ffe600;
+    border-radius: 10px 10px 0 0;
+    font-size: 17px;
+}
+
+.ayar-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.ayar-grid input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 11px;
+    border: 1px solid #ccc;
+    border-radius: 7px;
+    font-size: 15px;
+}
+
+@media (max-width: 600px) {
+
+    .ayar-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .ayarlar-panel {
+        padding: 10px;
+    }
+
+    .ayar-grup {
+        padding: 10px;
+    }
+
+    .ayar-grup h3 {
+        margin: -10px -10px 10px -10px;
+    }
+
+}
+
+</style>
+
 </head>
 
 
@@ -28,15 +101,16 @@
         </button>
 
         <div class="recete-sayisi">
-
             Toplam Reçete:
-
             <strong id="toplamRecete">0</strong>
-
         </div>
 
     </div>
 
+
+    <!-- ===============================
+         TEMEL REÇETE BİLGİLERİ
+    ================================ -->
 
     <div class="form">
 
@@ -55,300 +129,133 @@
         <textarea id="notlar" placeholder="Notlar"></textarea>
 
 
-        <button
-            type="button"
-            id="kaydetBtn"
-            onclick="kaydet()">
-
+        <button type="button" id="kaydetBtn" onclick="kaydet()">
             Kaydet
-
         </button>
 
-
-        <button
-            type="button"
-            id="btnTemizle"
-            onclick="temizle()">
-
+        <button type="button" id="btnTemizle" onclick="temizle()">
             Temizle
-
         </button>
 
     </div>
 
 
-    <hr>
+    <!-- ===============================
+         ÜRETİM AYARLARI
+    ================================ -->
+
+    <div class="ayarlar-panel">
+
+        <h2>ÜRETİM AYARLARI</h2>
 
 
-    <input
-        id="arama"
-        placeholder="Reçete ara..."
-        onkeyup="ara()">
+        <!-- GENEL AYARLAR -->
 
+        <div class="ayar-grup">
 
-    <div class="liste">
+            <h3>Genel Ayarlar</h3>
 
-        <table>
+            <div class="ayar-grid">
 
-            <thead>
+                <input id="ayar_gram" placeholder="Gram">
 
-                <tr>
+                <input id="ayar_renk" placeholder="Renk">
 
-                    <th>No</th>
-                    <th>Ürün</th>
-                    <th>Makine</th>
-                    <th>Hız</th>
-                    <th>Sıcaklık</th>
-                    <th>Basınç</th>
-                    <th>İşlem</th>
+                <input id="ayar_tarih" type="date">
 
-                </tr>
+                <input id="ayar_servolap" placeholder="Servolap">
 
-            </thead>
+                <input id="ayar_tarak_hizi" placeholder="Tarak Hızı">
 
-
-            <tbody id="liste"></tbody>
-
-        </table>
-
-    </div>
-
-</div>
-
-
-
-<!-- =================================
-     DETAY PENCERESİ
-================================= -->
-
-<div
-    id="detayModal"
-    class="modal"
-    style="
-        display:none;
-        position:fixed;
-        z-index:99999;
-        left:0;
-        top:0;
-        width:100%;
-        height:100%;
-        background:rgba(0,0,0,0.60);
-        align-items:center;
-        justify-content:center;
-        padding:15px;
-    ">
-
-
-    <div
-        class="modal-icerik"
-        style="
-            background:white;
-            width:100%;
-            max-width:600px;
-            max-height:90vh;
-            overflow-y:auto;
-            border-radius:16px;
-            padding:20px;
-        ">
-
-
-        <div
-            style="
-                display:flex;
-                justify-content:space-between;
-                align-items:center;
-                margin-bottom:15px;
-                border-bottom:1px solid #ddd;
-                padding-bottom:10px;
-            ">
-
-            <div>
-
-                <h2 style="margin:0;">
-                    Reçete Detayı
-                </h2>
-
-                <small id="detay_baslik_no"></small>
+                <input id="ayar_firma_adi" placeholder="Firma Adı">
 
             </div>
-
-
-            <button
-                type="button"
-                onclick="detayKapat()"
-                style="
-                    background:#dc2626;
-                    color:white;
-                    width:40px;
-                    height:40px;
-                    padding:0;
-                    margin:0;
-                    font-size:20px;
-                ">
-
-                ✕
-
-            </button>
 
         </div>
 
 
+        <!-- TARAK AYARLARI -->
 
-        <div id="detayBilgi">
+        <div class="ayar-grup">
 
+            <h3>Tarak Ayarları</h3>
 
-            <div class="detay-satir">
+            <div class="ayar-grid">
 
-                <span>Reçete No</span>
+                <input id="ayar_ana_tambur" placeholder="Ana Tambur">
 
-                <strong id="detay_recete_no"></strong>
+                <input id="ayar_alt_ara_dofer" placeholder="Alt Ara Dofer">
 
-            </div>
+                <input id="ayar_siyirici" placeholder="Sıyırıcı">
 
+                <input id="ayar_ust_ara_dofer" placeholder="Üst Ara Dofer">
 
-            <div class="detay-satir">
+                <input id="ayar_isci" placeholder="İşçi">
 
-                <span>Ürün Adı</span>
+                <input id="ayar_ust_sevk_doferi" placeholder="Üst Sevk Doferi">
 
-                <strong id="detay_urun_adi"></strong>
+                <input id="ayar_alt_sevk_doferi" placeholder="Alt Sevk Doferi">
 
-            </div>
+                <input id="ayar_ust_dofer_alici" placeholder="Üst Dofer Alıcı">
 
+                <input id="ayar_alt_dofer_alici" placeholder="Alt Dofer Alıcı">
 
-            <div class="detay-satir">
+                <input id="ayar_ust_sevk_bandi" placeholder="Üst Sevk Bandı">
 
-                <span>Makine Adı</span>
-
-                <strong id="detay_makine_adi"></strong>
-
-            </div>
-
-
-            <div class="detay-satir">
-
-                <span>Hız</span>
-
-                <strong id="detay_hiz"></strong>
+                <input id="ayar_alt_sevk_bandi" placeholder="Alt Sevk Bandı">
 
             </div>
-
-
-            <div class="detay-satir">
-
-                <span>Sıcaklık</span>
-
-                <strong id="detay_sicaklik"></strong>
-
-            </div>
-
-
-            <div class="detay-satir">
-
-                <span>Basınç</span>
-
-                <strong id="detay_basinc"></strong>
-
-            </div>
-
-
-            <div class="detay-satir">
-
-                <span>Notlar</span>
-
-                <p id="detay_notlar"></p>
-
-            </div>
-
 
         </div>
 
 
+        <!-- SERİCİ AYARLARI -->
 
-        <!-- DETAY BUTONLARI -->
+        <div class="ayar-grup">
 
-        <div
-            style="
-                display:flex;
-                gap:8px;
-                margin-top:20px;
-                flex-wrap:wrap;
-            ">
+            <h3>Serici Ayarları</h3>
 
+            <div class="ayar-grid">
 
-            <button
-                type="button"
-                onclick="detayKopyala()"
-                style="
-                    background:#2563eb;
-                    color:white;
-                    flex:1;
-                ">
+                <input id="ayar_tulbent_kati" placeholder="Tülbent Katı">
 
-                📋 Kopyala
+                <input id="ayar_besleme_cekim" placeholder="Besleme Çekim">
 
-            </button>
+                <input id="ayar_serme_eni_on" placeholder="Serme Eni Ön">
 
+                <input id="ayar_bant_cekim" placeholder="Bant Çekim">
 
-            <button
-                type="button"
-                onclick="detaydanDuzenle()"
-                style="
-                    background:#f59e0b;
-                    color:white;
-                    flex:1;
-                ">
+                <input id="ayar_serme_eni_arka" placeholder="Serme Eni Arka">
 
-                ✏️ Düzenle
+                <input id="ayar_araba_cekim" placeholder="Araba Çekim">
 
-            </button>
+                <input id="ayar_cikis_yuksekligi_sag" placeholder="Çıkış Yüksekliği Sağ">
 
+                <input id="ayar_cikis_hafiza" placeholder="Çıkış Hafıza Faktörü">
 
-            <button
-                type="button"
-                onclick="detayYazdir()"
-                style="
-                    background:#374151;
-                    color:white;
-                    flex:1;
-                ">
+                <input id="ayar_on_cikis_hafiza" placeholder="Ön Çıkış Hafıza Faktörü">
 
-                🖨️ Yazdır
+                <input id="ayar_cikis_yuksekligi_sol" placeholder="Çıkış Yüksekliği Sol">
 
-            </button>
+                <input id="ayar_arka_cikis_hafiza" placeholder="Arka Çıkış Hafıza Faktörü">
 
+            </div>
 
         </div>
 
 
+        <!-- ÇEKTİRME AYARLARI -->
 
-        <button
-            type="button"
-            onclick="detayKapat()"
-            style="
-                width:100%;
-                background:#e5e7eb;
-                color:#222;
-                margin-top:10px;
-            ">
+        <div class="ayar-grup">
 
-            Kapat
+            <h3>Çektirme Ayarları</h3>
 
-        </button>
+            <div class="ayar-grid">
 
+                <input id="ayar_trio1" placeholder="Trio 1 Çekim">
 
-    </div>
+                <input id="ayar_trio2" placeholder="Trio 2 Çekim">
 
-</div>
+                <input id="ayar_trio3" placeholder="Trio 3 Çekim">
 
-
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script src="js/supabase.js"></script>
-
-<script src="js/Script.js"></script>
-
-
-</body>
-
-</html>
+                <input id="ayar_trio4" placeholder="Trio 4 Ç
