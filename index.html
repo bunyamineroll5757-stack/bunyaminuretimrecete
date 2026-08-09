@@ -16,11 +16,12 @@
         .btn-primary { background-color: #0284c7; }
         .btn-danger { background-color: #ef4444; }
 
+        /* TABLO VE SÜTUN YAPISI */
         .tbl-container { font-size: 11px; border-collapse: collapse; width: 100%; max-width: 900px; background: white; table-layout: fixed; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .tbl-container td { border: 1px solid #666; padding: 4px 3px; text-align: left; vertical-align: middle; word-wrap: break-word; }
+        .tbl-container td { border: 1px solid #000; padding: 4px 3px; text-align: left; vertical-align: middle; word-wrap: break-word; }
         
         .bg-blue { background-color: #3b93ff; color: #000; font-weight: bold; text-align: center !important; font-size: 12px; }
-        .bg-green { background-color: #7ce06c; font-weight: bold; color: #000; }
+        .bg-green { background-color: #55ef3a; font-weight: bold; color: #000; }
         .bg-orange { background-color: #f2c199; font-weight: bold; color: #000; }
         
         .tbl-container input, .tbl-container textarea { width: 100%; border: none; outline: none; background: transparent; font-size: 11px; font-weight: bold; color: #1e293b; padding: 2px 0; }
@@ -66,7 +67,7 @@
         <div class="header-actions">
             <h2 style="color: #1e3a8a; font-size: 16px;">Üretim Reçetesi Veri Girişi</h2>
             <div class="btn-group">
-                <button type="button" class="btn-success" id="kaydetBtn" onclick="window.kaydet ? window.kaydet(event) : alert('Sistem yükleniyor, tekrar deneyin.')">Kaydet</button>
+                <button type="button" class="btn-success" id="kaydetBtn" onclick="window.kaydet ? window.kaydet(event) : alert('Sistem yükleniyor...')">Kaydet</button>
                 <button type="button" class="btn-primary" onclick="window.yeniRecete && window.yeniRecete()">Yeni Reçete</button>
                 <button type="button" onclick="window.pdfIndir && window.pdfIndir()">PDF İndir</button>
                 <button type="button" class="btn-primary" onclick="window.paylas && window.paylas()">WhatsApp</button>
@@ -75,14 +76,12 @@
         </div>
 
         <table class="tbl-container" id="detayIcerik">
-            <!-- SÜTUN GENİŞLİK SABİTLEYİCİ -->
+            <!-- 4 ORANTILI SÜTUN: Sol Etiket (%35) | Sol Değer (%15) | Sağ Etiket (%35) | Sağ Değer (%15) -->
             <colgroup>
-                <col style="width: 22%;">
-                <col style="width: 11%;">
-                <col style="width: 22%;">
-                <col style="width: 11%;">
-                <col style="width: 22%;">
-                <col style="width: 12%;">
+                <col style="width: 35%;">
+                <col style="width: 15%;">
+                <col style="width: 35%;">
+                <col style="width: 15%;">
             </colgroup>
 
             <!-- ÜST BİLGİLER -->
@@ -91,137 +90,142 @@
                 <td><input type="text" id="ayar_servolap"></td>
                 <td class="bg-green">TARAK HIZI</td>
                 <td><input type="text" id="ayar_tarak_hizi"></td>
+            </tr>
+            <tr>
                 <td class="bg-green">FİRMA ADI</td>
-                <td><input type="text" id="ayar_firma_adi"></td>
+                <td colspan="3"><input type="text" id="ayar_firma_adi"></td>
             </tr>
             <tr>
                 <td class="bg-green">ÜRÜN ADI *</td>
-                <td colspan="5"><input type="text" id="urun_adi" required placeholder="Gerekli"></td>
+                <td colspan="3"><input type="text" id="urun_adi" required placeholder="Gerekli"></td>
             </tr>
 
             <!-- TARAK AYARLARI -->
-            <tr><td colspan="6" class="bg-blue">TARAK AYARLARI</td></tr>
+            <tr><td colspan="4" class="bg-blue">TARAK AYARLARI</td></tr>
             <tr>
                 <td class="bg-green">ANA TAMBUR</td><td><input type="text" id="ayar_ana_tambur"></td>
-                <td class="bg-green">ALT ARA DOFER</td><td colspan="3"><input type="text" id="ayar_alt_ara_dofer"></td>
+                <td class="bg-green">ALT ARA DOFER</td><td><input type="text" id="ayar_alt_ara_dofer"></td>
             </tr>
             <tr>
                 <td class="bg-green">SIYIRICI</td><td><input type="text" id="ayar_siyirici"></td>
-                <td class="bg-green">ÜST ARA DOFER</td><td colspan="3"><input type="text" id="ayar_ust_ara_dofer"></td>
+                <td class="bg-green">ÜST ARA DOFER</td><td><input type="text" id="ayar_ust_ara_dofer"></td>
             </tr>
             <tr>
                 <td class="bg-green">İŞÇİ</td><td><input type="text" id="ayar_isci"></td>
-                <td colspan="4"></td>
+                <td colspan="2"></td>
             </tr>
             <tr>
                 <td class="bg-green">ÜST SEVK DOFERİ</td><td><input type="text" id="ayar_ust_sevk_doferi"></td>
-                <td class="bg-green">ALT SEVK DOFERİ</td><td colspan="3"><input type="text" id="ayar_alt_sevk_doferi"></td>
+                <td class="bg-green">ALT SEVK DOFERİ</td><td><input type="text" id="ayar_alt_sevk_doferi"></td>
             </tr>
             <tr>
                 <td class="bg-green">ÜST DOFER ALICI</td><td><input type="text" id="ayar_ust_dofer_alici"></td>
-                <td class="bg-green">ALT DOFER ALICI</td><td colspan="3"><input type="text" id="ayar_alt_dofer_alici"></td>
+                <td class="bg-green">ALT DOFER ALICI</td><td><input type="text" id="ayar_alt_dofer_alici"></td>
             </tr>
             <tr>
                 <td class="bg-green">UST SEVK BANDI</td><td><input type="text" id="ayar_ust_sevk_bandi"></td>
-                <td class="bg-green">ALT SEVK BANDI</td><td colspan="3"><input type="text" id="ayar_alt_sevk_bandi"></td>
+                <td class="bg-green">ALT SEVK BANDI</td><td><input type="text" id="ayar_alt_sevk_bandi"></td>
             </tr>
 
             <!-- SERİCİ AYARLARI -->
-            <tr><td colspan="6" class="bg-blue">SERİCİ AYARLARI</td></tr>
+            <tr><td colspan="4" class="bg-blue">SERİCİ AYARLARI</td></tr>
             <tr>
                 <td class="bg-green">TÜLBENT KATI</td><td><input type="text" id="ayar_tulbent_kati"></td>
-                <td class="bg-green">BESLEME ÇEKİM</td><td colspan="3"><input type="text" id="ayar_besleme_cekim"></td>
+                <td class="bg-green">BESLEME ÇEKİM</td><td><input type="text" id="ayar_besleme_cekim"></td>
             </tr>
             <tr>
                 <td class="bg-green">SERME ENİ ÖN</td><td><input type="text" id="ayar_serme_eni_on"></td>
-                <td class="bg-green">BANT ÇEKİM</td><td colspan="3"><input type="text" id="ayar_bant_cekim"></td>
+                <td class="bg-green">BANT ÇEKİM</td><td><input type="text" id="ayar_bant_cekim"></td>
             </tr>
             <tr>
                 <td class="bg-green">SERME ENİ ARKA</td><td><input type="text" id="ayar_serme_eni_arka"></td>
-                <td class="bg-green">ARABA ÇEKİM</td><td colspan="3"><input type="text" id="ayar_araba_cekim"></td>
+                <td class="bg-green">ARABA ÇEKİM</td><td><input type="text" id="ayar_araba_cekim"></td>
             </tr>
             <tr>
                 <td class="bg-green">ÇKŞ YÜKSEKLİĞİ SAĞ</td><td><input type="text" id="ayar_cikis_yuksekligi_sag"></td>
-                <td class="bg-green">ÇKŞ HAFIZA FAKTÖRÜ</td><td colspan="3"><input type="text" id="ayar_cikis_hafiza"></td>
+                <td class="bg-green">ÇKŞ HAFIZA FAKTÖRÜ</td><td><input type="text" id="ayar_cikis_hafiza"></td>
             </tr>
             <tr>
                 <td class="bg-green">ÇKŞ YÜKSEKLİĞİ SOL</td><td><input type="text" id="ayar_cikis_yuksekligi_sol"></td>
-                <td class="bg-green">ÖN ÇKŞ HAFIZA FAKTÖRÜ</td><td colspan="3"><input type="text" id="ayar_on_cikis_hafiza"></td>
+                <td class="bg-green">ÖN ÇKŞ HAFIZA FAKTÖRÜ</td><td><input type="text" id="ayar_on_cikis_hafiza"></td>
             </tr>
             <tr>
                 <td colspan="2"></td>
-                <td class="bg-green">ARKA ÇKŞ HFZA FAKTÖR</td><td colspan="3"><input type="text" id="ayar_arka_cikis_hafiza"></td>
+                <td class="bg-green">ARKA ÇKŞ HFZA FAKTÖR</td><td><input type="text" id="ayar_arka_cikis_hafiza"></td>
             </tr>
 
             <!-- ÇEKTİRME AYARLARI -->
-            <tr><td colspan="6" class="bg-blue">ÇEKTİRME AYARLARI</td></tr>
+            <tr><td colspan="4" class="bg-blue">ÇEKTİRME AYARLARI</td></tr>
             <tr>
                 <td class="bg-green">TRİO 1 ÇEKİM</td><td><input type="text" id="ayar_trio1"></td>
-                <td class="bg-green">TRİO 4 ÇEKİM</td><td colspan="3"><input type="text" id="ayar_trio4"></td>
+                <td class="bg-green">TRİO 4 ÇEKİM</td><td><input type="text" id="ayar_trio4"></td>
             </tr>
             <tr>
                 <td class="bg-green">TRİO 2 ÇEKİM</td><td><input type="text" id="ayar_trio2"></td>
-                <td class="bg-green">TRİO 5 ÇEKİM</td><td colspan="3"><input type="text" id="ayar_trio5"></td>
+                <td class="bg-green">TRİO 5 ÇEKİM</td><td><input type="text" id="ayar_trio5"></td>
             </tr>
             <tr>
                 <td class="bg-green">TRİO 3 ÇEKİM</td><td><input type="text" id="ayar_trio3"></td>
-                <td class="bg-green">TRİO 6 ÇEKİM</td><td colspan="3"><input type="text" id="ayar_trio6"></td>
+                <td class="bg-green">TRİO 6 ÇEKİM</td><td><input type="text" id="ayar_trio6"></td>
             </tr>
 
             <!-- SU JETİ AYARLARI -->
-            <tr><td colspan="6" class="bg-blue">SU JETİ AYARLARI</td></tr>
+            <tr><td colspan="4" class="bg-blue">SU JETİ AYARLARI</td></tr>
             <tr>
-                <td></td><td class="bg-blue">BAR</td><td class="bg-blue">HZ</td><td class="bg-green" colspan="3">BESLEME 1</td>
+                <td></td><td class="bg-blue" style="text-align:center;">BAR</td><td class="bg-blue" style="text-align:center;">HZ</td><td class="bg-green">BESLEME 1</td>
             </tr>
             <tr>
-                <td class="bg-green">POMPA 1</td><td><input type="text" id="ayar_pompa1"></td><td><input type="text" id="ayar_besleme1"></td><td class="bg-green" colspan="3">TAMBUR 1</td>
+                <td class="bg-green">POMPA 1</td><td><input type="text" id="ayar_pompa1"></td><td><input type="text" id="ayar_besleme1"></td><td class="bg-green">TAMBUR 1</td>
             </tr>
             <tr>
-                <td class="bg-green">POMPA 2</td><td><input type="text" id="ayar_pompa2"></td><td><input type="text" id="ayar_tambur1"></td><td class="bg-green" colspan="3">TAMBUR 2</td>
+                <td class="bg-green">POMPA 2</td><td><input type="text" id="ayar_pompa2"></td><td><input type="text" id="ayar_tambur1"></td><td class="bg-green">TAMBUR 2</td>
             </tr>
             <tr>
-                <td class="bg-green">POMPA 3</td><td><input type="text" id="ayar_pompa3"></td><td><input type="text" id="ayar_tambur2"></td><td class="bg-green" colspan="3">TAMBUR 3</td>
+                <td class="bg-green">POMPA 3</td><td><input type="text" id="ayar_pompa3"></td><td><input type="text" id="ayar_tambur2"></td><td class="bg-green">TAMBUR 3</td>
             </tr>
             <tr>
-                <td class="bg-green">POMPA 4</td><td><input type="text" id="ayar_pompa4"></td><td><input type="text" id="ayar_tambur3"></td><td class="bg-green" colspan="3">BESLEME 2</td>
+                <td class="bg-green">POMPA 4</td><td><input type="text" id="ayar_pompa4"></td><td><input type="text" id="ayar_tambur3"></td><td class="bg-green">BESLEME 2</td>
             </tr>
             <tr>
-                <td class="bg-green">POMPA 5</td><td><input type="text" id="ayar_pompa5"></td><td><input type="text" id="ayar_besleme2"></td><td class="bg-green" colspan="3">SIKMA FULAR</td>
+                <td class="bg-green">POMPA 5</td><td><input type="text" id="ayar_pompa5"></td><td><input type="text" id="ayar_besleme2"></td><td class="bg-green">SIKMA FULAR</td>
             </tr>
             <tr>
-                <td class="bg-green">POMPA 6</td><td><input type="text" id="ayar_pompa6"></td><td><input type="text" id="ayar_sikma_fular"></td><td class="bg-green" colspan="3">FIRIN</td>
+                <td class="bg-green">POMPA 6</td><td><input type="text" id="ayar_pompa6"></td><td><input type="text" id="ayar_sikma_fular"></td><td class="bg-green">FIRIN</td>
             </tr>
 
             <!-- HAMMADDE AYARLARI -->
-            <tr><td colspan="6" class="bg-blue">HAMMADDE AYARLARI</td></tr>
+            <tr><td colspan="4" class="bg-blue">HAMMADDE AYARLARI</td></tr>
             <tr>
-                <td class="bg-green">BALKAN 1</td><td><input type="text" id="ayar_balkan1"></td>
-                <td class="bg-green">BALKAN 2</td><td><input type="text" id="ayar_balkan2"></td>
-                <td class="bg-green">BALKAN 3</td><td><input type="text" id="ayar_balkan3"></td>
+                <td class="bg-green">BALKAN 1 %</td><td><input type="text" id="ayar_balkan1"></td>
+                <td class="bg-green">BALKAN 2 %</td><td><input type="text" id="ayar_balkan2"></td>
             </tr>
             <tr>
-                <td class="bg-green">HAMMADDE</td><td colspan="5"><input type="text" id="ayar_hammadde"></td>
+                <td class="bg-green">BALKAN 3 %</td><td><input type="text" id="ayar_balkan3"></td>
+                <td colspan="2"></td>
+            </tr>
+            <tr>
+                <td class="bg-green">HAMMADDE</td><td colspan="3"><input type="text" id="ayar_hammadde"></td>
             </tr>
 
             <!-- KESİM EBATLARI -->
-            <tr><td colspan="6" class="bg-blue">KESİM EBATLARI</td></tr>
+            <tr><td colspan="4" class="bg-blue">KESİM EBATLARI</td></tr>
             <tr>
                 <td class="bg-green">KESİM ENİ</td><td><input type="text" id="ayar_kesim_eni"></td>
-                <td class="bg-green" colspan="2">ÇAP</td><td colspan="2"><input type="text" id="ayar_cap"></td>
+                <td class="bg-green">ÇAP</td><td><input type="text" id="ayar_cap"></td>
             </tr>
             <tr>
                 <td class="bg-green">SARIM METRESİ</td><td><input type="text" id="ayar_sarim_metresi"></td>
-                <td colspan="2"></td><td class="bg-green" colspan="2">SAATLİK KG</td>
+                <td class="bg-green">SAATLİK KG</td><td><input type="text"></td>
             </tr>
             <tr>
                 <td class="bg-green">FIRIN ISISI</td><td><input type="text" id="ayar_firin_isisi"></td>
-                <td colspan="2"></td><td class="bg-green" colspan="2">HAT HIZI</td>
+                <td class="bg-green">HAT HIZI</td><td><input type="text"></td>
             </tr>
 
             <!-- NOTLAR -->
             <tr>
                 <td class="bg-orange">NOTLAR</td>
-                <td colspan="5"><textarea id="notlar" placeholder="Not ekleyebilirsiniz..."></textarea></td>
+                <td colspan="3"><textarea id="notlar" placeholder="Not ekleyebilirsiniz..."></textarea></td>
             </tr>
         </table>
     </form>
