@@ -1978,11 +1978,34 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
+// ==========================================
+// ADMIN GİRİŞ KONTROLÜ
+// ==========================================
+
+const ADMIN_USER = "bunyamin";
+const ADMIN_PASS = "Busra.5744"; 
+
+document.addEventListener("DOMContentLoaded", function () {
+    const oturumAcik = localStorage.getItem("adminOturum");
+    const loginModal = document.getElementById("loginModal");
+
+    if (oturumAcik === "true") {
+        if (loginModal) loginModal.style.display = "none";
+    } else {
+        if (loginModal) loginModal.style.display = "flex";
+    }
+});
+
 function adminGiris() {
-    const user = document.getElementById("login_user").value.trim();
-    const pass = document.getElementById("login_pass").value.trim();
+    const userEl = document.getElementById("login_user");
+    const passEl = document.getElementById("login_pass");
     const errorMsg = document.getElementById("loginError");
     const loginModal = document.getElementById("loginModal");
+
+    if (!userEl || !passEl) return;
+
+    const user = userEl.value.trim();
+    const pass = passEl.value.trim();
 
     if (user === ADMIN_USER && pass === ADMIN_PASS) {
         localStorage.setItem("adminOturum", "true");
