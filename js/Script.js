@@ -419,13 +419,13 @@ async function kaydet(event) {
 
 
         // Üretim ayarları
-        const ayarlar = uretimAyarlariTopla();
+        const ayarlarObj = uretimAyarlariTopla();
 
-        ayarlar.makine_adi = makineAdi;
-        ayarlar.hiz = hiz;
-        ayarlar.sicaklik = sicaklik;
-        ayarlar.basinc = basinc;
-        ayarlar.notlar = notlar;
+        ayarlarObj.makine_adi = makineAdi;
+        ayarlarObj.hiz = hiz;
+        ayarlarObj.sicaklik = sicaklik;
+        ayarlarObj.basinc = basinc;
+        ayarlarObj.notlar = notlar;
 
 
         // Supabase sütunlarını doğrudan hedefleyen veri objesi
@@ -443,7 +443,9 @@ async function kaydet(event) {
 
             basinc: basinc,
 
-            uretim_ayarlari: ayarlar
+            ayarlar: ayarlarObj,
+
+            uretim_ayarlari: ayarlarObj
 
         };
 
@@ -612,21 +614,21 @@ async function receteleriListele() {
 
         data.forEach(function(r) {
 
-            let ayarlar =
-                r.uretim_ayarlari || {};
+            let ayarlarObj =
+                r.ayarlar || r.uretim_ayarlari || {};
 
 
             const receteNo = r.recete_no || "";
 
             const urunAdi = r.urun_adi || "";
 
-            const makine = r.makine_adi || ayarlar.makine_adi || "";
+            const makine = r.makine_adi || ayarlarObj.makine_adi || "";
 
-            const hiz = r.hiz || ayarlar.hiz || "";
+            const hiz = r.hiz || ayarlarObj.hiz || "";
 
-            const sicaklik = r.sicaklik || ayarlar.sicaklik || "";
+            const sicaklik = r.sicaklik || ayarlarObj.sicaklik || "";
 
-            const basinc = r.basinc || ayarlar.basinc || "";
+            const basinc = r.basinc || ayarlarObj.basinc || "";
 
 
             liste.innerHTML += `
@@ -814,8 +816,8 @@ async function detayGoster(id) {
         detaydakiId = id;
 
 
-        const ayarlar =
-            data.uretim_ayarlari || {};
+        const ayarlarObj =
+            data.ayarlar || data.uretim_ayarlari || {};
 
 
         setText(
@@ -838,31 +840,31 @@ async function detayGoster(id) {
 
         setText(
             "detay_makine_adi",
-            data.makine_adi || ayarlar.makine_adi || "-"
+            data.makine_adi || ayarlarObj.makine_adi || "-"
         );
 
 
         setText(
             "detay_hiz",
-            data.hiz || ayarlar.hiz || "-"
+            data.hiz || ayarlarObj.hiz || "-"
         );
 
 
         setText(
             "detay_sicaklik",
-            data.sicaklik || ayarlar.sicaklik || "-"
+            data.sicaklik || ayarlarObj.sicaklik || "-"
         );
 
 
         setText(
             "detay_basinc",
-            data.basinc || ayarlar.basinc || "-"
+            data.basinc || ayarlarObj.basinc || "-"
         );
 
 
         setText(
             "detay_notlar",
-            ayarlar.notlar || "Not yok"
+            ayarlarObj.notlar || "Not yok"
         );
 
 
@@ -1033,8 +1035,8 @@ async function duzenle(id) {
             id;
 
 
-        const ayarlar =
-            data.uretim_ayarlari || {};
+        const ayarlarObj =
+            data.ayarlar || data.uretim_ayarlari || {};
 
 
         setValue(
@@ -1051,38 +1053,38 @@ async function duzenle(id) {
 
         setValue(
             "makine_adi",
-            data.makine_adi || ayarlar.makine_adi || ""
+            data.makine_adi || ayarlarObj.makine_adi || ""
         );
 
 
         setValue(
             "hiz",
-            data.hiz || ayarlar.hiz || ""
+            data.hiz || ayarlarObj.hiz || ""
         );
 
 
         setValue(
             "sicaklik",
-            data.sicaklik || ayarlar.sicaklik || ""
+            data.sicaklik || ayarlarObj.sicaklik || ""
         );
 
 
         setValue(
             "basinc",
-            data.basinc || ayarlar.basinc || ""
+            data.basinc || ayarlarObj.basinc || ""
         );
 
 
         setValue(
             "notlar",
-            ayarlar.notlar || ""
+            ayarlarObj.notlar || ""
         );
 
 
         // Diğer üretim ayarlarını yükle
 
         uretimAyarlariYukle(
-            ayarlar
+            ayarlarObj
         );
 
 
@@ -1215,13 +1217,13 @@ async function guncelle() {
         const notlar = document.getElementById("notlar")?.value.trim() || "";
 
 
-        const ayarlar = uretimAyarlariTopla();
+        const ayarlarObj = uretimAyarlariTopla();
 
-        ayarlar.makine_adi = makineAdi;
-        ayarlar.hiz = hiz;
-        ayarlar.sicaklik = sicaklik;
-        ayarlar.basinc = basinc;
-        ayarlar.notlar = notlar;
+        ayarlarObj.makine_adi = makineAdi;
+        ayarlarObj.hiz = hiz;
+        ayarlarObj.sicaklik = sicaklik;
+        ayarlarObj.basinc = basinc;
+        ayarlarObj.notlar = notlar;
 
 
         const veri = {
@@ -1238,7 +1240,9 @@ async function guncelle() {
 
             basinc: basinc,
 
-            uretim_ayarlari: ayarlar
+            ayarlar: ayarlarObj,
+
+            uretim_ayarlari: ayarlarObj
 
         };
 
