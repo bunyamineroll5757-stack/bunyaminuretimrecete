@@ -2020,3 +2020,6 @@ function adminCikis() {
     localStorage.removeItem("adminOturum");
     location.reload();
 }
+
+
+    
