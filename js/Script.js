@@ -1,6 +1,6 @@
 // ======================================================
 // ÜRETİM REÇETE YÖNETİM SİSTEMİ
-// Script.js - ÇALIŞAN TAM SÜRÜM
+// Script.js - ÇALIŞAN TAM VE DÜZELTİLMİŞ SÜRÜM
 // ======================================================
 
 
@@ -17,6 +17,10 @@ let detaydakiId = null;
 // ======================================================
 
 function getSupabase() {
+
+    if (window.sbClient) {
+        return window.sbClient;
+    }
 
     if (window.supabaseClient) {
         return window.supabaseClient;
@@ -92,7 +96,6 @@ function uretimAyarlariTopla() {
         "ayar_tambur2",
         "ayar_tambur3",
         "ayar_besleme2",
-        "ayar_tambur3",
         "ayar_sikma_fular",
         "ayar_firin",
 
@@ -278,7 +281,7 @@ async function otomatikReceteNo() {
     const { data, error } =
         await db
             .from("receteler")
-            .select("no")
+            .select("recete_no")
             .order("id", {
                 ascending: false
             })
@@ -296,7 +299,7 @@ async function otomatikReceteNo() {
     if (data && data.length > 0) {
 
         const sonNo =
-            String(data[0].no || "");
+            String(data[0].recete_no || "");
 
 
         const sonuc =
@@ -403,68 +406,34 @@ async function kaydet() {
         }
 
 
-        // Miktar
-        // HTML'de miktar alanı olmadığı için
-        // varsayılan olarak 0 gönderiyoruz.
-
-        let miktar = 0;
+        // Diğer genel alanlar
+        const makineAdi = document.getElementById("makine_adi")?.value.trim() || "";
+        const hiz = document.getElementById("hiz")?.value.trim() || "";
+        const sicaklik = document.getElementById("sicaklik")?.value.trim() || "";
+        const basinc = document.getElementById("basinc")?.value.trim() || "";
+        const notlar = document.getElementById("notlar")?.value.trim() || "";
 
 
         // Üretim ayarları
+        const ayarlar = uretimAyarlariTopla();
 
-        const ayarlar =
-            uretimAyarlariTopla();
-
-
-        // Genel bilgiler de JSONB içine kaydediliyor
-
-        ayarlar.makine_adi =
-            document.getElementById(
-                "makine_adi"
-            )?.value.trim() || "";
+        ayarlar.makine_adi = makineAdi;
+        ayarlar.hiz = hiz;
+        ayarlar.sicaklik = sicaklik;
+        ayarlar.basinc = basinc;
+        ayarlar.notlar = notlar;
 
 
-        ayarlar.hiz =
-            document.getElementById(
-                "hiz"
-            )?.value.trim() || "";
-
-
-        ayarlar.sicaklik =
-            document.getElementById(
-                "sicaklik"
-            )?.value.trim() || "";
-
-
-        ayarlar.basinc =
-            document.getElementById(
-                "basinc"
-            )?.value.trim() || "";
-
-
-        ayarlar.notlar =
-            document.getElementById(
-                "notlar"
-            )?.value.trim() || "";
-
-
-        // Tarih
-
-        const bugun =
-            new Date().toISOString().split("T")[0];
-
-
-        // Gerçek tablo yapımıza uygun veri
-
+        // Supabase sütunlarını doğrudan hedefleyen veri objesi
         const veri = {
 
-            no: receteNo,
+            recete_no: receteNo,
 
-            urun: urunAdi,
+            urun_adi: urunAdi,
 
-            miktar: miktar,
+            makine_adi: makineAdi,
 
-            tarih: bugun,
+            hiz: hiz,
 
             uretim_ayarlari: ayarlar
 
@@ -639,20 +608,17 @@ async function receteleriListele() {
                 r.uretim_ayarlari || {};
 
 
-            const makine =
-                ayarlar.makine_adi || "";
+            const receteNo = r.recete_no || "";
 
+            const urunAdi = r.urun_adi || "";
 
-            const hiz =
-                ayarlar.hiz || "";
+            const makine = r.makine_adi || ayarlar.makine_adi || "";
 
+            const hiz = r.hiz || ayarlar.hiz || "";
 
-            const sicaklik =
-                ayarlar.sicaklik || "";
+            const sicaklik = ayarlar.sicaklik || "";
 
-
-            const basinc =
-                ayarlar.basinc || "";
+            const basinc = ayarlar.basinc || "";
 
 
             liste.innerHTML += `
@@ -660,11 +626,11 @@ async function receteleriListele() {
                 <tr>
 
                     <td>
-                        ${guvenliMetin(r.no)}
+                        ${guvenliMetin(receteNo)}
                     </td>
 
                     <td>
-                        ${guvenliMetin(r.urun)}
+                        ${guvenliMetin(urunAdi)}
                     </td>
 
                     <td>
@@ -846,31 +812,31 @@ async function detayGoster(id) {
 
         setText(
             "detay_recete_no",
-            data.no || "-"
+            data.recete_no || "-"
         );
 
 
         setText(
             "detay_baslik_no",
-            data.no || "-"
+            data.recete_no || "-"
         );
 
 
         setText(
             "detay_urun_adi",
-            data.urun || "-"
+            data.urun_adi || "-"
         );
 
 
         setText(
             "detay_makine_adi",
-            ayarlar.makine_adi || "-"
+            data.makine_adi || ayarlar.makine_adi || "-"
         );
 
 
         setText(
             "detay_hiz",
-            ayarlar.hiz || "-"
+            data.hiz || ayarlar.hiz || "-"
         );
 
 
@@ -1065,25 +1031,25 @@ async function duzenle(id) {
 
         setValue(
             "recete_no",
-            data.no || ""
+            data.recete_no || ""
         );
 
 
         setValue(
             "urun_adi",
-            data.urun || ""
+            data.urun_adi || ""
         );
 
 
         setValue(
             "makine_adi",
-            ayarlar.makine_adi || ""
+            data.makine_adi || ayarlar.makine_adi || ""
         );
 
 
         setValue(
             "hiz",
-            ayarlar.hiz || ""
+            data.hiz || ayarlar.hiz || ""
         );
 
 
@@ -1234,45 +1200,31 @@ async function guncelle() {
             )?.value.trim() || "";
 
 
-        const ayarlar =
-            uretimAyarlariTopla();
+        const makineAdi = document.getElementById("makine_adi")?.value.trim() || "";
+        const hiz = document.getElementById("hiz")?.value.trim() || "";
+        const sicaklik = document.getElementById("sicaklik")?.value.trim() || "";
+        const basinc = document.getElementById("basinc")?.value.trim() || "";
+        const notlar = document.getElementById("notlar")?.value.trim() || "";
 
 
-        ayarlar.makine_adi =
-            document.getElementById(
-                "makine_adi"
-            )?.value.trim() || "";
+        const ayarlar = uretimAyarlariTopla();
 
-
-        ayarlar.hiz =
-            document.getElementById(
-                "hiz"
-            )?.value.trim() || "";
-
-
-        ayarlar.sicaklik =
-            document.getElementById(
-                "sicaklik"
-            )?.value.trim() || "";
-
-
-        ayarlar.basinc =
-            document.getElementById(
-                "basinc"
-            )?.value.trim() || "";
-
-
-        ayarlar.notlar =
-            document.getElementById(
-                "notlar"
-            )?.value.trim() || "";
+        ayarlar.makine_adi = makineAdi;
+        ayarlar.hiz = hiz;
+        ayarlar.sicaklik = sicaklik;
+        ayarlar.basinc = basinc;
+        ayarlar.notlar = notlar;
 
 
         const veri = {
 
-            no: receteNo,
+            recete_no: receteNo,
 
-            urun: urunAdi,
+            urun_adi: urunAdi,
+
+            makine_adi: makineAdi,
+
+            hiz: hiz,
 
             uretim_ayarlari: ayarlar
 
