@@ -21,12 +21,12 @@ window.adminCikis = function() {
 
 // ======================================================
 // ÜRETİM REÇETE YÖNETİM SİSTEMİ
-// Script.js - DÜZELTİLMİŞ TAM SÜRÜM
+// Script.js - MOBİL UYUMLU TAM SÜRÜM
 // ======================================================
 
 let secilenId = null;
 let detaydakiId = null;
-let detaydakiVeri = null; // Kopyalama için detay nesnesini hafızada tutar
+let detaydakiVeri = null; // Kopyalama, Paylaşım ve Yazdırma için veriyi tutar
 
 // ======================================================
 // SUPABASE KONTROLÜ
@@ -311,7 +311,7 @@ async function detayGoster(id) {
         }
 
         detaydakiId = id;
-        detaydakiVeri = data; // Tüm veriyi hafızaya alıyoruz (Kopyalamada kullanmak için)
+        detaydakiVeri = data; // Tüm veriyi hafızaya alıyoruz
         const ayarlarObj = data.uretim_ayarlari || data.ayarlar || {};
 
         setText("detay_recete_no", data.recete_no || "-");
@@ -498,7 +498,7 @@ function yeniRecete() {
 function temizle() { temizleForm(); }
 
 // ======================================================
-// KOPYALA (DÜZELTİLDİ: TÜM SİSTEMİ FORMA AKTARIR)
+// KOPYALA
 // ======================================================
 function detayKopyala() {
     if (!detaydakiVeri) {
@@ -506,12 +506,11 @@ function detayKopyala() {
         return;
     }
 
-    temizleForm(); // Önce formu sıfırla
+    temizleForm();
 
     const data = detaydakiVeri;
     const ayarlarObj = data.uretim_ayarlari || data.ayarlar || {};
 
-    // Temel alanlar (Reçete no boş bırakılır ki yenisi otomatik verilsin)
     setValue("recete_no", "");
     setValue("urun_adi", data.urun_adi || "");
     setValue("makine_adi", data.makine_adi || ayarlarObj.makine_adi || "");
@@ -520,10 +519,9 @@ function detayKopyala() {
     setValue("basinc", data.basinc || ayarlarObj.basinc || "");
     setValue("notlar", data.notlar || ayarlarObj.notlar || "");
 
-    // Üretim ayarlarını (tüm makine girdilerini) yükle
     uretimAyarlariYukle(ayarlarObj);
 
-    secilenId = null; // Güncelleme değil, YENİ KAYIT olacağını belirttik
+    secilenId = null;
     const buton = document.getElementById("kaydetBtn");
     if (buton) buton.innerText = "Kaydet";
 
@@ -539,53 +537,89 @@ function getText(id) {
 }
 
 // ======================================================
-// YAZDIR
+// 1. YAZDIR / PDF İNDİR (ANDROID VE MOBİL UYUMLU)
 // ======================================================
 function detayYazdir() {
-    const receteNo = getText("detay_recete_no");
-    const urunAdi = getText("detay_urun_adi");
-    const makineAdi = getText("detay_makine_adi");
-    const hiz = getText("detay_hiz");
-    const sicaklik = getText("detay_sicaklik");
-    const basinc = getText("detay_basinc");
-    const notlar = getText("detay_notlar");
-
-    const yazdir = window.open("", "_blank", "width=700,height=800");
-    if (!yazdir) {
-        alert("Yazdırma penceresi açılamadı.");
+    if (!detaydakiVeri) {
+        alert("Yazdırılacak reçete bulunamadı.");
         return;
     }
 
-    yazdir.document.write(`
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-<meta charset="UTF-8">
-<title>Üretim Reçetesi</title>
-<style>
-body { font-family: Arial, sans-serif; padding: 30px; color: #222; }
-h1 { text-align: center; margin-bottom: 30px; }
-.bilgi { border: 1px solid #ddd; padding: 14px; margin-bottom: 10px; border-radius: 8px; }
-.etiket { display: block; font-weight: bold; margin-bottom: 5px; }
-.notlar { min-height: 100px; white-space: pre-wrap; }
-</style>
-</head>
-<body>
-<h1>Üretim Reçetesi</h1>
-<div class="bilgi"><span class="etiket">Reçete No</span>${guvenliMetin(receteNo)}</div>
-<div class="bilgi"><span class="etiket">Ürün Adı</span>${guvenliMetin(urunAdi)}</div>
-<div class="bilgi"><span class="etiket">Makine Adı</span>${guvenliMetin(makineAdi)}</div>
-<div class="bilgi"><span class="etiket">Hız</span>${guvenliMetin(hiz)}</div>
-<div class="bilgi"><span class="etiket">Sıcaklık</span>${guvenliMetin(sicaklik)}</div>
-<div class="bilgi"><span class="etiket">Basınç</span>${guvenliMetin(basinc)}</div>
-<div class="bilgi notlar"><span class="etiket">Notlar</span>${guvenliMetin(notlar)}</div>
-<script>
-window.onload = function() { window.print(); };
-<\/script>
-</body>
-</html>`);
+    const data = detaydakiVeri;
+    const ayarlarObj = data.uretim_ayarlari || data.ayarlar || {};
 
-    yazdir.document.close();
+    let printArea = document.getElementById("mobilePrintArea");
+    if (!printArea) {
+        printArea = document.createElement("div");
+        printArea.id = "mobilePrintArea";
+        document.body.appendChild(printArea);
+    }
+
+    let detaySatirlari = "";
+    Object.keys(ayarlarObj).forEach(key => {
+        if (ayarlarObj[key]) {
+            detaySatirlari += `<div style="border-bottom: 1px dotted #ccc; padding: 4px 0;"><b>${guvenliMetin(key)}:</b> ${guvenliMetin(ayarlarObj[key])}</div>`;
+        }
+    });
+
+    printArea.innerHTML = `
+        <div style="padding: 15px; font-family: sans-serif; color: #000; background: #fff;">
+            <h2 style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 8px; margin-top: 0;">ÜRETİM REÇETESİ</h2>
+            <div style="margin-bottom: 15px; line-height: 1.6;">
+                <p style="margin: 3px 0;"><strong>Reçete No:</strong> ${guvenliMetin(data.recete_no || "-")}</p>
+                <p style="margin: 3px 0;"><strong>Ürün Adı:</strong> ${guvenliMetin(data.urun_adi || "-")}</p>
+                <p style="margin: 3px 0;"><strong>Makine Adı:</strong> ${guvenliMetin(data.makine_adi || ayarlarObj.makine_adi || "-")}</p>
+                <p style="margin: 3px 0;"><strong>Hız:</strong> ${guvenliMetin(data.hiz || ayarlarObj.hiz || "-")}</p>
+                <p style="margin: 3px 0;"><strong>Sıcaklık:</strong> ${guvenliMetin(data.sicaklik || ayarlarObj.sicaklik || "-")}</p>
+                <p style="margin: 3px 0;"><strong>Basınç:</strong> ${guvenliMetin(data.basinc || ayarlarObj.basinc || "-")}</p>
+                <p style="margin: 3px 0;"><strong>Notlar:</strong> ${guvenliMetin(data.notlar || ayarlarObj.notlar || "-")}</p>
+            </div>
+            <h3 style="border-bottom: 1px solid #000; padding-bottom: 4px;">Makine / Üretim Ayarları</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 11px;">
+                ${detaySatirlari}
+            </div>
+        </div>
+    `;
+
+    window.print();
+}
+
+// ======================================================
+// 2. MOBİL PAYLAŞ VEYA WHATSAPP (ANDROID UYUMLU)
+// ======================================================
+async function detayPaylas() {
+    if (!detaydakiVeri) {
+        alert("Paylaşılacak reçete bulunamadı.");
+        return;
+    }
+
+    const data = detaydakiVeri;
+    const ayarlarObj = data.uretim_ayarlari || data.ayarlar || {};
+
+    const paylasimMetni = 
+`📋 *ÜRETİM REÇETESİ*
+🔹 *Reçete No:* ${data.recete_no || "-"}
+🔹 *Ürün Adı:* ${data.urun_adi || "-"}
+🔹 *Makine:* ${data.makine_adi || ayarlarObj.makine_adi || "-"}
+🔹 *Hız:* ${data.hiz || ayarlarObj.hiz || "-"}
+🔹 *Sıcaklık:* ${data.sicaklik || ayarlarObj.sicaklik || "-"}
+🔹 *Basınç:* ${data.basinc || ayarlarObj.basinc || "-"}`;
+
+    // Mobil cihazlarda varsayılan Web Share API'si
+    if (navigator.share) {
+        try {
+            await navigator.share({
+                title: `Reçete - ${data.recete_no}`,
+                text: paylasimMetni
+            });
+        } catch (err) {
+            console.log("Paylaşım iptal edildi:", err);
+        }
+    } else {
+        // Native Share desteği yoksa doğrudan WhatsApp yönlendirmesi
+        const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(paylasimMetni)}`;
+        window.open(waUrl, "_blank");
+    }
 }
 
 // ======================================================
@@ -604,6 +638,31 @@ function ara() {
 }
 
 // ======================================================
+// YAZDIRMA CSS STİLLERİNİ SAYFAYA OTOMATİK EKLE
+// ======================================================
+function yazdirmaStilleriniEkle() {
+    if (document.getElementById("printStyles")) return;
+    const style = document.createElement("style");
+    style.id = "printStyles";
+    style.innerHTML = `
+        #mobilePrintArea { display: none; }
+        @media print {
+            body * { visibility: hidden !important; }
+            #mobilePrintArea, #mobilePrintArea * { visibility: visible !important; }
+            #mobilePrintArea {
+                display: block !important;
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                background: #fff !important;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+// ======================================================
 // KLAVYE VE AÇILIŞ DİNLENİCİLERİ
 // ======================================================
 document.addEventListener("keydown", function(event) {
@@ -615,6 +674,9 @@ document.addEventListener("keydown", function(event) {
 document.addEventListener("DOMContentLoaded", function() {
     console.log("Script.js çalıştı.");
     
+    // Mobil yazdırma CSS kurallarını ekle
+    yazdirmaStilleriniEkle();
+
     // Oturum Kontrolü
     const oturumAcik = localStorage.getItem("adminOturum");
     const loginModal = document.getElementById("loginModal");
