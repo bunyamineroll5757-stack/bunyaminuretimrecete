@@ -50,7 +50,7 @@
 
 <body>
 
-<div class="container" id="anaIcerik" style="display: none;">
+<div class="container">
     <h1>Üretim Reçete Yönetim Sistemi</h1>
     <div id="durum" class="durum"></div>
 
@@ -183,7 +183,7 @@
                     <td class="label">BALKAN 2</td><td><input id="ayar_balkan2"></td>
                     <td class="label">BALKAN 3</td><td><input id="ayar_balkan3"></td>
                 </tr>
-                <tr><td colspan="6"><input id="ayar_hammadde" placeholder="Hammadde detayları..."></td></tr>
+                <tr><td colspan="6"><input id="ayar_hammadde"></td></tr>
                 <tr><td colspan="6" class="section-header">KESİM EBATLARI</td></tr>
                 <tr>
                     <td class="label" colspan="2">KESİM ENİ</td><td><input id="ayar_kesim_eni"></td>
@@ -202,7 +202,7 @@
     </div>
 
     <div class="panel">
-        <input id="arama" placeholder="Arama..." oninput="ara()" style="width: 100%; margin-bottom: 5px;">
+        <input id="arama" placeholder="Arama..." oninput="ara()">
         <div class="table-wrap">
             <table>
                 <thead><tr><th>No</th><th>Ürün</th><th>Makine</th><th>İşlem</th></tr></thead>
@@ -231,7 +231,7 @@
 <!-- GİRİŞ MODAL -->
 <div id="loginModal" class="modal" style="display: flex;">
     <div class="modal-content" style="max-width: 300px;">
-        <h2>Giriş Yap</h2>
+        <h2>Giriş</h2>
         <form id="loginForm" onsubmit="event.preventDefault(); adminGiris();">
             <input id="login_user" placeholder="Kullanıcı" autocomplete="username" style="margin-bottom: 5px; width:100%;">
             <input id="login_pass" type="password" placeholder="Şifre" autocomplete="current-password" style="margin-bottom: 5px; width:100%;">
@@ -247,14 +247,13 @@
     let aktifRecete = null;
     let tumReceteler = [];
 
-    // GİRİŞ & ÇIKIŞ FONKSİYONLARI
+    // GİRİŞ FONKSİYONU
     function adminGiris() {
-        const user = document.getElementById("login_user").value.trim();
-        const pass = document.getElementById("login_pass").value.trim();
+        const user = document.getElementById("login_user").value;
+        const pass = document.getElementById("login_pass").value;
         
         if (user === "admin" && pass === "1234") {
             document.getElementById("loginModal").style.display = "none";
-            document.getElementById("anaIcerik").style.display = "block";
             receteleriYukle();
         } else {
             alert("Hatalı kullanıcı adı veya şifre!");
@@ -262,13 +261,10 @@
     }
 
     function adminCikis() {
-        document.getElementById("login_user").value = "";
-        document.getElementById("login_pass").value = "";
-        document.getElementById("anaIcerik").style.display = "none";
         document.getElementById("loginModal").style.display = "flex";
     }
 
-    // EXCEL TABLOSU VERİ YÖNETİMİ
+    // EXCEL TABLOSU VERİLERİNİ TOPLAMA VE DOLDURMA
     function excelVerileriniAl() {
         const veriler = {};
         const inputs = document.querySelectorAll('.excel-table input');
@@ -279,31 +275,30 @@
     }
 
     function excelVerileriniYaz(veriler) {
+        if (!veriler) return;
         const inputs = document.querySelectorAll('.excel-table input');
         inputs.forEach(input => {
-            input.value = (veriler && veriler[input.id] !== undefined) ? veriler[input.id] : '';
+            if (veriler[input.id] !== undefined) {
+                input.value = veriler[input.id];
+            }
         });
     }
 
     function yeniRecete() {
-        document.querySelectorAll('input, textarea').forEach(el => {
-            if (el.id !== 'login_user' && el.id !== 'login_pass') {
-                el.value = '';
-            }
-        });
+        document.querySelectorAll('input, textarea').forEach(el => el.value = '');
         aktifRecete = null;
     }
 
-    // KAYDET (Supabase)
+    // KAYDET (Supabase Entegrasyonu)
     async function kaydet() {
         const receteData = {
-            recete_no: document.getElementById("recete_no").value.trim(),
-            urun_adi: document.getElementById("urun_adi").value.trim(),
-            makine_adi: document.getElementById("makine_adi").value.trim(),
-            hiz: document.getElementById("hiz").value.trim(),
-            sicaklik: document.getElementById("sicaklik").value.trim(),
-            basinc: document.getElementById("basinc").value.trim(),
-            notlar: document.getElementById("notlar").value.trim(),
+            recete_no: document.getElementById("recete_no").value,
+            urun_adi: document.getElementById("urun_adi").value,
+            makine_adi: document.getElementById("makine_adi").value,
+            hiz: document.getElementById("hiz").value,
+            sicaklik: document.getElementById("sicaklik").value,
+            basinc: document.getElementById("basinc").value,
+            notlar: document.getElementById("notlar").value,
             detaylar: excelVerileriniAl()
         };
 
@@ -377,13 +372,11 @@
         aktifRecete = tumReceteler.find(r => r.id === id);
         if (!aktifRecete) return;
 
-        excelVerileriniYaz(aktifRecete.detaylar);
-
         const detayHtml = `
-            <p><strong>Reçete No:</strong> ${aktifRecete.recete_no || '-'}</p>
-            <p><strong>Ürün Adı:</strong> ${aktifRecete.urun_adi || '-'}</p>
-            <p><strong>Makine:</strong> ${aktifRecete.makine_adi || '-'}</p>
-            <p><strong>Hız:</strong> ${aktifRecete.hiz || '-'} | <strong>Sıcaklık:</strong> ${aktifRecete.sicaklik || '-'} | <strong>Basınç:</strong> ${aktifRecete.basinc || '-'}</p>
+            <p><strong>Reçete No:</strong> ${aktifRecete.recete_no}</p>
+            <p><strong>Ürün Adı:</strong> ${aktifRecete.urun_adi}</p>
+            <p><strong>Makine:</strong> ${aktifRecete.makine_adi}</p>
+            <p><strong>Hız:</strong> ${aktifRecete.hiz} | <strong>Sıcaklık:</strong> ${aktifRecete.sicaklik} | <strong>Basınç:</strong> ${aktifRecete.basinc}</p>
             <p><strong>Notlar:</strong> ${aktifRecete.notlar || '-'}</p>
         `;
         document.getElementById("detayIcerik").innerHTML = detayHtml;
@@ -410,8 +403,8 @@
     function detayKopyala() {
         if (!aktifRecete) return;
         detaydanDuzenle();
-        aktifRecete = null; // Yeni kayıt moduna geçirir
-        document.getElementById("recete_no").value += " (Kopya)";
+        aktifRecete = null; // Yeni reçete olarak kaydetmeye hazırlar
+        document.getElementById("recete_no").value += " (Kopyalar)";
     }
 
     function detayYazdir() {
@@ -420,18 +413,7 @@
 
     function pdfIndir() {
         const el = document.getElementById("excelAlani");
-        const fileName = (aktifRecete && aktifRecete.recete_no) ? `${aktifRecete.recete_no}.pdf` : 'recete.pdf';
-        
-        // Input değerlerinin PDF render sırasında görünmesi için HTML attribute'una atanması
-        const inputs = el.querySelectorAll('input');
-        inputs.forEach(input => input.setAttribute('value', input.value));
-
-        const opt = { 
-            margin: 5, 
-            filename: fileName, 
-            html2canvas: { scale: 2 }, 
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
-        };
+        const opt = { margin: 5, filename: `${aktifRecete ? aktifRecete.recete_no : 'recete'}.pdf`, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
         html2pdf().set(opt).from(el).save();
     }
 
