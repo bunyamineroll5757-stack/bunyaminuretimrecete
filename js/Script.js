@@ -1881,3 +1881,56 @@ document.addEventListener(
 
     }
 );
+
+// Reçeteyi PDF Olarak İndirme
+function pdfIndir() {
+    const element = document.getElementById('detayIcerik');
+    const receteNo = document.getElementById('detay_recete_no').innerText || 'Recete';
+    
+    // PDF ayarları
+    const opt = {
+        margin:       10,
+        filename:     `Recete_${receteNo}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2 },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    // PDF oluştur ve indir
+    html2pdf().set(opt).from(element).save();
+}
+
+// Reçeteyi WhatsApp/E-Posta ile Paylaşma
+async function paylas() {
+    const receteNo = document.getElementById('detay_recete_no').innerText;
+    const urunAdi = document.getElementById('detay_urun_adi').innerText;
+    const makine = document.getElementById('detay_makine_adi').innerText;
+    const hiz = document.getElementById('detay_hiz').innerText;
+    const sicaklik = document.getElementById('detay_sicaklik').innerText;
+    const basinc = document.getElementById('detay_basinc').innerText;
+
+    const metin = `📄 *Üretim Reçetesi Detayı*\n\n` +
+                  `*Reçete No:* ${receteNo}\n` +
+                  `*Ürün Adı:* ${urunAdi}\n` +
+                  `*Makine:* ${makine}\n` +
+                  `*Hız:* ${hiz}\n` +
+                  `*Sıcaklık:* ${sicaklik}\n` +
+                  `*Basınç:* ${basinc}\n\n` +
+                  `Üretim Reçete Sisteminden Gönderildi.`;
+
+    // Mobil veya destekleyen tarayıcılarda doğrudan paylaşım menüsü açar
+    if (navigator.share) {
+        try {
+            await navigator.share({
+                title: `Reçete No: ${receteNo}`,
+                text: metin
+            });
+        } catch (err) {
+            console.log("Paylaşım iptal edildi.");
+        }
+    } else {
+        // Tarayıcı paylaşımı desteklemiyorsa WhatsApp Web'e yönlendirir
+        const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(metin)}`;
+        window.open(whatsappUrl, '_blank');
+    }
+}
