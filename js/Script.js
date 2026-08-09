@@ -1885,29 +1885,37 @@ document.addEventListener(
 // Reçeteyi PDF Olarak İndirme
 function pdfIndir() {
     const element = document.getElementById('detayIcerik');
-    const receteNo = document.getElementById('detay_recete_no').innerText || 'Recete';
-    
-    // PDF ayarları
+    const receteEl = document.getElementById('detay_recete_no');
+    const receteNo = (receteEl && receteEl.innerText.trim()) ? receteEl.innerText.trim() : 'Recete';
+
     const opt = {
         margin:       10,
-        filename:     `Recete_${receteNo}.pdf`,
+        filename:     'Recete_' + receteNo + '.pdf',
         image:        { type: 'jpeg', quality: 0.98 },
         html2canvas:  { scale: 2 },
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
-    // PDF oluştur ve indir
-    html2pdf().set(opt).from(element).save();
+    if (typeof html2pdf !== 'undefined') {
+        html2pdf().set(opt).from(element).save();
+    } else {
+        alert('PDF kütüphanesi yüklenemedi. Lütfen index.html dosyasını kontrol edin.');
+    }
 }
 
 // Reçeteyi WhatsApp/E-Posta ile Paylaşma
 async function paylas() {
-    const receteNo = document.getElementById('detay_recete_no').innerText;
-    const urunAdi = document.getElementById('detay_urun_adi').innerText;
-    const makine = document.getElementById('detay_makine_adi').innerText;
-    const hiz = document.getElementById('detay_hiz').innerText;
-    const sicaklik = document.getElementById('detay_sicaklik').innerText;
-    const basinc = document.getElementById('detay_basinc').innerText;
+    const getVal = (id) => {
+        const el = document.getElementById(id);
+        return el ? el.innerText.trim() : '-';
+    };
+
+    const receteNo = getVal('detay_recete_no');
+    const urunAdi = getVal('detay_urun_adi');
+    const makine = getVal('detay_makine_adi');
+    const hiz = getVal('detay_hiz');
+    const sicaklik = getVal('detay_sicaklik');
+    const basinc = getVal('detay_basinc');
 
     const metin = `📄 *Üretim Reçetesi Detayı*\n\n` +
                   `*Reçete No:* ${receteNo}\n` +
@@ -1918,7 +1926,6 @@ async function paylas() {
                   `*Basınç:* ${basinc}\n\n` +
                   `Üretim Reçete Sisteminden Gönderildi.`;
 
-    // Mobil veya destekleyen tarayıcılarda doğrudan paylaşım menüsü açar
     if (navigator.share) {
         try {
             await navigator.share({
@@ -1929,7 +1936,6 @@ async function paylas() {
             console.log("Paylaşım iptal edildi.");
         }
     } else {
-        // Tarayıcı paylaşımı desteklemiyorsa WhatsApp Web'e yönlendirir
         const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(metin)}`;
         window.open(whatsappUrl, '_blank');
     }
