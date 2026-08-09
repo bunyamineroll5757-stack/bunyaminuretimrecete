@@ -10,19 +10,16 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
-        /* DAHA FAZLA İÇERİK SIĞDIRMAK İÇİN KOMPAKT TASARIM */
         body { font-family: Arial, sans-serif; margin: 0; background: #f4f6f8; font-size: 11px; }
         .container { max-width: 1000px; margin: auto; padding: 5px; }
         h1 { text-align: center; font-size: 16px; margin: 5px 0; }
         .panel { background: white; padding: 5px; margin-bottom: 5px; border-radius: 5px; }
         
-        /* Input ve Grid Ayarları */
         .ayar-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; }
         input, textarea, button { box-sizing: border-box; font-size: 11px; padding: 3px; }
         input { border: 1px solid #ccc; border-radius: 3px; }
-        textarea { min-height: 40px; }
+        textarea { min-height: 40px; width: 100%; }
         
-        /* Butonlar */
         button { padding: 5px 10px; border: 0; border-radius: 4px; cursor: pointer; margin: 2px; }
         .btn { background: #1976d2; color: white; }
         .btn-danger { background: #d32f2f; color: white; }
@@ -30,7 +27,6 @@
         .btn-secondary { background: #666; color: white; }
         .btn-warning { background: #f57c00; color: white; }
 
-        /* TABLO SIKIŞTIRMA */
         .table-wrap { overflow-x: auto; }
         table { width: 100%; border-collapse: collapse; background: white; font-size: 11px; }
         th, td { border: 1px solid #aaa; padding: 2px 4px; text-align: left; }
@@ -45,7 +41,6 @@
         .modal { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, .6); justify-content: center; align-items: center; padding: 5px; z-index: 9999; }
         .modal-content { background: white; max-width: 600px; width: 100%; max-height: 95vh; overflow-y: auto; padding: 10px; border-radius: 8px; }
 
-        /* Yazdırma */
         @media print {
             body { background: white; }
             .modal, button, #arama, #loginModal { display: none !important; }
@@ -77,7 +72,7 @@
     </div>
 
     <div class="panel">
-        <div class="excel-container">
+        <div class="excel-container" id="excelAlani">
             <table class="excel-table">
                 <tr><td colspan="6" class="section-header">ÜRETİM AYARLARI</td></tr>
                 <tr>
@@ -220,48 +215,224 @@
 <!-- DETAY MODAL -->
 <div id="detayModal" class="modal">
     <div class="modal-content">
-        <h2>Detay</h2>
+        <h2>Reçete Detayı</h2>
         <div id="detayIcerik"></div>
-        <button onclick="detaydanDuzenle()">Düzenle</button>
-        <button onclick="detayKopyala()">Kopyala</button>
-        <button onclick="detayYazdir()">Yazdır</button>
-        <button onclick="pdfIndir()">PDF</button>
-        <button onclick="paylas()">Paylaş</button>
-        <button onclick="detayKapat()">Kapat</button>
+        <div style="margin-top: 10px; text-align: right;">
+            <button class="btn" onclick="detaydanDuzenle()">Düzenle</button>
+            <button class="btn-warning" onclick="detayKopyala()">Kopyala</button>
+            <button class="btn-secondary" onclick="detayYazdir()">Yazdır</button>
+            <button class="btn-success" onclick="pdfIndir()">PDF</button>
+            <button class="btn" style="background:#25D366; color:white;" onclick="paylas()">WhatsApp</button>
+            <button class="btn-danger" onclick="detayKapat()">Kapat</button>
+        </div>
     </div>
 </div>
 
-<!-- GİRİŞ MODAL (Form Desteği ve Event Bağlantısı ile Düzenlendi) -->
+<!-- GİRİŞ MODAL -->
 <div id="loginModal" class="modal" style="display: flex;">
     <div class="modal-content" style="max-width: 300px;">
         <h2>Giriş</h2>
-        <form id="loginForm" onsubmit="event.preventDefault();">
-            <input id="login_user" placeholder="Kullanıcı" autocomplete="username" style="margin-bottom: 5px;">
-            <input id="login_pass" type="password" placeholder="Şifre" autocomplete="current-password" style="margin-bottom: 5px;">
-            <button type="button" id="loginBtn" class="btn" style="width: 100%;">Giriş Yap</button>
+        <form id="loginForm" onsubmit="event.preventDefault(); adminGiris();">
+            <input id="login_user" placeholder="Kullanıcı" autocomplete="username" style="margin-bottom: 5px; width:100%;">
+            <input id="login_pass" type="password" placeholder="Şifre" autocomplete="current-password" style="margin-bottom: 5px; width:100%;">
+            <button type="submit" id="loginBtn" class="btn" style="width: 100%;">Giriş Yap</button>
         </form>
     </div>
 </div>
 
-<!-- SCRIPT YÜKLEMELERİ -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase.js"></script>
-<script src="js/Script.js"></script>
 
-<!-- GİRİŞ TETİKLEYİCİSİ -->
 <script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const btn = document.getElementById("loginBtn");
-        if (btn) {
-            btn.addEventListener("click", () => {
-                if (typeof adminGiris === "function") {
-                    adminGiris();
-                } else {
-                    console.error("adminGiris fonksiyonu Script.js içinde bulunamadı!");
-                }
-            });
+    let aktifRecete = null;
+    let tumReceteler = [];
+
+    // GİRİŞ FONKSİYONU
+    function adminGiris() {
+        const user = document.getElementById("login_user").value;
+        const pass = document.getElementById("login_pass").value;
+        
+        if (user === "admin" && pass === "1234") {
+            document.getElementById("loginModal").style.display = "none";
+            receteleriYukle();
+        } else {
+            alert("Hatalı kullanıcı adı veya şifre!");
         }
-    });
+    }
+
+    function adminCikis() {
+        document.getElementById("loginModal").style.display = "flex";
+    }
+
+    // EXCEL TABLOSU VERİLERİNİ TOPLAMA VE DOLDURMA
+    function excelVerileriniAl() {
+        const veriler = {};
+        const inputs = document.querySelectorAll('.excel-table input');
+        inputs.forEach(input => {
+            veriler[input.id] = input.value;
+        });
+        return veriler;
+    }
+
+    function excelVerileriniYaz(veriler) {
+        if (!veriler) return;
+        const inputs = document.querySelectorAll('.excel-table input');
+        inputs.forEach(input => {
+            if (veriler[input.id] !== undefined) {
+                input.value = veriler[input.id];
+            }
+        });
+    }
+
+    function yeniRecete() {
+        document.querySelectorAll('input, textarea').forEach(el => el.value = '');
+        aktifRecete = null;
+    }
+
+    // KAYDET (Supabase Entegrasyonu)
+    async function kaydet() {
+        const receteData = {
+            recete_no: document.getElementById("recete_no").value,
+            urun_adi: document.getElementById("urun_adi").value,
+            makine_adi: document.getElementById("makine_adi").value,
+            hiz: document.getElementById("hiz").value,
+            sicaklik: document.getElementById("sicaklik").value,
+            basinc: document.getElementById("basinc").value,
+            notlar: document.getElementById("notlar").value,
+            detaylar: excelVerileriniAl()
+        };
+
+        if (!receteData.recete_no) {
+            alert("Lütfen Reçete No giriniz!");
+            return;
+        }
+
+        try {
+            let error;
+            if (aktifRecete && aktifRecete.id) {
+                const res = await supabase.from('receteler').update(receteData).eq('id', aktifRecete.id);
+                error = res.error;
+            } else {
+                const res = await supabase.from('receteler').insert([receteData]);
+                error = res.error;
+            }
+
+            if (error) throw error;
+            alert("Reçete başarıyla kaydedildi.");
+            yeniRecete();
+            receteleriYukle();
+        } catch (err) {
+            console.error("Kaydetme hatası:", err);
+            alert("Kaydedilirken hata oluştu!");
+        }
+    }
+
+    // VERİ LİSTELEME
+    async function receteleriYukle() {
+        try {
+            const { data, error } = await supabase.from('receteler').select('*').order('id', { ascending: false });
+            if (error) throw error;
+            tumReceteler = data || [];
+            tabloGuncelle(tumReceteler);
+        } catch (err) {
+            console.error("Veri çekme hatası:", err);
+        }
+    }
+
+    function tabloGuncelle(liste) {
+        const tbody = document.getElementById("liste");
+        tbody.innerHTML = "";
+        liste.forEach(item => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td>${item.recete_no || ''}</td>
+                <td>${item.urun_adi || ''}</td>
+                <td>${item.makine_adi || ''}</td>
+                <td>
+                    <button class="btn" onclick="detayGoster(${item.id})">Aç</button>
+                    <button class="btn-danger" onclick="receteSil(${item.id})">Sil</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function ara() {
+        const q = document.getElementById("arama").value.toLowerCase();
+        const filtreli = tumReceteler.filter(r => 
+            (r.recete_no && r.recete_no.toLowerCase().includes(q)) ||
+            (r.urun_adi && r.urun_adi.toLowerCase().includes(q)) ||
+            (r.makine_adi && r.makine_adi.toLowerCase().includes(q))
+        );
+        tabloGuncelle(filtreli);
+    }
+
+    // MODAL VE DETAY İŞLEMLERİ
+    function detayGoster(id) {
+        aktifRecete = tumReceteler.find(r => r.id === id);
+        if (!aktifRecete) return;
+
+        const detayHtml = `
+            <p><strong>Reçete No:</strong> ${aktifRecete.recete_no}</p>
+            <p><strong>Ürün Adı:</strong> ${aktifRecete.urun_adi}</p>
+            <p><strong>Makine:</strong> ${aktifRecete.makine_adi}</p>
+            <p><strong>Hız:</strong> ${aktifRecete.hiz} | <strong>Sıcaklık:</strong> ${aktifRecete.sicaklik} | <strong>Basınç:</strong> ${aktifRecete.basinc}</p>
+            <p><strong>Notlar:</strong> ${aktifRecete.notlar || '-'}</p>
+        `;
+        document.getElementById("detayIcerik").innerHTML = detayHtml;
+        document.getElementById("detayModal").style.display = "flex";
+    }
+
+    function detayKapat() {
+        document.getElementById("detayModal").style.display = "none";
+    }
+
+    function detaydanDuzenle() {
+        if (!aktifRecete) return;
+        document.getElementById("recete_no").value = aktifRecete.recete_no || '';
+        document.getElementById("urun_adi").value = aktifRecete.urun_adi || '';
+        document.getElementById("makine_adi").value = aktifRecete.makine_adi || '';
+        document.getElementById("hiz").value = aktifRecete.hiz || '';
+        document.getElementById("sicaklik").value = aktifRecete.sicaklik || '';
+        document.getElementById("basinc").value = aktifRecete.basinc || '';
+        document.getElementById("notlar").value = aktifRecete.notlar || '';
+        excelVerileriniYaz(aktifRecete.detaylar);
+        detayKapat();
+    }
+
+    function detayKopyala() {
+        if (!aktifRecete) return;
+        detaydanDuzenle();
+        aktifRecete = null; // Yeni reçete olarak kaydetmeye hazırlar
+        document.getElementById("recete_no").value += " (Kopyalar)";
+    }
+
+    function detayYazdir() {
+        window.print();
+    }
+
+    function pdfIndir() {
+        const el = document.getElementById("excelAlani");
+        const opt = { margin: 5, filename: `${aktifRecete ? aktifRecete.recete_no : 'recete'}.pdf`, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
+        html2pdf().set(opt).from(el).save();
+    }
+
+    function paylas() {
+        if (!aktifRecete) return;
+        const metin = `*Reçete No:* ${aktifRecete.recete_no}%0A*Ürün:* ${aktifRecete.urun_adi}%0A*Makine:* ${aktifRecete.makine_adi}`;
+        window.open(`https://api.whatsapp.com/send?text=${metin}`, '_blank');
+    }
+
+    async function receteSil(id) {
+        if (!confirm("Bu reçeteyi silmek istediğinize emin misiniz?")) return;
+        try {
+            const { error } = await supabase.from('receteler').delete().eq('id', id);
+            if (error) throw error;
+            receteleriYukle();
+        } catch (err) {
+            alert("Silme işlemi başarısız!");
+        }
+    }
 </script>
 
 </body>
