@@ -2,24 +2,30 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Üretim Reçete Takip Sistemi</title>
     <style>
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        html, body {
+            width: 100%;
+            overflow-x: hidden;
+            background-color: #f4f6f9;
+            color: #333;
         }
 
         body {
-            background-color: #f4f6f9;
-            color: #333;
-            padding: 10px;
+            padding: 8px;
         }
 
         .container {
-            max-width: 900px;
+            width: 100%;
+            max-width: 100%;
             margin: 0 auto;
         }
 
@@ -28,20 +34,24 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             background: #fff;
-            padding: 10px 15px;
+            padding: 10px;
             border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .header-actions h2 {
+            font-size: 16px;
         }
 
         .btn {
-            padding: 8px 14px;
+            padding: 8px 12px;
             border: none;
             border-radius: 4px;
             font-weight: bold;
             cursor: pointer;
-            font-size: 13px;
+            font-size: 12px;
         }
 
         .btn-primary { background-color: #007bff; color: #fff; }
@@ -55,17 +65,18 @@
             border-radius: 6px;
             overflow: hidden;
             background-color: #ffffff;
+            width: 100%;
         }
 
         .section-title {
             width: 100%;
             background-color: #007bff;
             color: white;
-            padding: 10px 14px;
+            padding: 10px;
             border: none;
             text-align: left;
             font-weight: bold;
-            font-size: 14px;
+            font-size: 13px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -73,10 +84,11 @@
         }
 
         .section-content {
-            padding: 10px;
+            padding: 8px;
             display: grid;
             grid-template-columns: 1fr;
             gap: 8px;
+            width: 100%;
         }
 
         @media (min-width: 600px) {
@@ -88,6 +100,7 @@
         .form-group {
             display: flex;
             flex-direction: column;
+            width: 100%;
         }
 
         .form-group label {
@@ -98,16 +111,30 @@
             padding: 4px 6px;
             border-radius: 3px;
             margin-bottom: 2px;
+            word-break: break-word;
         }
 
         .form-group input, .form-group textarea {
+            width: 100%;
             padding: 8px;
             border: 1px solid #ccc;
             border-radius: 4px;
             font-size: 14px;
+            outline: none;
         }
 
-        /* MODAL VE YAZDIRMA DETAY RAPORU (A4 ŞABLONU) */
+        .pompa-group {
+            display: flex;
+            gap: 4px;
+            width: 100%;
+        }
+
+        .pompa-group input {
+            flex: 1;
+            min-width: 0;
+        }
+
+        /* MODAL VE DETAY RAPORU */
         .modal {
             display: none;
             position: fixed;
@@ -115,83 +142,142 @@
             width: 100%; height: 100%;
             background: rgba(0,0,0,0.6);
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             z-index: 1000;
             overflow-y: auto;
-            padding: 10px;
+            padding: 5px;
         }
 
         .modal-content {
             background: #fff;
-            padding: 15px;
+            padding: 10px;
             border-radius: 8px;
             width: 100%;
-            max-width: 850px;
-            max-height: 90vh;
-            overflow-y: auto;
+            max-width: 100%;
+            box-sizing: border-box;
+            margin-top: 10px;
+            margin-bottom: 20px;
         }
 
         .print-document {
             width: 100%;
             background: #fff;
-            font-family: 'Times New Roman', Times, serif;
-            font-size: 11px;
+            font-size: 10px;
             color: #000;
-            padding: 5px;
             box-sizing: border-box;
+            overflow-x: auto;
         }
 
         .doc-section {
             border: 1px solid #aaa;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             padding: 2px;
+            width: 100%;
         }
 
         .doc-title {
             text-align: center;
             font-weight: bold;
-            font-size: 12px;
+            font-size: 11px;
             padding: 3px 0;
-            border-bottom: 1px solid #aaa;
+            background-color: #007bff;
+            color: white;
             text-transform: uppercase;
         }
 
         .grid-table {
             width: 100%;
             border-collapse: collapse;
+            table-layout: fixed;
         }
 
         .grid-table td, .grid-table th {
             border: 1px solid #ccc;
-            padding: 3px 4px;
+            padding: 3px 2px;
             text-align: center;
             vertical-align: middle;
+            font-size: 10px;
+            word-wrap: break-word;
         }
 
         .grid-table td.lbl {
             font-weight: bold;
             text-align: right;
-            padding-right: 5px;
-            white-space: nowrap;
+            padding-right: 3px;
+            background-color: #d4edda;
+            color: #1b5e20;
         }
 
         .grid-table td.val {
             text-align: center;
+            background-color: #fff;
         }
 
-        .flex-row {
-            display: flex;
-            gap: 8px;
-        }
-
-        .flex-col {
-            flex: 1;
-        }
-
+        /* TEK SAYFA A4 YAZDIRMA (PDF) OPTİMİZASYONU */
         @media print {
-            body * { visibility: hidden; }
-            #detayIcerik, #detayIcerik * { visibility: visible; }
-            #detayIcerik { position: absolute; left: 0; top: 0; width: 100%; }
+            @page {
+                size: A4 portrait;
+                margin: 4mm;
+            }
+
+            body * {
+                visibility: hidden;
+            }
+
+            #detayModal, #detayIcerik, #detayIcerik * {
+                visibility: visible;
+            }
+
+            #detayModal {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: auto;
+                padding: 0;
+                margin: 0;
+                background: white;
+                overflow: visible;
+            }
+
+            /* Yazdırmada butonları gizle */
+            .modal-content > div:first-child {
+                display: none !important;
+            }
+
+            .modal-content {
+                padding: 0 !important;
+                margin: 0 !important;
+                width: 100% !important;
+                border: none !important;
+                box-shadow: none !important;
+            }
+
+            /* Bölüm ve tablo dikey sıkıştırma */
+            .doc-section {
+                margin-bottom: 1.5mm !important;
+                border: 1px solid #666 !important;
+                page-break-inside: avoid;
+            }
+
+            .doc-title {
+                font-size: 8pt !important;
+                padding: 1px 0 !important;
+                background-color: #eee !important;
+                color: #000 !important;
+            }
+
+            .grid-table td, .grid-table th {
+                padding: 1px 2px !important;
+                font-size: 7.5pt !important;
+                line-height: 1.1 !important;
+                border: 1px solid #888 !important;
+            }
+
+            .grid-table td.lbl {
+                background-color: #f0f0f0 !important;
+                color: #000 !important;
+            }
         }
     </style>
 </head>
@@ -284,32 +370,82 @@
                 SU JETİ AYARLARI <span>▼</span>
             </button>
             <div id="sec_sujeti" class="section-content">
+                <div class="form-group">
+                    <label>POMPA 1 (BAR / HZ)</label>
+                    <div class="pompa-group">
+                        <input type="text" id="ayar_p1_bar" placeholder="Bar">
+                        <input type="text" id="ayar_pompa1" placeholder="Hz">
+                    </div>
+                </div>
                 <div class="form-group"><label>BESLEME 1</label><input type="text" id="ayar_besleme1"></div>
-                <div class="form-group"><label>POMPA 1 (BAR / HZ)</label><input type="text" id="ayar_pompa1"></div>
+
+                <div class="form-group">
+                    <label>POMPA 2 (BAR / HZ)</label>
+                    <div class="pompa-group">
+                        <input type="text" id="ayar_p2_bar" placeholder="Bar">
+                        <input type="text" id="ayar_pompa2" placeholder="Hz">
+                    </div>
+                </div>
                 <div class="form-group"><label>TAMBUR 1</label><input type="text" id="ayar_tambur1"></div>
-                <div class="form-group"><label>POMPA 2</label><input type="text" id="ayar_pompa2"></div>
+
+                <div class="form-group">
+                    <label>POMPA 3 (BAR / HZ)</label>
+                    <div class="pompa-group">
+                        <input type="text" id="ayar_p3_bar" placeholder="Bar">
+                        <input type="text" id="ayar_pompa3" placeholder="Hz">
+                    </div>
+                </div>
                 <div class="form-group"><label>TAMBUR 2</label><input type="text" id="ayar_tambur2"></div>
-                <div class="form-group"><label>POMPA 3</label><input type="text" id="ayar_pompa3"></div>
+
+                <div class="form-group">
+                    <label>POMPA 4 (BAR / HZ)</label>
+                    <div class="pompa-group">
+                        <input type="text" id="ayar_p4_bar" placeholder="Bar">
+                        <input type="text" id="ayar_pompa4" placeholder="Hz">
+                    </div>
+                </div>
                 <div class="form-group"><label>TAMBUR 3</label><input type="text" id="ayar_tambur3"></div>
-                <div class="form-group"><label>POMPA 4</label><input type="text" id="ayar_pompa4"></div>
+
+                <div class="form-group">
+                    <label>POMPA 5 (BAR / HZ)</label>
+                    <div class="pompa-group">
+                        <input type="text" id="ayar_p5_bar" placeholder="Bar">
+                        <input type="text" id="ayar_pompa5" placeholder="Hz">
+                    </div>
+                </div>
                 <div class="form-group"><label>BESLEME 2</label><input type="text" id="ayar_besleme2"></div>
-                <div class="form-group"><label>POMPA 5</label><input type="text" id="ayar_pompa5"></div>
+
+                <div class="form-group">
+                    <label>POMPA 6 (BAR / HZ)</label>
+                    <div class="pompa-group">
+                        <input type="text" id="ayar_p6_bar" placeholder="Bar">
+                        <input type="text" id="ayar_pompa6" placeholder="Hz">
+                    </div>
+                </div>
                 <div class="form-group"><label>SIKMA FULAR</label><input type="text" id="ayar_sikma_fular"></div>
-                <div class="form-group"><label>POMPA 6</label><input type="text" id="ayar_pompa6"></div>
+
                 <div class="form-group"><label>FIRIN</label><input type="text" id="ayar_firin"></div>
             </div>
         </div>
 
-        <!-- HAMMADDE VE KESİM EBATLARI -->
+        <!-- HAMMADDE AYARLARI -->
         <div class="mobile-section">
             <button type="button" class="section-title" onclick="toggleSection('sec_hammadde')">
-                HAMMADDE VE KESİM EBATLARI <span>▼</span>
+                HAMMADDE AYARLARI <span>▼</span>
             </button>
             <div id="sec_hammadde" class="section-content">
                 <div class="form-group"><label>BALKAN 1 (%)</label><input type="text" id="ayar_balkan1"></div>
                 <div class="form-group"><label>BALKAN 2 (%)</label><input type="text" id="ayar_balkan2"></div>
                 <div class="form-group"><label>BALKAN 3 (%)</label><input type="text" id="ayar_balkan3"></div>
-                <div class="form-group"><label>HAMMADDE</label><input type="text" id="ayar_hammadde"></div>
+            </div>
+        </div>
+
+        <!-- KESİM EBATLARI -->
+        <div class="mobile-section">
+            <button type="button" class="section-title" onclick="toggleSection('sec_kesim')">
+                KESİM EBATLARI <span>▼</span>
+            </button>
+            <div id="sec_kesim" class="section-content">
                 <div class="form-group"><label>KESİM ENİ</label><input type="text" id="ayar_kesim_eni"></div>
                 <div class="form-group"><label>ÇAP</label><input type="text" id="ayar_cap"></div>
                 <div class="form-group"><label>SARIM METRESİ</label><input type="text" id="ayar_sarim_metresi"></div>
@@ -324,9 +460,9 @@
             <button type="button" class="section-title" onclick="toggleSection('sec_notlar')">
                 NOTLAR <span>▼</span>
             </button>
-            <div id="sec_notlar" class="section-content" style="grid-template-columns: 1fr;">
+            <div id="sec_notlar" class="section-content">
                 <div class="form-group">
-                    <textarea id="notlar" rows="4" placeholder="Reçete notlarını yazın..."></textarea>
+                    <textarea id="notlar" rows="3" placeholder="Reçete notlarını yazın..."></textarea>
                 </div>
             </div>
         </div>
@@ -336,181 +472,111 @@
 
 <!-- ADMIN GİRİŞ MODAL -->
 <div id="loginModal" class="modal" style="display: flex;">
-    <div class="modal-content" style="max-width: 350px; text-align: center; margin: auto;">
+    <div class="modal-content" style="max-width: 320px; text-align: center; margin: auto;">
         <h2>Admin Girişi</h2>
-        <p style="color: #666; font-size: 14px; margin-top: 5px;">Lütfen devam etmek için giriş yapın.</p>
+        <p style="color: #666; font-size: 13px; margin-top: 5px;">Devam etmek için giriş yapın.</p>
         <br>
         <input id="login_user" type="text" placeholder="Kullanıcı Adı" style="margin-bottom: 10px; width: 100%; padding: 8px;">
         <input id="login_pass" type="password" placeholder="Şifre" style="margin-bottom: 15px; width: 100%; padding: 8px;">
         <button class="btn btn-primary" type="button" style="width: 100%; padding: 10px;" onclick="adminGiris()">Giriş Yap</button>
-        <p id="loginError" style="color: red; margin-top: 10px; display: none; font-size: 13px;">Kullanıcı adı veya şifre hatalı!</p>
+        <p id="loginError" style="color: red; margin-top: 10px; display: none; font-size: 12px;">Kullanıcı adı veya şifre hatalı!</p>
     </div>
 </div>
 
-<!-- DETAY / A4 RAPOR YAZDIRMA MODALI -->
+<!-- DETAY / RAPOR MODALI -->
 <div id="detayModal" class="modal">
     <div class="modal-content">
-        <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-            <button class="btn btn-primary" onclick="window.print()">Yazdır / PDF İndir</button>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+            <button class="btn btn-primary" onclick="window.print()">Yazdır / PDF</button>
             <button class="btn btn-danger" onclick="document.getElementById('detayModal').style.display='none'">Kapat</button>
         </div>
 
-        <!-- A4 RAPOR ŞABLONU -->
         <div class="print-document" id="detayIcerik">
 
             <div class="doc-section">
-                <div class="doc-title">ÜRETİM DETAYLARI</div>
                 <table class="grid-table">
                     <tr>
-                        <td colspan="3" style="font-weight:bold; font-size:12px;" id="detay_urun_adi">-</td>
-                        <td id="detay_tarih">-</td>
-                        <td><b>Makina:</b> <span id="detay_makine_adi">Eski Çapraz</span></td>
-                    </tr>
-                    <tr>
-                        <td class="lbl">Gram :</td><td class="val" id="detay_gram">-</td>
-                        <td class="lbl">Renk:</td><td class="val" id="detay_renk">-</td>
-                        <td class="lbl">Kesim Çapı:</td><td class="val" id="detay_cap">-</td>
-                        <td class="lbl">Kopma Test En:</td><td class="val">-</td>
-                        <td class="lbl">Servo S/KG:</td><td class="val">507</td>
-                    </tr>
-                    <tr>
-                        <td class="lbl">Ürün Tipi:</td><td class="val">Polyemitli</td>
-                        <td class="lbl">Isı:</td><td class="val" id="detay_sicaklik">-</td>
-                        <td class="lbl">Isı Test En:</td><td class="val">-</td>
-                        <td class="lbl">Kopma Test Boy:</td><td class="val">-</td>
-                        <td class="lbl">Sarma Hızı:</td><td class="val">12.68</td>
-                    </tr>
-                    <tr>
-                        <td class="lbl">Firma:</td><td class="val" id="detay_firma">-</td>
-                        <td class="lbl">Kesim eni:</td><td class="val" id="detay_kesim_eni">-</td>
-                        <td class="lbl">Isı Test Boy:</td><td class="val">-</td>
-                        <td class="lbl">Tarak Hız:</td><td class="val" id="detay_tarak_hizi">-</td>
-                        <td class="lbl">Sarma Eni:</td><td class="val">318</td>
-                    </tr>
-                    <tr>
-                        <td class="lbl">Hammadde:</td><td class="val" id="detay_hammadde">-</td>
-                        <td class="lbl">Kesim Sarım:</td><td class="val" id="detay_sarim">-</td>
-                        <td class="lbl">Kalınlık (mm):</td><td class="val">-</td>
-                        <td class="lbl">Servolap:</td><td class="val" id="detay_servolap">-</td>
-                        <td class="lbl">İD :</td><td class="val">41</td>
-                    </tr>
-                    <tr>
-                        <td colspan="10" style="text-align:center; padding: 4px;">
-                            <b>Açıklama:</b> <span id="detay_notlar">-</span>
-                        </td>
+                        <td class="lbl">SERVOLAP</td><td class="val" id="detay_servolap">-</td>
+                        <td class="lbl">TARAK HIZI</td><td class="val" id="detay_tarak_hizi">-</td>
+                        <td class="lbl">FİRMA</td><td class="val" id="detay_firma">-</td>
                     </tr>
                 </table>
             </div>
 
             <div class="doc-section">
-                <div class="doc-title">HAMMADDE</div>
+                <div class="doc-title">TARAK AYARLARI</div>
                 <table class="grid-table">
-                    <tr style="font-weight:bold;">
-                        <td>Hammadde</td>
-                        <td>Oran %</td>
-                        <td>Denye</td>
-                        <td>Menşei</td>
+                    <tr><td class="lbl">ANA TAMBUR</td><td class="val" id="detay_ana_tambur">-</td><td class="lbl">ALT ARA DOFER</td><td class="val" id="detay_alt_ara_dofer">-</td></tr>
+                    <tr><td class="lbl">SIYIRICI</td><td class="val" id="detay_siyirici">-</td><td class="lbl">ÜST ARA DOFER</td><td class="val" id="detay_ust_ara_dofer">-</td></tr>
+                    <tr><td class="lbl">İŞÇİ</td><td class="val" id="detay_isci">-</td><td colspan="2"></td></tr>
+                    <tr><td class="lbl">ÜST SEVK DOF.</td><td class="val" id="detay_ust_sevk_doferi">-</td><td class="lbl">ALT SEVK DOF.</td><td class="val" id="detay_alt_sevk_doferi">-</td></tr>
+                    <tr><td class="lbl">ÜST DOF. ALICI</td><td class="val" id="detay_ust_dofer_alici">-</td><td class="lbl">ALT DOF. ALICI</td><td class="val" id="detay_alt_dofer_alici">-</td></tr>
+                    <tr><td class="lbl">ÜST SEVK BANT</td><td class="val" id="detay_ust_sevk_bandi">-</td><td class="lbl">ALT SEVK BANT</td><td class="val" id="detay_alt_sevk_bandi">-</td></tr>
+                </table>
+            </div>
+
+            <div class="doc-section">
+                <div class="doc-title">SERİCİ AYARLARI</div>
+                <table class="grid-table">
+                    <tr><td class="lbl">TÜLBENT KATI</td><td class="val" id="detay_tulbent_kati">-</td><td class="lbl">BESLEME ÇEKİM</td><td class="val" id="detay_besleme_cekim">-</td></tr>
+                    <tr><td class="lbl">SERME ENİ ÖN</td><td class="val" id="detay_serme_eni_on">-</td><td class="lbl">BANT ÇEKİM</td><td class="val" id="detay_bant_cekim">-</td></tr>
+                    <tr><td class="lbl">SERME ENİ ARKA</td><td class="val" id="detay_serme_eni_arka">-</td><td class="lbl">ARABA ÇEKİM</td><td class="val" id="detay_araba_cekim">-</td></tr>
+                    <tr><td class="lbl">ÇKŞ YÜK. SAĞ</td><td class="val" id="detay_cikis_yuksekligi_sag">-</td><td class="lbl">ÇKŞ HZF. FAKT.</td><td class="val" id="detay_cikis_hafiza">-</td></tr>
+                    <tr><td class="lbl">ÇKŞ YÜK. SOL</td><td class="val" id="detay_cikis_yuksekligi_sol">-</td><td class="lbl">ÖN HZF. FAKT.</td><td class="val" id="detay_on_cikis_hafiza">-</td></tr>
+                    <tr><td colspan="2"></td><td class="lbl">ARKA HZF. FKT.</td><td class="val" id="detay_arka_cikis_hafiza">-</td></tr>
+                </table>
+            </div>
+
+            <div class="doc-section">
+                <div class="doc-title">ÇEKTİRME AYARLARI</div>
+                <table class="grid-table">
+                    <tr><td class="lbl">TRİO 1 ÇEKİM</td><td class="val" id="detay_trio1">-</td><td class="lbl">TRİO 4 ÇEKİM</td><td class="val" id="detay_trio4">-</td></tr>
+                    <tr><td class="lbl">TRİO 2 ÇEKİM</td><td class="val" id="detay_trio2">-</td><td class="lbl">TRİO 5 ÇEKİM</td><td class="val" id="detay_trio5">-</td></tr>
+                    <tr><td class="lbl">TRİO 3 ÇEKİM</td><td class="val" id="detay_trio3">-</td><td class="lbl">TRİO 6 ÇEKİM</td><td class="val" id="detay_trio6">-</td></tr>
+                </table>
+            </div>
+
+            <div class="doc-section">
+                <div class="doc-title">SU JETİ AYARLARI</div>
+                <table class="grid-table">
+                    <tr style="font-weight:bold; background-color:#e0e0e0;">
+                        <td>POMPA</td><td>BAR</td><td>HZ</td><td colspan="2">DİĞER</td>
                     </tr>
+                    <tr><td class="lbl">POMPA 1</td><td class="val" id="detay_p1_bar">-</td><td class="val" id="detay_pompa1">-</td><td class="lbl">BESLEME 1</td><td class="val" id="detay_besleme1">-</td></tr>
+                    <tr><td class="lbl">POMPA 2</td><td class="val" id="detay_p2_bar">-</td><td class="val" id="detay_pompa2">-</td><td class="lbl">TAMBUR 1</td><td class="val" id="detay_tambur1">-</td></tr>
+                    <tr><td class="lbl">POMPA 3</td><td class="val" id="detay_p3_bar">-</td><td class="val" id="detay_pompa3">-</td><td class="lbl">TAMBUR 2</td><td class="val" id="detay_tambur2">-</td></tr>
+                    <tr><td class="lbl">POMPA 4</td><td class="val" id="detay_p4_bar">-</td><td class="val" id="detay_pompa4">-</td><td class="lbl">TAMBUR 3</td><td class="val" id="detay_tambur3">-</td></tr>
+                    <tr><td class="lbl">POMPA 5</td><td class="val" id="detay_p5_bar">-</td><td class="val" id="detay_pompa5">-</td><td class="lbl">BESLEME 2</td><td class="val" id="detay_besleme2">-</td></tr>
+                    <tr><td class="lbl">POMPA 6</td><td class="val" id="detay_p6_bar">-</td><td class="val" id="detay_pompa6">-</td><td class="lbl">SIKMA FULAR</td><td class="val" id="detay_sikma_fular">-</td></tr>
+                    <tr><td colspan="3"></td><td class="lbl">FIRIN</td><td class="val" id="detay_firin">-</td></tr>
+                </table>
+            </div>
+
+            <div class="doc-section">
+                <div class="doc-title">HAMMADDE AYARLARI</div>
+                <table class="grid-table">
                     <tr>
-                        <td>polyester</td>
-                        <td id="detay_balkan1">-</td>
-                        <td>1.7</td>
-                        <td>sasa 50556</td>
-                    </tr>
-                    <tr>
-                        <td>Polyester</td>
-                        <td id="detay_balkan2">-</td>
-                        <td>1.7</td>
-                        <td>Sada 50398</td>
+                        <td class="lbl">BALKAN 1 %</td><td class="val" id="detay_balkan1">-</td>
+                        <td class="lbl">BALKAN 2 %</td><td class="val" id="detay_balkan2">-</td>
+                        <td class="lbl">BALKAN 3 %</td><td class="val" id="detay_balkan3">-</td>
                     </tr>
                 </table>
             </div>
 
             <div class="doc-section">
-                <div class="doc-title">SU JETİ</div>
-                <div class="flex-row">
-                    <div class="flex-col">
-                        <table class="grid-table">
-                            <tr style="font-weight:bold;">
-                                <td>pompa</td>
-                                <td>Bar</td>
-                                <td>Hz</td>
-                            </tr>
-                            <tr><td>1.pompa</td><td id="detay_p1_bar">0</td><td id="detay_pompa1">-</td></tr>
-                            <tr><td>2.pompa</td><td id="detay_p2_bar">0</td><td id="detay_pompa2">-</td></tr>
-                            <tr><td>3.pompa</td><td id="detay_p3_bar">82</td><td id="detay_pompa3">-</td></tr>
-                            <tr><td>5.pompa</td><td id="detay_p5_bar">140</td><td id="detay_pompa5">-</td></tr>
-                            <tr><td>6.pompa</td><td id="detay_p6_bar">98</td><td id="detay_pompa6">-</td></tr>
-                        </table>
-                    </div>
-                    <div class="flex-col">
-                        <table class="grid-table">
-                            <tr><td class="lbl">Besleme</td><td class="val" id="detay_besleme1">-</td></tr>
-                            <tr><td class="lbl">1.Tambur</td><td class="val" id="detay_tambur1">-</td></tr>
-                            <tr><td class="lbl">2.Tambur</td><td class="val" id="detay_tambur2">-</td></tr>
-                            <tr><td class="lbl">3.Tambur</td><td class="val" id="detay_tambur3">-</td></tr>
-                            <tr><td class="lbl">Besleme 2</td><td class="val" id="detay_besleme2">-</td></tr>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <div class="doc-section">
-                <div class="doc-title">ÇEKTİRME</div>
+                <div class="doc-title">KESİM EBATLARI</div>
                 <table class="grid-table">
-                    <tr>
-                        <td class="lbl">Trio 1:</td><td class="val" id="detay_trio1">-</td>
-                        <td class="lbl">Trio 4:</td><td class="val" id="detay_trio4">-</td>
-                    </tr>
-                    <tr>
-                        <td class="lbl">Trio 2:</td><td class="val" id="detay_trio2">-</td>
-                        <td class="lbl">Trio 5:</td><td class="val" id="detay_trio5">-</td>
-                    </tr>
-                    <tr>
-                        <td class="lbl">Trio 3:</td><td class="val" id="detay_trio3">-</td>
-                        <td class="lbl">Trio 6:</td><td class="val" id="detay_trio6">-</td>
-                    </tr>
+                    <tr><td class="lbl">KESİM ENİ</td><td class="val" id="detay_kesim_eni">-</td><td class="lbl">ÇAP</td><td class="val" id="detay_cap">-</td></tr>
+                    <tr><td class="lbl">SARIM M.</td><td class="val" id="detay_sarim_metresi">-</td><td class="lbl">SAATLİK KG</td><td class="val" id="detay_saatlik_kg">-</td></tr>
+                    <tr><td class="lbl">FIRIN ISISI</td><td class="val" id="detay_firin_isisi">-</td><td class="lbl">HAT HIZI</td><td class="val" id="detay_hat_hizi">-</td></tr>
                 </table>
             </div>
 
             <div class="doc-section">
-                <div class="doc-title">TARAK</div>
                 <table class="grid-table">
                     <tr>
-                        <td class="lbl">Anatambur :</td><td class="val" id="detay_ana_tambur">-</td>
-                        <td class="lbl">Çıkış Üst Doffer :</td><td class="val" id="detay_ust_sevk_doferi">-</td>
-                        <td class="lbl">Çıkış Alt Doffer :</td><td class="val" id="detay_alt_sevk_doferi">-</td>
-                    </tr>
-                    <tr>
-                        <td class="lbl">İşçi :</td><td class="val" id="detay_isci">-</td>
-                        <td class="lbl">Çıkış Üst Alıcı :</td><td class="val" id="detay_ust_dofer_alici">-</td>
-                        <td class="lbl">Çıkış Alt Dof.Alıcı1 :</td><td class="val" id="detay_alt_dofer_alici">-</td>
-                    </tr>
-                    <tr>
-                        <td class="lbl">Sıyırıcı :</td><td class="val" id="detay_siyirici">-</td>
-                        <td class="lbl">Çıkış Üst Bant:</td><td class="val" id="detay_ust_sevk_bandi">-</td>
-                        <td class="lbl">Çıkış Alt Bant.:</td><td class="val" id="detay_alt_sevk_bandi">-</td>
-                    </tr>
-                </table>
-            </div>
-
-            <div class="doc-section">
-                <div class="doc-title">SERİCİ</div>
-                <table class="grid-table">
-                    <tr>
-                        <td class="lbl">Besleme :</td><td class="val" id="detay_besleme_cekim">-</td>
-                        <td class="lbl">KatnSayısı :</td><td class="val" id="detay_tulbent_kati">-</td>
-                        <td class="lbl">Çıkış Hafıza Fak. :</td><td class="val" id="detay_cikis_hafiza">-</td>
-                    </tr>
-                    <tr>
-                        <td class="lbl">Serme Eni Ön :</td><td class="val" id="detay_serme_eni_on">-</td>
-                        <td class="lbl">Serme EnimArka :</td><td class="val" id="detay_serme_eni_arka">-</td>
-                        <td class="lbl">Hafıza Fak.Ön :</td><td class="val" id="detay_on_cikis_hafiza">-</td>
-                    </tr>
-                    <tr>
-                        <td class="lbl">Bant :</td><td class="val" id="detay_bant_cekim">-</td>
-                        <td class="lbl">Araba :</td><td class="val" id="detay_araba_cekim">-</td>
-                        <td class="lbl">Hafıza Fak.Arka :</td><td class="val" id="detay_arka_cikis_hafiza">-</td>
+                        <td class="lbl" style="background-color: #ffcc80; text-align: left; width: 70px;">NOTLAR</td>
+                        <td class="val" id="detay_notlar" style="text-align: left; padding: 4px;">-</td>
                     </tr>
                 </table>
             </div>
@@ -519,6 +585,16 @@
     </div>
 </div>
 
+<script>
+    function toggleSection(id) {
+        const content = document.getElementById(id);
+        if (content.style.display === "none" || content.style.display === "") {
+            content.style.display = "grid";
+        } else {
+            content.style.display = "none";
+        }
+    }
+</script>
 <script src="js/Script.js"></script>
 </body>
 </html>
