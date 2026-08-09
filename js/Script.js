@@ -1,3 +1,37 @@
+window.adminGiris = function() {
+    const user = document.getElementById("login_user")?.value.trim();
+    const pass = document.getElementById("login_pass")?.value.trim();
+    const errorMsg = document.getElementById("loginError");
+    const loginModal = document.getElementById("loginModal");
+
+    // Belirlediğiniz kullanıcı adı ve şifre
+    if (user === "bunyamin" && pass === "Busra.5744") {
+        localStorage.setItem("adminOturum", "true");
+        if (loginModal) loginModal.style.display = "none";
+        if (errorMsg) errorMsg.style.display = "none";
+        alert("Giriş başarılı!");
+    } else {
+        if (errorMsg) errorMsg.style.display = "block";
+    }
+};
+
+
+window.adminCikis = function() {
+    localStorage.removeItem("adminOturum");
+    location.reload();
+};
+
+// Sayfa yüklendiğinde oturum kontrolü
+document.addEventListener("DOMContentLoaded", function () {
+    const oturumAcik = localStorage.getItem("adminOturum");
+    const loginModal = document.getElementById("loginModal");
+
+    if (oturumAcik === "true") {
+        if (loginModal) loginModal.style.display = "none";
+    } else {
+        if (loginModal) loginModal.style.display = "flex";
+    }
+});
 // ======================================================
 // ÜRETİM REÇETE YÖNETİM SİSTEMİ
 // Script.js - DÜZELTİLMİŞ TAM SÜRÜM
