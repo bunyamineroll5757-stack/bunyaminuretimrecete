@@ -8,9 +8,9 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
         body { background-color: #f4f6f9; padding: 15px; display: flex; flex-direction: column; align-items: center; }
         
-        .header-actions { width: 100%; max-width: 900px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .header-actions { width: 100%; max-width: 900px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
         .btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
-        button { padding: 8px 14px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 13px; color: white; background-color: #1e3a8a; }
+        button { padding: 8px 14px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 13px; color: white; background-color: #1e3a8a; transition: 0.2s; }
         button:hover { opacity: 0.9; }
         .btn-success { background-color: #10b981; }
         .btn-primary { background-color: #0284c7; }
@@ -51,7 +51,7 @@
         </div>
     </div>
 
-    <!-- ÜST BUTONLAR -->
+    <!-- ÜST BUTONLAR VE BAŞLIK -->
     <div class="header-actions">
         <h2 style="color: #1e3a8a; font-size: 18px;">Üretim Reçetesi Veri Girişi</h2>
         <div class="btn-group">
@@ -63,17 +63,31 @@
         </div>
     </div>
 
-    <!-- BİREBİR REÇETE TABLOSU VE İNPUT ALANLARI -->
+    <!-- REÇETE FORMU -->
     <form id="receteForm" style="width:100%; max-width:900px;">
+        <!-- Gizli Alanlar (Script.js Uyumluluğu İçin) -->
+        <input type="hidden" id="recete_no">
+        <input type="hidden" id="makine_adi" value="Hat 1">
+        <input type="hidden" id="hiz" value="">
+        <input type="hidden" id="sicaklik" value="">
+        <input type="hidden" id="basinc" value="">
+        <input type="hidden" id="ayar_renk" value="">
+        <input type="hidden" id="ayar_gram" value="">
+        <input type="hidden" id="ayar_tarih" value="">
+
         <table class="tbl-container" id="detayIcerik">
-            <!-- Üst Bilgiler -->
+            <!-- ÜST BİLGİLER -->
             <tr>
+                <td class="bg-green">ÜRÜN ADI *</td>
+                <td><input type="text" id="urun_adi" required placeholder="Gerekli"></td>
                 <td class="bg-green">SERVOLAP</td>
                 <td><input type="text" id="ayar_servolap"></td>
                 <td class="bg-green">TARAK HIZI</td>
                 <td><input type="text" id="ayar_tarak_hizi"></td>
+            </tr>
+            <tr>
                 <td class="bg-green">FİRMA ADI</td>
-                <td><input type="text" id="ayar_firma_adi"></td>
+                <td colspan="5"><input type="text" id="ayar_firma_adi"></td>
             </tr>
 
             <!-- TARAK AYARLARI -->
@@ -88,7 +102,7 @@
             </tr>
             <tr>
                 <td class="bg-green">İŞÇİ</td><td><input type="text" id="ayar_isci"></td>
-                <td class="bg-green">ÜÜRÜN ADI *</td><td colspan="3"><input type="text" id="urun_adi" required placeholder="Gerekli"></td>
+                <td colspan="4"></td>
             </tr>
             <tr>
                 <td class="bg-green">ÜST SEVK DOFERİ</td><td><input type="text" id="ayar_ust_sevk_doferi"></td>
@@ -151,22 +165,22 @@
                 <td></td><td class="bg-blue">BAR</td><td class="bg-blue">HZ</td><td class="bg-green" colspan="3">BESLEME 1</td>
             </tr>
             <tr>
-                <td class="bg-green">POMPA 1</td><td><input type="text" id="ayar_pompa1"></td><td><input type="text" id="hiz"></td><td class="bg-green" colspan="3">TAMBUR 1</td>
+                <td class="bg-green">POMPA 1</td><td><input type="text" id="ayar_pompa1"></td><td><input type="text" id="ayar_besleme1"></td><td class="bg-green" colspan="3">TAMBUR 1</td>
             </tr>
             <tr>
-                <td class="bg-green">POMPA 2</td><td><input type="text" id="ayar_pompa2"></td><td><input type="text" id="sicaklik"></td><td class="bg-green" colspan="3">TAMBUR 2</td>
+                <td class="bg-green">POMPA 2</td><td><input type="text" id="ayar_pompa2"></td><td><input type="text" id="ayar_tambur1"></td><td class="bg-green" colspan="3">TAMBUR 2</td>
             </tr>
             <tr>
-                <td class="bg-green">POMPA 3</td><td><input type="text" id="ayar_pompa3"></td><td><input type="text" id="basinc"></td><td class="bg-green" colspan="3">TAMBUR 3</td>
+                <td class="bg-green">POMPA 3</td><td><input type="text" id="ayar_pompa3"></td><td><input type="text" id="ayar_tambur2"></td><td class="bg-green" colspan="3">TAMBUR 3</td>
             </tr>
             <tr>
-                <td class="bg-green">POMPA 4</td><td><input type="text" id="ayar_pompa4"></td><td></td><td class="bg-green" colspan="3">BESLEME 2</td>
+                <td class="bg-green">POMPA 4</td><td><input type="text" id="ayar_pompa4"></td><td><input type="text" id="ayar_tambur3"></td><td class="bg-green" colspan="3">BESLEME 2</td>
             </tr>
             <tr>
-                <td class="bg-green">POMPA 5</td><td><input type="text" id="ayar_pompa5"></td><td></td><td class="bg-green" colspan="3">SIKMA FULAR</td>
+                <td class="bg-green">POMPA 5</td><td><input type="text" id="ayar_pompa5"></td><td><input type="text" id="ayar_besleme2"></td><td class="bg-green" colspan="3">SIKMA FULAR</td>
             </tr>
             <tr>
-                <td class="bg-green">POMPA 6</td><td><input type="text" id="ayar_pompa6"></td><td></td><td class="bg-green" colspan="3">FIRIN</td>
+                <td class="bg-green">POMPA 6</td><td><input type="text" id="ayar_pompa6"></td><td><input type="text" id="ayar_sikma_fular"></td><td class="bg-green" colspan="3">FIRIN</td>
             </tr>
 
             <!-- HAMMADDE AYARLARI -->
@@ -175,6 +189,9 @@
                 <td class="bg-green">BALKAN 1</td><td><input type="text" id="ayar_balkan1"></td>
                 <td class="bg-green">BALKAN 2</td><td><input type="text" id="ayar_balkan2"></td>
                 <td class="bg-green">BALKAN 3</td><td><input type="text" id="ayar_balkan3"></td>
+            </tr>
+            <tr>
+                <td class="bg-green">HAMMADDE</td><td colspan="5"><input type="text" id="ayar_hammadde"></td>
             </tr>
 
             <!-- KESİM EBATLARI -->
@@ -198,11 +215,9 @@
                 <td colspan="5"><textarea id="notlar" placeholder="Not ekleyebilirsiniz..."></textarea></td>
             </tr>
         </table>
-        <input type="hidden" id="recete_no">
-        <input type="hidden" id="makine_adi" value="Hat 1">
     </form>
 
-    <!-- KAYITLI REÇETELER TABLOSU -->
+    <!-- KAYITLI REÇETELER LISTESI -->
     <div class="list-section">
         <h3 style="margin-bottom: 10px; color: #1e3a8a;">Kayıtlı Reçeteler (<span id="toplamRecete">0</span>)</h3>
         <input type="text" id="arama" class="search-box" onkeyup="ara()" placeholder="Arama yapın...">
@@ -212,7 +227,6 @@
                     <th>Reçete No</th>
                     <th>Ürün Adı</th>
                     <th>Firma Adı</th>
-                    <th>Hız</th>
                     <th>İşlemler</th>
                 </tr>
             </thead>
@@ -227,6 +241,7 @@
             <hr style="margin: 10px 0;">
             <p><strong>Reçete No:</strong> <span id="detay_recete_no">-</span></p>
             <p><strong>Ürün Adı:</strong> <span id="detay_urun_adi">-</span></p>
+            <p><strong>Firma Adı:</strong> <span id="detay_makine_adi">-</span></p>
             <p><strong>Notlar:</strong> <span id="detay_notlar">-</span></p>
             <br>
             <div class="btn-group">
@@ -240,6 +255,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
+    <!-- SCRIPT KONTROLLERİ -->
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             if (localStorage.getItem("adminOturum") === "true") {
