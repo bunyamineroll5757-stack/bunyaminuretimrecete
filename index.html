@@ -231,18 +231,38 @@
     </div>
 </div>
 
+<!-- GİRİŞ MODAL (Form Desteği ve Event Bağlantısı ile Düzenlendi) -->
 <div id="loginModal" class="modal" style="display: flex;">
     <div class="modal-content" style="max-width: 300px;">
         <h2>Giriş</h2>
-        <input id="login_user" placeholder="Kullanıcı">
-        <input id="login_pass" type="password" placeholder="Şifre">
-        <button onclick="adminGiris()">Giriş Yap</button>
+        <form id="loginForm" onsubmit="event.preventDefault();">
+            <input id="login_user" placeholder="Kullanıcı" autocomplete="username" style="margin-bottom: 5px;">
+            <input id="login_pass" type="password" placeholder="Şifre" autocomplete="current-password" style="margin-bottom: 5px;">
+            <button type="button" id="loginBtn" class="btn" style="width: 100%;">Giriş Yap</button>
+        </form>
     </div>
 </div>
 
+<!-- SCRIPT YÜKLEMELERİ -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase.js"></script>
 <script src="js/Script.js"></script>
+
+<!-- GİRİŞ TETİKLEYİCİSİ -->
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const btn = document.getElementById("loginBtn");
+        if (btn) {
+            btn.addEventListener("click", () => {
+                if (typeof adminGiris === "function") {
+                    adminGiris();
+                } else {
+                    console.error("adminGiris fonksiyonu Script.js içinde bulunamadı!");
+                }
+            });
+        }
+    });
+</script>
 
 </body>
 </html>
