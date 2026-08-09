@@ -6,173 +6,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Üretim Reçete Yönetim Sistemi</title>
 
-    <!-- Favicon 404 Uyarısını Tamamen Engelleme -->
+    <!-- Favicon -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚙️</text></svg>">
+
+    <!-- PDF Oluşturma Kütüphanesi (html2pdf.js) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.min.js"></script>
 
     <link rel="stylesheet" href="css/style.css">
 
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            background: #f4f6f8;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: auto;
-            padding: 15px;
-        }
-
-        h1 {
-            text-align: center;
-        }
-
-        .panel {
-            background: white;
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 10px;
-        }
-
-        .ayar-group {
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            padding: 12px;
-            margin-bottom: 15px;
-        }
-
-        .ayar-group h3 {
-            margin-top: 0;
-            text-align: center;
-            background: #ffe600;
-            padding: 10px;
-            border-radius: 8px;
-        }
-
-        .ayar-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-        }
-
-        input,
-        textarea,
-        button {
-            box-sizing: border-box;
-            font-size: 15px;
-        }
-
-        input,
-        textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 7px;
-        }
-
-        textarea {
-            min-height: 100px;
-        }
-
-        button {
-            padding: 10px 15px;
-            border: 0;
-            border-radius: 7px;
-            cursor: pointer;
-            margin: 3px;
-        }
-
-        .btn {
-            background: #1976d2;
-            color: white;
-        }
-
-        .btn-danger {
-            background: #d32f2f;
-            color: white;
-        }
-
-        .btn-success {
-            background: #2e7d32;
-            color: white;
-        }
-
-        .btn-secondary {
-            background: #666;
-            color: white;
-        }
-
-        .table-wrap {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-        }
-
-        th,
-        td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-
-        th {
-            background: #ffe600;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, .6);
-            justify-content: center;
-            align-items: center;
-            padding: 15px;
-            z-index: 9999;
-        }
-
-        .modal-content {
-            background: white;
-            max-width: 700px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-            padding: 20px;
-            border-radius: 12px;
-        }
-
-        .detay-satir {
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .durum {
-            padding: 10px;
-            margin-bottom: 15px;
-            border-radius: 8px;
-            display: none;
-        }
-
+        body { font-family: Arial, sans-serif; margin: 0; background: #f4f6f8; }
+        .container { max-width: 1200px; margin: auto; padding: 15px; }
+        h1 { text-align: center; }
+        .panel { background: white; padding: 15px; margin-bottom: 20px; border-radius: 10px; }
+        .ayar-group { background: white; border: 1px solid #ddd; border-radius: 10px; padding: 12px; margin-bottom: 15px; }
+        .ayar-group h3 { margin-top: 0; text-align: center; background: #ffe600; padding: 10px; border-radius: 8px; }
+        .ayar-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        input, textarea, button { box-sizing: border-box; font-size: 15px; }
+        input, textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 7px; }
+        textarea { min-height: 100px; }
+        button { padding: 10px 15px; border: 0; border-radius: 7px; cursor: pointer; margin: 3px; }
+        .btn { background: #1976d2; color: white; }
+        .btn-danger { background: #d32f2f; color: white; }
+        .btn-success { background: #2e7d32; color: white; }
+        .btn-secondary { background: #666; color: white; }
+        .btn-warning { background: #f57c00; color: white; }
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; background: white; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background: #ffe600; }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, .6); justify-content: center; align-items: center; padding: 15px; z-index: 9999; }
+        .modal-content { background: white; max-width: 700px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 20px; border-radius: 12px; }
+        .detay-satir { padding: 10px; border-bottom: 1px solid #ddd; }
+        .durum { padding: 10px; margin-bottom: 15px; border-radius: 8px; display: none; }
         @media (max-width: 600px) {
-
-            .ayar-grid {
-                grid-template-columns: 1fr;
-            }
-
-            h1 {
-                font-size: 22px;
-            }
-
-            th,
-            td {
-                font-size: 13px;
-            }
-
+            .ayar-grid { grid-template-columns: 1fr; }
+            h1 { font-size: 22px; }
+            th, td { font-size: 13px; }
         }
     </style>
 </head>
@@ -346,7 +216,7 @@
 
 <!-- DETAY PENCERESİ -->
 <div id="detayModal" class="modal">
-    <div class="modal-content">
+    <div class="modal-content" id="detayIcerik">
         <h2>Üretim Reçetesi</h2>
         <div class="detay-satir"><b>Reçete No:</b> <span id="detay_recete_no">-</span></div>
         <div class="detay-satir"><b>Başlık:</b> <span id="detay_baslik_no"></span></div>
@@ -360,6 +230,8 @@
         <button class="btn" type="button" onclick="detaydanDuzenle()">Düzenle</button>
         <button class="btn-success" type="button" onclick="detayKopyala()">Kopyala</button>
         <button class="btn" type="button" onclick="detayYazdir()">Yazdır</button>
+        <button class="btn-danger" type="button" onclick="pdfIndir()">PDF İndir</button>
+        <button class="btn-warning" type="button" onclick="paylas()">Paylaş</button>
         <button class="btn-secondary" type="button" onclick="detayKapat()">Kapat</button>
     </div>
 </div>
