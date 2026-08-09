@@ -1884,24 +1884,35 @@ document.addEventListener(
 
 // Reçeteyi PDF Olarak İndirme
 function pdfIndir() {
-    const element = document.getElementById('detayIcerik');
-    const receteEl = document.getElementById('detay_recete_no');
-    const receteNo = (receteEl && receteEl.innerText.trim()) ? receteEl.innerText.trim() : 'Recete';
+    // 1. Tüm sayfa içeriğini yakala
+    const element = document.querySelector('.container');
 
+    if (!element) {
+        alert("İçerik bulunamadı!");
+        return;
+    }
+
+    // 2. PDF Ayarları
     const opt = {
-        margin:       10,
-        filename:     'Recete_' + receteNo + '.pdf',
+        margin:       [5, 5, 5, 5],
+        filename:     `Recete_${document.getElementById('recete_no')?.value || 'Detay'}.pdf`,
         image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2 },
+        html2canvas:  { scale: 2, useCORS: true, logging: false },
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
-    if (typeof html2pdf !== 'undefined') {
-        html2pdf().set(opt).from(element).save();
-    } else {
-        alert('PDF kütüphanesi yüklenemedi. Lütfen index.html dosyasını kontrol edin.');
-    }
-}
+   // 3. İndirme esnasında butonları gizle
+    const butonlar = element.querySelectorAll('button, #arama, #loginModal');
+    butonlar.forEach(b => b.style.display = 'none');
+
+    // 4. PDF Oluştur ve İndir
+    html2pdf().set(opt).from(element).save().then(() => {
+        butonlar.forEach(b => b.style.display = '');
+    }).catch(err => {
+        console.error("PDF Hatası:", err);
+        butonlar.forEach(b => b.style.display = '');
+    });
+    } 
 
 // Reçeteyi WhatsApp/E-Posta ile Paylaşma
 async function paylas() {
