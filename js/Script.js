@@ -1899,23 +1899,23 @@ function pdfIndir() {
     const butonlar = document.querySelectorAll('button, #arama, #loginModal, .modal-backdrop');
     butonlar.forEach(b => b.style.visibility = 'hidden');
 
-    // 4. Reçete numarasını al
-    const receteNoEl = document.getElementById('detay_recete_no') || document.getElementById('recete_no');
-    const receteNo = receteNoEl ? (receteNoEl.value || receteNoEl.innerText.trim()) : 'Detay';
+    // 4. Reçete Numarasını Al
+const receteNoEl = document.getElementById('detay_recete_no') || document.getElementById('recete_no');
+const receteNo = receteNoEl ? (receteNoEl.value || receteNoEl.innerText.trim()) : 'Detay';
 
-    // 5. PDF Ayarları
-    const opt = {
-        margin:       [5, 5, 5, 5],
-        filename:     `Recete_${receteNo}.pdf`,
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { 
-            scale: 2, 
-            useCORS: true, 
-            logging: false,
-            windowWidth: 1200 // Mobilde masaüstü görünümü simüle ederek kaymayı önler
-        },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    };
+// 5. PDF Ayarları
+const opt = {
+    margin:       [5, 5, 5, 5],
+    filename:     `Recete_${receteNo}.pdf`,
+    image:        { type: 'jpeg', quality: 0.98 },
+    html2canvas:  { 
+        scale: 2, 
+        useCORS: true, 
+        logging: false,
+        windowWidth: 1200
+    },
+    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+};
 
     // 6. PDF Oluştur ve İndir
     html2pdf().set(opt).from(element).save().then(() => {
