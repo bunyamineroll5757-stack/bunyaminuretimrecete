@@ -2,236 +2,385 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Üretim Reçetesi Formu</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Üretim Reçete Yönetim Sistemi</title>
     <style>
-        * { box-sizing: border-box; font-family: Arial, sans-serif; }
-        body { background-color: #f4f6f9; padding: 15px; }
-        .form-container { max-width: 900px; margin: 0 auto; background: #fff; border: 2px solid #ccc; padding: 10px; }
-        
-        .section-header { 
-            background-color: #3b99fc; 
-            color: black; 
-            text-align: center; 
-            font-weight: bold; 
-            padding: 6px; 
-            margin: 10px 0 5px 0; 
-            text-transform: uppercase;
-            font-size: 14px;
+        :root {
+            --primary: #2c3e50;
+            --secondary: #27ae60;
+            --accent: #2980b9;
+            --danger: #c0392b;
+            --light: #f8f9fa;
+            --dark: #333;
+            --border: #bdc3c7;
         }
 
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 15px; }
-        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px 15px; }
-        
-        .field-group { display: flex; align-items: center; }
-        .label-green { 
-            background-color: #55f368; 
-            color: #000; 
-            padding: 5px 8px; 
-            font-size: 12px; 
-            font-weight: bold; 
-            width: 160px; 
-            flex-shrink: 0;
-            border: 1px solid #777;
-            text-align: center;
-        }
-        .input-box { 
-            flex: 1; 
-            padding: 5px; 
-            border: 1px solid #777; 
-            border-left: none;
-            outline: none;
-            font-size: 13px;
-            width: 100%;
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        /* Su jeti için özel yapı */
-        .su-jeti-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .su-jeti-left-header { display: flex; margin-bottom: 5px; }
-        .su-jeti-left-header div { 
-            background-color: #3b99fc; 
-            color: black; 
-            font-weight: bold; 
-            text-align: center; 
-            padding: 4px;
-            border: 1px solid #777;
-            font-size: 12px;
+        body {
+            background-color: #eef2f3;
+            color: var(--dark);
+            padding: 20px;
         }
-        
-        /* Notlar alanı */
-        .notes-area { display: flex; margin-top: 10px; }
-        .label-orange {
-            background-color: #ffc482;
-            color: #000;
-            padding: 10px;
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            color: var(--primary);
+            font-size: 24px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        button, .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
             font-weight: bold;
-            border: 1px solid #777;
-            width: 100px;
+            transition: 0.2s;
+            background-color: var(--primary);
+            color: white;
+        }
+
+        button:hover, .btn:hover { opacity: 0.9; }
+        .btn-success { background-color: var(--secondary); }
+        .btn-primary { background-color: var(--accent); }
+        .btn-danger { background-color: var(--danger); }
+
+        .form-section {
+            margin-bottom: 25px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .section-title {
+            background-color: var(--primary);
+            color: white;
+            padding: 10px 15px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            padding: 15px;
+            background-color: #fdfdfd;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #555;
+        }
+
+        .form-group input, .form-group textarea {
+            padding: 8px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        /* Liste ve Tablo Yapısı */
+        .search-box {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            border: 1px solid var(--border);
+            padding: 10px;
+            text-align: left;
+            font-size: 13px;
+        }
+
+        th { background-color: #f2f2f2; }
+
+        /* Modal Stilleri */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        /* Modal Login */
+        .login-card {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            width: 320px;
             text-align: center;
         }
-        .notes-area textarea {
-            flex: 1;
-            border: 1px solid #777;
-            border-left: none;
-            padding: 5px;
-            resize: vertical;
+
+        .login-card input {
+            width: 100%;
+            margin-bottom: 12px;
+            padding: 10px;
         }
     </style>
 </head>
 <body>
 
-<div class="form-container">
-    
-    <!-- Üst Başlıklar -->
-    <div class="grid-3" style="margin-bottom: 15px;">
-        <div class="field-group">
-            <span class="label-green">SERVOLAP</span>
-            <input type="text" id="servolap" class="input-box">
-        </div>
-        <div class="field-group">
-            <span class="label-green">TARAK HIZI</span>
-            <input type="text" id="tarak_hizi" class="input-box">
-        </div>
-        <div class="field-group">
-            <span class="label-green">FİRMA ADI</span>
-            <input type="text" id="firma_adi" class="input-box">
+    <!-- LOGIN MODAL -->
+    <div id="loginModal" class="modal" style="display: flex;">
+        <div class="login-card">
+            <h2 style="margin-bottom: 15px;">Yönetici Girişi</h2>
+            <input type="text" id="login_user" placeholder="Kullanıcı Adı">
+            <input type="password" id="login_pass" placeholder="Şifre">
+            <button class="btn-success" style="width:100%" onclick="adminGiris()">Giriş Yap</button>
+            <p id="loginError" style="color:red; display:none; margin-top:10px; font-size:12px;">Hatalı Giriş!</p>
         </div>
     </div>
 
-    <!-- TARAK AYARLARI -->
-    <div class="section-header">TARAK AYARLARI</div>
-    <div class="grid-2">
-        <div class="field-group"><span class="label-green">ANA TAMBUR</span><input type="text" id="ana_tambur" class="input-box"></div>
-        <div class="field-group"><span class="label-green">ALT ARA DOFER</span><input type="text" id="alt_ara_dofer" class="input-box"></div>
-        <div class="field-group"><span class="label-green">SIYIRICI</span><input type="text" id="siyirici" class="input-box"></div>
-        <div class="field-group"><span class="label-green">ÜST ARA DOFER</span><input type="text" id="ust_ara_dofer" class="input-box"></div>
-        <div class="field-group"><span class="label-green">İŞÇİ</span><input type="text" id="isci" class="input-box"></div>
-        <div></div> <!-- Boşluk -->
-        <div class="field-group"><span class="label-green">ÜST SEVK DOFERİ</span><input type="text" id="ust_sevk_doferi" class="input-box"></div>
-        <div class="field-group"><span class="label-green">ALT SEVK DOFERİ</span><input type="text" id="alt_sevk_doferi" class="input-box"></div>
-        <div class="field-group"><span class="label-green">ÜST DOFER ALICI</span><input type="text" id="ust_dofer_alici" class="input-box"></div>
-        <div class="field-group"><span class="label-green">ALT DOFER ALICI</span><input type="text" id="alt_dofer_alici" class="input-box"></div>
-        <div class="field-group"><span class="label-green">ÜST SEVK BANDI</span><input type="text" id="ust_sevk_bandi" class="input-box"></div>
-        <div class="field-group"><span class="label-green">ALT SEVK BANDI</span><input type="text" id="alt_sevk_bandi" class="input-box"></div>
-    </div>
-
-    <!-- SERİCİ AYARLARI -->
-    <div class="section-header">SERİCİ AYARLARI</div>
-    <div class="grid-2">
-        <div class="field-group"><span class="label-green">TÜLBENT KATI</span><input type="text" id="tulbent_kati" class="input-box"></div>
-        <div class="field-group"><span class="label-green">BESLEME ÇEKİM</span><input type="text" id="besleme_cekim" class="input-box"></div>
-        <div class="field-group"><span class="label-green">SERME ENİ ÖN</span><input type="text" id="serme_eni_on" class="input-box"></div>
-        <div class="field-group"><span class="label-green">BANT ÇEKİM</span><input type="text" id="bant_cekim" class="input-box"></div>
-        <div class="field-group"><span class="label-green">SERME ENİ ARKA</span><input type="text" id="serme_eni_arka" class="input-box"></div>
-        <div class="field-group"><span class="label-green">ARABA ÇEKİM</span><input type="text" id="araba_cekim" class="input-box"></div>
-        <div class="field-group"><span class="label-green">ÇKŞ YÜKSEKLİĞİ SAĞ</span><input type="text" id="cks_yuksekligi_sag" class="input-box"></div>
-        <div class="field-group"><span class="label-green">ÇKŞ HAFIZA FAKTÖRÜ</span><input type="text" id="cks_hafiza_faktoru" class="input-box"></div>
-        <div class="field-group"><span class="label-green">ÇKŞ YÜKSEKLİĞİ SOL</span><input type="text" id="cks_yuksekligi_sol" class="input-box"></div>
-        <div class="field-group"><span class="label-green">ÖN ÇKŞ HAFIZA FAKTÖRÜ</span><input type="text" id="on_cks_hafiza_faktoru" class="input-box"></div>
-        <div></div>
-        <div class="field-group"><span class="label-green">ARKA ÇKŞ HFZA FAKTÖR</span><input type="text" id="arka_cks_hfza_faktori" class="input-box"></div>
-    </div>
-
-    <!-- ÇEKTİRME AYARLARI -->
-    <div class="section-header">ÇEKTİRME AYARLARI</div>
-    <div class="grid-2">
-        <div class="field-group"><span class="label-green">TRİO 1 ÇEKİM</span><input type="text" id="trio_1_cekim" class="input-box"></div>
-        <div class="field-group"><span class="label-green">TRİO 4 ÇEKİM</span><input type="text" id="trio_4_cekim" class="input-box"></div>
-        <div class="field-group"><span class="label-green">TRİO 2 ÇEKİM</span><input type="text" id="trio_2_cekim" class="input-box"></div>
-        <div class="field-group"><span class="label-green">TRİO 5 ÇEKİM</span><input type="text" id="trio_5_cekim" class="input-box"></div>
-        <div class="field-group"><span class="label-green">TRİO 3 ÇEKİM</span><input type="text" id="trio_3_cekim" class="input-box"></div>
-        <div class="field-group"><span class="label-green">TRİO 6 ÇEKİM</span><input type="text" id="trio_6_cekim" class="input-box"></div>
-    </div>
-
-    <!-- SU JETİ AYARLARI -->
-    <div class="section-header">SU JETİ AYARLARI</div>
-    <div class="su-jeti-grid">
-        <div>
-            <div class="su-jeti-left-header">
-                <div style="width: 160px; visibility: hidden;"></div>
-                <div style="flex:1;">BAR</div>
-                <div style="flex:1;">HZ</div>
-            </div>
-            <div class="field-group" style="margin-bottom:5px;">
-                <span class="label-green">POMPA 1</span>
-                <input type="text" id="pompa1_bar" class="input-box">
-                <input type="text" id="pompa1_hz" class="input-box">
-            </div>
-            <div class="field-group" style="margin-bottom:5px;">
-                <span class="label-green">POMPA 2</span>
-                <input type="text" id="pompa2_bar" class="input-box">
-                <input type="text" id="pompa2_hz" class="input-box">
-            </div>
-            <div class="field-group" style="margin-bottom:5px;">
-                <span class="label-green">POMPA 3</span>
-                <input type="text" id="pompa3_bar" class="input-box">
-                <input type="text" id="pompa3_hz" class="input-box">
-            </div>
-            <div class="field-group" style="margin-bottom:5px;">
-                <span class="label-green">POMPA 4</span>
-                <input type="text" id="pompa4_bar" class="input-box">
-                <input type="text" id="pompa4_hz" class="input-box">
-            </div>
-            <div class="field-group" style="margin-bottom:5px;">
-                <span class="label-green">POMPA 5</span>
-                <input type="text" id="pompa5_bar" class="input-box">
-                <input type="text" id="pompa5_hz" class="input-box">
-            </div>
-            <div class="field-group">
-                <span class="label-green">POMPA 6</span>
-                <input type="text" id="pompa6_bar" class="input-box">
-                <input type="text" id="pompa6_hz" class="input-box">
+    <!-- ANA KONTEYNER -->
+    <div class="container" id="detayIcerik">
+        <div class="header">
+            <h1>Üretim Reçetesi Veri Girişi</h1>
+            <div class="btn-group">
+                <button type="button" class="btn-success" id="kaydetBtn" onclick="kaydet(event)">Kaydet</button>
+                <button type="button" class="btn-primary" onclick="yeniRecete()">Yeni Reçete</button>
+                <button type="button" onclick="pdfIndir()">PDF İndir</button>
+                <button type="button" class="btn-primary" onclick="paylas()">WhatsApp Paylaş</button>
+                <button type="button" class="btn-danger" onclick="adminCikis()">Çıkış</button>
             </div>
         </div>
-        
-        <div style="display:flex; flex-direction:column; gap:5px; margin-top:27px;">
-            <div class="field-group"><span class="label-green">BESLEME 1</span><input type="text" id="besleme_1" class="input-box"></div>
-            <div class="field-group"><span class="label-green">TAMBUR 1</span><input type="text" id="tambur_1" class="input-box"></div>
-            <div class="field-group"><span class="label-green">TAMBUR 2</span><input type="text" id="tambur_2" class="input-box"></div>
-            <div class="field-group"><span class="label-green">TAMBUR 3</span><input type="text" id="tambur_3" class="input-box"></div>
-            <div class="field-group"><span class="label-green">BESLEME 2</span><input type="text" id="besleme_2" class="input-box"></div>
-            <div class="field-group"><span class="label-green">SIKMA FULAR</span><input type="text" id="sikma_fular" class="input-box"></div>
-            <div class="field-group"><span class="label-green">FIRIN</span><input type="text" id="firin" class="input-box"></div>
+
+        <form id="receteForm">
+            <!-- Temel Bilgiler -->
+            <div class="form-section">
+                <div class="section-title">Temel Bilgiler</div>
+                <div class="grid-container">
+                    <div class="form-group">
+                        <label>Reçete No</label>
+                        <input type="text" id="recete_no" placeholder="Otomatik Oluşturulur">
+                    </div>
+                    <div class="form-group">
+                        <label>Ürün Adı *</label>
+                        <input type="text" id="urun_adi" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Firma Adı</label>
+                        <input type="text" id="ayar_firma_adi">
+                    </div>
+                    <div class="form-group">
+                        <label>Tarih</label>
+                        <input type="date" id="ayar_tarih">
+                    </div>
+                    <div class="form-group">
+                        <label>Gramaj</label>
+                        <input type="text" id="ayar_gram">
+                    </div>
+                    <div class="form-group">
+                        <label>Renk</label>
+                        <input type="text" id="ayar_renk">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tarak Ayarları -->
+            <div class="form-section">
+                <div class="section-title">Tarak Ayarları</div>
+                <div class="grid-container">
+                    <div class="form-group"><label>Servolap</label><input type="text" id="ayar_servolap"></div>
+                    <div class="form-group"><label>Tarak Hızı</label><input type="text" id="ayar_tarak_hizi"></div>
+                    <div class="form-group"><label>Ana Tambur</label><input type="text" id="ayar_ana_tambur"></div>
+                    <div class="form-group"><label>Alt Ara Döfer</label><input type="text" id="ayar_alt_ara_dofer"></div>
+                    <div class="form-group"><label>Sıyırıcı</label><input type="text" id="ayar_siyirici"></div>
+                    <div class="form-group"><label>Üst Ara Döfer</label><input type="text" id="ayar_ust_ara_dofer"></div>
+                    <div class="form-group"><label>İşçi</label><input type="text" id="ayar_isci"></div>
+                    <div class="form-group"><label>Üst Sevk Döf.</label><input type="text" id="ayar_ust_sevk_doferi"></div>
+                    <div class="form-group"><label>Alt Sevk Döf.</label><input type="text" id="ayar_alt_sevk_doferi"></div>
+                    <div class="form-group"><label>Üst Döfer Alıcı</label><input type="text" id="ayar_ust_dofer_alici"></div>
+                    <div class="form-group"><label>Alt Döfer Alıcı</label><input type="text" id="ayar_alt_dofer_alici"></div>
+                    <div class="form-group"><label>Üst Sevk Bandı</label><input type="text" id="ayar_ust_sevk_bandi"></div>
+                    <div class="form-group"><label>Alt Sevk Bandı</label><input type="text" id="ayar_alt_sevk_bandi"></div>
+                </div>
+            </div>
+
+            <!-- Serici & Çektirme -->
+            <div class="form-section">
+                <div class="section-title">Serici ve Çektirme</div>
+                <div class="grid-container">
+                    <div class="form-group"><label>Tülbent Katı</label><input type="text" id="ayar_tulbent_kati"></div>
+                    <div class="form-group"><label>Besleme Çekim</label><input type="text" id="ayar_besleme_cekim"></div>
+                    <div class="form-group"><label>Serme Eni Ön</label><input type="text" id="ayar_serme_eni_on"></div>
+                    <div class="form-group"><label>Bant Çekim</label><input type="text" id="ayar_bant_cekim"></div>
+                    <div class="form-group"><label>Serme Eni Arka</label><input type="text" id="ayar_serme_eni_arka"></div>
+                    <div class="form-group"><label>Araba Çekim</label><input type="text" id="ayar_araba_cekim"></div>
+                    <div class="form-group"><label>Çıkış Yük. Sağ</label><input type="text" id="ayar_cikis_yuksekligi_sag"></div>
+                    <div class="form-group"><label>Çıkış Hafıza</label><input type="text" id="ayar_cikis_hafiza"></div>
+                    <div class="form-group"><label>Ön Çıkış Hafıza</label><input type="text" id="ayar_on_cikis_hafiza"></div>
+                    <div class="form-group"><label>Çıkış Yük. Sol</label><input type="text" id="ayar_cikis_yuksekligi_sol"></div>
+                    <div class="form-group"><label>Arka Çıkış Hafıza</label><input type="text" id="ayar_arka_cikis_hafiza"></div>
+                </div>
+            </div>
+
+            <!-- Trio / Pompa / Balkan -->
+            <div class="form-section">
+                <div class="section-title">Trio & Pompalar</div>
+                <div class="grid-container">
+                    <div class="form-group"><label>Trio 1</label><input type="text" id="ayar_trio1"></div>
+                    <div class="form-group"><label>Trio 2</label><input type="text" id="ayar_trio2"></div>
+                    <div class="form-group"><label>Trio 3</label><input type="text" id="ayar_trio3"></div>
+                    <div class="form-group"><label>Trio 4</label><input type="text" id="ayar_trio4"></div>
+                    <div class="form-group"><label>Trio 5</label><input type="text" id="ayar_trio5"></div>
+                    <div class="form-group"><label>Trio 6</label><input type="text" id="ayar_trio6"></div>
+                    <div class="form-group"><label>Pompa 1</label><input type="text" id="ayar_pompa1"></div>
+                    <div class="form-group"><label>Pompa 2</label><input type="text" id="ayar_pompa2"></div>
+                    <div class="form-group"><label>Pompa 3</label><input type="text" id="ayar_pompa3"></div>
+                    <div class="form-group"><label>Pompa 4</label><input type="text" id="ayar_pompa4"></div>
+                    <div class="form-group"><label>Pompa 5</label><input type="text" id="ayar_pompa5"></div>
+                    <div class="form-group"><label>Pompa 6</label><input type="text" id="ayar_pompa6"></div>
+                </div>
+            </div>
+
+            <!-- Su Jeti & Kesim -->
+            <div class="form-section">
+                <div class="section-title">Su Jeti, Kesim ve Hat</div>
+                <div class="grid-container">
+                    <div class="form-group"><label>Besleme 1</label><input type="text" id="ayar_besleme1"></div>
+                    <div class="form-group"><label>Tambur 1</label><input type="text" id="ayar_tambur1"></div>
+                    <div class="form-group"><label>Tambur 2</label><input type="text" id="ayar_tambur2"></div>
+                    <div class="form-group"><label>Tambur 3</label><input type="text" id="ayar_tambur3"></div>
+                    <div class="form-group"><label>Besleme 2</label><input type="text" id="ayar_besleme2"></div>
+                    <div class="form-group"><label>Sıkma Fular</label><input type="text" id="ayar_sikma_fular"></div>
+                    <div class="form-group"><label>Fırın</label><input type="text" id="ayar_firin"></div>
+                    <div class="form-group"><label>Balkan 1</label><input type="text" id="ayar_balkan1"></div>
+                    <div class="form-group"><label>Balkan 2</label><input type="text" id="ayar_balkan2"></div>
+                    <div class="form-group"><label>Balkan 3</label><input type="text" id="ayar_balkan3"></div>
+                    <div class="form-group"><label>Hammadde</label><input type="text" id="ayar_hammadde"></div>
+                    <div class="form-group"><label>Kesim Eni</label><input type="text" id="ayar_kesim_eni"></div>
+                    <div class="form-group"><label>Çap</label><input type="text" id="ayar_cap"></div>
+                    <div class="form-group"><label>Sarım Metresi</label><input type="text" id="ayar_sarim_metresi"></div>
+                    <div class="form-group"><label>Saatlik Kg</label><input type="text" id="ayar_saatlik_kg"></div>
+                    <div class="form-group"><label>Fırın Isısı</label><input type="text" id="ayar_firin_isisi"></div>
+                    <div class="form-group"><label>Hat Hızı</label><input type="text" id="ayar_hat_hizi"></div>
+                    <div class="form-group"><label>Makine Adı</label><input type="text" id="makine_adi"></div>
+                    <div class="form-group"><label>Hız</label><input type="text" id="hiz"></div>
+                    <div class="form-group"><label>Sıcaklık</label><input type="text" id="sicaklik"></div>
+                    <div class="form-group"><label>Basınç</label><input type="text" id="basinc"></div>
+                </div>
+            </div>
+
+            <!-- Notlar -->
+            <div class="form-section">
+                <div class="section-title">Notlar</div>
+                <div style="padding:15px;">
+                    <textarea id="notlar" style="width:100%;" placeholder="Açıklama veya not ekleyin..."></textarea>
+                </div>
+            </div>
+        </form>
+
+        <!-- ARAMA VE LİSTELEME TABLOSU -->
+        <div class="form-section" style="padding:15px;">
+            <h3>Kayıtlı Reçeteler (Toplam: <span id="toplamRecete">0</span>)</h3>
+            <input type="text" id="arama" class="search-box" onkeyup="ara()" placeholder="Reçete ara (Reçete no, ürün adı vb.)...">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Reçete No</th>
+                        <th>Ürün Adı</th>
+                        <th>Makine</th>
+                        <th>Hız</th>
+                        <th>Sıcaklık</th>
+                        <th>Basınç</th>
+                        <th>İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody id="liste">
+                    <!-- Script.js verileri buraya dolduracak -->
+                </tbody>
+            </table>
         </div>
     </div>
 
-    <!-- HAMMADDE AYARLARI -->
-    <div class="section-header">HAMMADDE AYARLARI</div>
-    <div class="grid-3">
-        <div class="field-group">
-            <span class="label-green">BALKAN 1</span>
-            <input type="text" id="balkan1_val" class="input-box">
-            <span style="border:1px solid #777; border-left:none; padding:5px; background:#eee;">%</span>
-        </div>
-        <div class="field-group">
-            <span class="label-green">BALKAN 2</span>
-            <input type="text" id="balkan2_val" class="input-box">
-            <span style="border:1px solid #777; border-left:none; padding:5px; background:#eee;">%</span>
-        </div>
-        <div class="field-group">
-            <span class="label-green">BALKAN 3</span>
-            <input type="text" id="balkan3_val" class="input-box">
-            <span style="border:1px solid #777; border-left:none; padding:5px; background:#eee;">%</span>
+    <!-- DETAY MODALI -->
+    <div id="detayModal" class="modal">
+        <div class="modal-content">
+            <h2>Reçete Detayı - <span id="detay_baslik_no">-</span></h2>
+            <hr style="margin: 10px 0;">
+            <p><strong>Reçete No:</strong> <span id="detay_recete_no">-</span></p>
+            <p><strong>Ürün Adı:</strong> <span id="detay_urun_adi">-</span></p>
+            <p><strong>Makine Adı:</strong> <span id="detay_makine_adi">-</span></p>
+            <p><strong>Hız:</strong> <span id="detay_hiz">-</span></p>
+            <p><strong>Sıcaklık:</strong> <span id="detay_sicaklik">-</span></p>
+            <p><strong>Basınç:</strong> <span id="detay_basinc">-</span></p>
+            <p><strong>Notlar:</strong> <span id="detay_notlar">-</span></p>
+            <br>
+            <div class="btn-group">
+                <button type="button" class="btn-primary" onclick="detaydanDuzenle()">Düzenle</button>
+                <button type="button" class="btn-success" onclick="detayKopyala()">Kopyala</button>
+                <button type="button" onclick="detayYazdir()">Yazdır</button>
+                <button type="button" class="btn-danger" onclick="detayKapat()">Kapat</button>
+            </div>
         </div>
     </div>
 
-    <!-- KESİM EBATLARI -->
-    <div class="section-header">KESİM EBATLARI</div>
-    <div class="grid-2">
-        <div class="field-group"><span class="label-green">KESİM ENİ</span><input type="text" id="kesim_eni" class="input-box"></div>
-        <div class="field-group"><span class="label-green">ÇAP</span><input type="text" id="cap" class="input-box"></div>
-        <div class="field-group"><span class="label-green">SARIM METRESİ</span><input type="text" id="sarim_metresi" class="input-box"></div>
-        <div class="field-group"><span class="label-green">SAATLİK KG</span><input type="text" id="saatlik_kg" class="input-box"></div>
-        <div class="field-group"><span class="label-green">FIRIN ISISI</span><input type="text" id="firin_isisi" class="input-box"></div>
-        <div class="field-group"><span class="label-green">HAT HIZI</span><input type="text" id="hat_hizi" class="input-box"></div>
-    </div>
-
-    <!-- NOTLAR -->
-    <div class="notes-area">
-        <div class="label-orange">NOTLAR</div>
-        <textarea id="notlar" rows="3"></textarea>
-    </div>
-
-</div>
-
+    <!-- KÜTÜPHANELER VE SCRİPT BAĞLANTILARI -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="Script.js"></script>
 </body>
 </html>
