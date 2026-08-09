@@ -2016,8 +2016,8 @@ document.addEventListener("DOMContentLoaded", function () {
 // ADMIN GİRİŞ KONTROLÜ
 // ==========================================
 
-const ADMIN_USER = "bunyamin";
-const ADMIN_PASS = "Busra.5744"; 
+ADMIN_USER = "bunyamin";
+ADMIN_PASS = "Busra.5744"; 
 
 document.addEventListener("DOMContentLoaded", function () {
     const oturumAcik = localStorage.getItem("adminOturum");
@@ -2047,6 +2047,7 @@ function adminGiris() {
         if (errorMsg) errorMsg.style.display = "none";
     } else {
         if (errorMsg) errorMsg.style.display = "block";
+        else alert("Kullanıcı adı veya şifre hatalı!");
     }
 }
 
@@ -2054,6 +2055,5 @@ function adminCikis() {
     localStorage.removeItem("adminOturum");
     location.reload();
 }
-
 
     
