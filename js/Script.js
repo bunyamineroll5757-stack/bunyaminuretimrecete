@@ -1924,7 +1924,8 @@ function pdfIndir() {
     });
 }
 
-
+// WhatsApp Paylaşımı
+async function paylas() {
     const receteNo = getVal('detay_recete_no');
     const urunAdi = getVal('detay_urun_adi');
     const makine = getVal('detay_makine_adi');
@@ -1955,6 +1956,7 @@ function pdfIndir() {
         window.open(whatsappUrl, '_blank');
     }
 }
+
 // ==========================================
 // ADMIN GİRİŞ KONTROLÜ
 // ==========================================
