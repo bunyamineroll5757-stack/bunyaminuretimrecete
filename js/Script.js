@@ -76,7 +76,7 @@ function uretimAyarlariTopla() {
         "ayar_on_cikis_hafiza",
         "ayar_cikis_yuksekligi_sol",
         "ayar_arka_cikis_hafiza",
-
+a
         "ayar_trio1",
         "ayar_trio2",
         "ayar_trio3",
@@ -1911,7 +1911,7 @@ function pdfIndir() {
             scale: 2, 
             useCORS: true, 
             logging: false,
-            windowWidth: 1200, 
+            windowWidth: 1200 
         },
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
@@ -1923,12 +1923,7 @@ function pdfIndir() {
         butonlar.forEach(b => b.style.visibility = 'visible');
     });
 }
-// Reçeteyi WhatsApp/E-Posta ile Paylaşma
-async function paylas() {
-    const getVal = (id) => {
-        const el = document.getElementById(id);
-        return el ? el.innerText.trim() : '-';
-    };
+
 
     const receteNo = getVal('detay_recete_no');
     const urunAdi = getVal('detay_urun_adi');
