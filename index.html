@@ -38,10 +38,10 @@
         .form-group input, .form-group textarea { padding: 6px 8px; border: 1px solid var(--border); border-radius: 4px; font-size: 13px; outline: none; }
         .form-group input:focus { border-color: var(--accent); }
 
-        .search-box { width: 100%; padding: 8px; margin-bottom: 12px; border: 1px solid var(--border); border-radius: 4px; }
-        table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        th, td { border: 1px solid var(--border); padding: 8px; text-align: left; }
-        th { background-color: #f8fafc; font-weight: 600; }
+        .search-box { width: 100%; padding: 10px; margin-bottom: 12px; border: 1px solid var(--border); border-radius: 4px; font-size: 14px; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 5px; }
+        th, td { border: 1px solid var(--border); padding: 10px; text-align: left; }
+        th { background-color: #f8fafc; font-weight: 600; color: var(--primary); }
 
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 99999; }
         .modal-content { background: white; padding: 20px; border-radius: 8px; width: 90%; max-width: 600px; }
@@ -51,18 +51,18 @@
 </head>
 <body>
 
-    <!-- YÖNETİCİ GİRİŞ MODALI (HTML İÇİNDE BAĞIMSIZ ÇALIŞIR) -->
+    <!-- YÖNETİCİ GİRİŞ MODALI -->
     <div id="loginModal" class="modal" style="display: flex;">
         <div class="login-card">
             <h3 style="margin-bottom: 15px; color: var(--primary);">Yönetici Girişi</h3>
             <input type="text" id="login_user" placeholder="Kullanıcı Adı" autocomplete="off">
             <input type="password" id="login_pass" placeholder="Şifre" autocomplete="off">
-            <button type="button" class="btn-success" style="width:100%; padding:10px;" onclick="dogrudanGirisYap()">Giriş Yap</button>
+            <button type="button" class="btn-success" style="width:100%; padding:10px;" onclick="sistemeGirisYap()">Giriş Yap</button>
             <p id="loginError" style="color:var(--danger); display:none; margin-top:10px; font-size:12px; font-weight:bold;">Hatalı Kullanıcı Adı veya Şifre!</p>
         </div>
     </div>
 
-    <!-- MAIN FORM CONTAINER -->
+    <!-- ANA REÇETE FORMU VE İÇERİK -->
     <div class="container" id="detayIcerik">
         <div class="header">
             <h1>Üretim Reçetesi Veri Girişi</h1>
@@ -183,10 +183,10 @@
             </div>
         </form>
 
-        <!-- Kayıtlı Reçeteler Tablosu -->
+        <!-- KAYITLI REÇETELER LİSTESİ VE ARAMA (GERİ EKLENDİ) -->
         <div class="form-section" style="padding:15px;">
-            <h3 style="margin-bottom: 10px;">Kayıtlı Reçeteler (<span id="toplamRecete">0</span>)</h3>
-            <input type="text" id="arama" class="search-box" onkeyup="ara()" placeholder="Reçete ara...">
+            <div class="section-title" style="margin:-15px -15px 15px -15px;">Kayıtlı Reçeteler (Toplam: <span id="toplamRecete">0</span>)</div>
+            <input type="text" id="arama" class="search-box" onkeyup="ara()" placeholder="Reçete ara (Reçete No, Ürün Adı, Makine vb.)...">
             <table>
                 <thead>
                     <tr>
@@ -199,12 +199,14 @@
                         <th>İşlemler</th>
                     </tr>
                 </thead>
-                <tbody id="liste"></tbody>
+                <tbody id="liste">
+                    <!-- Script.js verileri buraya dolduracak -->
+                </tbody>
             </table>
         </div>
     </div>
 
-    <!-- Detay Modalı -->
+    <!-- DETAY MODALI -->
     <div id="detayModal" class="modal">
         <div class="modal-content">
             <h3>Reçete Detayı - <span id="detay_baslik_no">-</span></h3>
@@ -226,20 +228,19 @@
         </div>
     </div>
 
-    <!-- Kütüphaneler ve Doğrudan Login Script'i -->
+    <!-- KÜTÜPHANELER -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
+    <!-- GİRİŞ KONTROL SCRİPTİ -->
     <script>
-        // Sayfa açıldığında giriş durumunu kontrol et
         document.addEventListener("DOMContentLoaded", function () {
             if (localStorage.getItem("adminOturum") === "true") {
                 document.getElementById("loginModal").style.display = "none";
             }
         });
 
-        // Doğrudan çalışan giriş fonksiyonu
-        function dogrudanGirisYap() {
+        function sistemeGirisYap() {
             var u = document.getElementById("login_user").value.trim();
             var p = document.getElementById("login_pass").value.trim();
             var err = document.getElementById("loginError");
@@ -260,7 +261,7 @@
         }
     </script>
 
-    <!-- Ana JS Dosyası -->
+    <!-- ANA JS KODLARI -->
     <script src="Script.js"></script>
 </body>
 </html>
