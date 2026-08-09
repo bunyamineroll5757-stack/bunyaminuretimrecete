@@ -1882,37 +1882,38 @@ document.addEventListener(
     }
 );
 
-// Reçeteyi PDF Olarak İndirme
 function pdfIndir() {
-    // 1. Tüm sayfa içeriğini yakala
-    const element = document.querySelector('.container');
+    // 1. Yazdırılacak alanı seç (Eğer container yoksa body'yi alır)
+    const element = document.querySelector('.container') || document.body;
 
-    if (!element) {
-        alert("İçerik bulunamadı!");
-        return;
-    }
+    // 2. İndirme esnasında butonları ve gereksiz elemanları gizle
+    const gizlenecekler = document.querySelectorAll('button, #arama, #loginModal, .modal');
+    gizlenecekler.forEach(el => el.style.visibility = 'hidden');
 
-    // 2. PDF Ayarları
+    // 3. PDF Ayarları
     const opt = {
         margin:       [5, 5, 5, 5],
         filename:     `Recete_${document.getElementById('recete_no')?.value || 'Detay'}.pdf`,
         image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2, useCORS: true, logging: false },
+        html2canvas:  { 
+            scale: 2, 
+            useCORS: true, 
+            logging: true,
+            scrollX: 0,
+            scrollY: 0
+        },
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
-   // 3. İndirme esnasında butonları gizle
-    const butonlar = element.querySelectorAll('button, #arama, #loginModal');
-    butonlar.forEach(b => b.style.display = 'none');
-
     // 4. PDF Oluştur ve İndir
     html2pdf().set(opt).from(element).save().then(() => {
-        butonlar.forEach(b => b.style.display = '');
+        gizlenecekler.forEach(el => el.style.visibility = 'visible');
     }).catch(err => {
-        console.error("PDF Hatası:", err);
-        butonlar.forEach(b => b.style.display = '');
+        console.error("PDF Oluşturma Hatası:", err);
+        gizlenecekler.forEach(el => el.style.visibility = 'visible');
+        alert("PDF oluşturulurken bir hata oluştu: " + err.message);
     });
-    } 
+}
 
 // Reçeteyi WhatsApp/E-Posta ile Paylaşma
 async function paylas() {
