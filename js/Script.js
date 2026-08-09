@@ -1940,3 +1940,40 @@ async function paylas() {
         window.open(whatsappUrl, '_blank');
     }
 }
+// ==========================================
+// ADMIN GİRİŞ KONTROLÜ
+// ==========================================
+
+const ADMIN_USER = "admin";
+const ADMIN_PASS = "1234"; 
+
+document.addEventListener("DOMContentLoaded", function () {
+    const oturumAcik = localStorage.getItem("adminOturum");
+    const loginModal = document.getElementById("loginModal");
+
+    if (oturumAcik === "true") {
+        if (loginModal) loginModal.style.display = "none";
+    } else {
+        if (loginModal) loginModal.style.display = "flex";
+    }
+});
+
+function adminGiris() {
+    const user = document.getElementById("login_user").value.trim();
+    const pass = document.getElementById("login_pass").value.trim();
+    const errorMsg = document.getElementById("loginError");
+    const loginModal = document.getElementById("loginModal");
+
+    if (user === ADMIN_USER && pass === ADMIN_PASS) {
+        localStorage.setItem("adminOturum", "true");
+        if (loginModal) loginModal.style.display = "none";
+        if (errorMsg) errorMsg.style.display = "none";
+    } else {
+        if (errorMsg) errorMsg.style.display = "block";
+    }
+}
+
+function adminCikis() {
+    localStorage.removeItem("adminOturum");
+    location.reload();
+}
