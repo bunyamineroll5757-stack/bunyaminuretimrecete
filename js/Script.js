@@ -1882,37 +1882,53 @@ document.addEventListener(
     }
 );
 
+// Reçeteyi PDF Olarak İndirme
 function pdfIndir() {
-    // 1. Yazdırılacak alanı seç (Eğer container yoksa body'yi alır)
-    const element = document.querySelector('.container') || document.body;
+    // 1. Yazdırılacak alanı seç (Sayfa üstündeki boşlukları atlayıp doğrudan içeriği alır)
+    const element = document.getElementById('detayIcerik') || 
+                    document.querySelector('.container') || 
+                    document.body;
 
-    // 2. İndirme esnasında butonları ve gereksiz elemanları gizle
-    const gizlenecekler = document.querySelectorAll('button, #arama, #loginModal, .modal');
-    gizlenecekler.forEach(el => el.style.visibility = 'hidden');
+    if (!element) {
+        alert("Yazdırılacak içerik bulunamadı!");
+        return;
+    }
 
-    // 3. PDF Ayarları
+    // 2. Mobilde kaymayı önlemek için ekranı en üste kaydır
+    window.scrollTo(0, 0);
+
+    // 3. İndirme anında butonları gizle
+    const butonlar = document.querySelectorAll('button, #arama, #loginModal, .modal-backdrop');
+    butonlar.forEach(b => b.style.visibility = 'hidden');
+
+    // 4. Reçete Numarasını Al
+    const receteNoEl = document.getElementById('detay_recete_no') || document.getElementById('recete_no');
+    const receteNo = receteNoEl ? (receteNoEl.value || receteNoEl.innerText.trim()) : 'Detay';
+
+    // 5. PDF Ayarları (Mobil genişlik ve kayma düzeltmeleri)
     const opt = {
-        margin:       [5, 5, 5, 5],
-        filename:     `Recete_${document.getElementById('recete_no')?.value || 'Detay'}.pdf`,
+        margin:       [10, 5, 10, 5],
+        filename:     `Recete_${receteNo}.pdf`,
         image:        { type: 'jpeg', quality: 0.98 },
         html2canvas:  { 
             scale: 2, 
             useCORS: true, 
-            logging: true,
-            scrollX: 0,
-            scrollY: 0
+            logging: false,
+            windowWidth: document.body.scrollWidth,
+            scrollY: -window.scrollY
         },
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
-    // 4. PDF Oluştur ve İndir
+    // 6. PDF Oluştur
     html2pdf().set(opt).from(element).save().then(() => {
-        gizlenecekler.forEach(el => el.style.visibility = 'visible');
+        butonlar.forEach(b => b.style.visibility = 'visible');
     }).catch(err => {
-        console.error("PDF Oluşturma Hatası:", err);
-        gizlenecekler.forEach(el => el.style.visibility = 'visible');
-        alert("PDF oluşturulurken bir hata oluştu: " + err.message);
+        console.error("PDF Hatası:", err);
+        butonlar.forEach(b => b.style.visibility = 'visible');
+        alert("PDF oluşturulamadı: " + err.message);
     });
+}
 }
 
 // Reçeteyi WhatsApp/E-Posta ile Paylaşma
