@@ -1,6 +1,6 @@
 // ======================================================
 // ÜRETİM REÇETE YÖNETİM SİSTEMİ
-// Script.js - DÜZELTİLMİŞ TAM SÜRÜM
+// Script.js - DÜZELTİLMİŞ VE NOTLAR SÜTUNU EKLENMİŞ TAM SÜRÜM
 // ======================================================
 
 
@@ -443,6 +443,8 @@ async function kaydet(event) {
 
             basinc: basinc,
 
+            notlar: notlar, // Veritabanındaki 'notlar' sütununun NULL kalmaması için eklendi
+
             ayarlar: ayarlarObj,
 
             uretim_ayarlari: ayarlarObj
@@ -864,7 +866,7 @@ async function detayGoster(id) {
 
         setText(
             "detay_notlar",
-            ayarlarObj.notlar || "Not yok"
+            data.notlar || ayarlarObj.notlar || "Not yok"
         );
 
 
@@ -1077,7 +1079,7 @@ async function duzenle(id) {
 
         setValue(
             "notlar",
-            ayarlarObj.notlar || ""
+            data.notlar || ayarlarObj.notlar || ""
         );
 
 
@@ -1239,6 +1241,8 @@ async function guncelle() {
             sicaklik: sicaklik,
 
             basinc: basinc,
+
+            notlar: notlar, // Veritabanındaki 'notlar' sütununun NULL kalmaması için eklendi
 
             ayarlar: ayarlarObj,
 
