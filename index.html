@@ -16,23 +16,23 @@
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
-        body { background-color: var(--bg); color: #1f2937; padding: 20px; }
-        .container { max-width: 1200px; margin: 0 auto; background: var(--card-bg); padding: 25px; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        body { background-color: var(--bg); color: #1f2937; padding: 15px; }
+        .container { max-width: 1200px; margin: 0 auto; background: var(--card-bg); padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
         
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary); padding-bottom: 15px; margin-bottom: 20px; }
-        .header h1 { color: var(--primary); font-size: 22px; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary); padding-bottom: 12px; margin-bottom: 15px; }
+        .header h1 { color: var(--primary); font-size: 20px; }
         
         .btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
-        button, .btn { padding: 8px 14px; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 13px; color: white; background-color: var(--primary); transition: 0.2s; }
+        button, .btn { padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 13px; color: white; background-color: var(--primary); transition: 0.2s; }
         button:hover { opacity: 0.9; }
         .btn-success { background-color: var(--secondary); }
         .btn-primary { background-color: var(--accent); }
         .btn-danger { background-color: var(--danger); }
 
-        .form-section { margin-bottom: 20px; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; background: #fff; }
+        .form-section { margin-bottom: 15px; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; background: #fff; }
         .section-title { background-color: var(--primary); color: white; padding: 8px 12px; font-size: 14px; font-weight: 600; }
         
-        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; padding: 12px; }
+        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px; padding: 12px; }
         .form-group { display: flex; flex-direction: column; }
         .form-group label { font-size: 11px; font-weight: 700; color: #4b5563; margin-bottom: 3px; text-transform: uppercase; }
         .form-group input, .form-group textarea { padding: 6px 8px; border: 1px solid var(--border); border-radius: 4px; font-size: 13px; outline: none; }
@@ -43,29 +43,29 @@
         th, td { border: 1px solid var(--border); padding: 8px; text-align: left; }
         th { background-color: #f8fafc; font-weight: 600; }
 
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 9999; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 99999; }
         .modal-content { background: white; padding: 20px; border-radius: 8px; width: 90%; max-width: 600px; }
-        .login-card { background: white; padding: 25px; border-radius: 8px; width: 300px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
-        .login-card input { width: 100%; margin-bottom: 10px; padding: 8px; border: 1px solid var(--border); border-radius: 4px; }
+        .login-card { background: white; padding: 25px; border-radius: 8px; width: 320px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        .login-card input { width: 100%; margin-bottom: 10px; padding: 10px; border: 1px solid var(--border); border-radius: 4px; }
     </style>
 </head>
 <body>
 
-    <!-- LOGIN MODAL -->
+    <!-- YÖNETİCİ GİRİŞ MODALI (HTML İÇİNDE BAĞIMSIZ ÇALIŞIR) -->
     <div id="loginModal" class="modal" style="display: flex;">
         <div class="login-card">
             <h3 style="margin-bottom: 15px; color: var(--primary);">Yönetici Girişi</h3>
-            <input type="text" id="login_user" placeholder="Kullanıcı Adı">
-            <input type="password" id="login_pass" placeholder="Şifre">
-            <button type="button" class="btn-success" style="width:100%" onclick="adminGiris()">Giriş Yap</button>
-            <p id="loginError" style="color:var(--danger); display:none; margin-top:10px; font-size:12px;">Hatalı Kullanıcı Adı veya Şifre!</p>
+            <input type="text" id="login_user" placeholder="Kullanıcı Adı" autocomplete="off">
+            <input type="password" id="login_pass" placeholder="Şifre" autocomplete="off">
+            <button type="button" class="btn-success" style="width:100%; padding:10px;" onclick="dogrudanGirisYap()">Giriş Yap</button>
+            <p id="loginError" style="color:var(--danger); display:none; margin-top:10px; font-size:12px; font-weight:bold;">Hatalı Kullanıcı Adı veya Şifre!</p>
         </div>
     </div>
 
-    <!-- MAIN FORM -->
+    <!-- MAIN FORM CONTAINER -->
     <div class="container" id="detayIcerik">
         <div class="header">
-            <h1>Üretim Reçetesi Yönetimi</h1>
+            <h1>Üretim Reçetesi Veri Girişi</h1>
             <div class="btn-group">
                 <button type="button" class="btn-success" id="kaydetBtn" onclick="kaydet(event)">Kaydet</button>
                 <button type="button" class="btn-primary" onclick="yeniRecete()">Yeni Reçete</button>
@@ -127,7 +127,7 @@
                 </div>
             </div>
 
-            <!-- Trio, Pompa & Diğer -->
+            <!-- Trio, Pompa ve Su Jeti -->
             <div class="form-section">
                 <div class="section-title">Trio, Pompa ve Su Jeti</div>
                 <div class="grid-container">
@@ -153,7 +153,7 @@
                 </div>
             </div>
 
-            <!-- Balkan, Kesim & Hat -->
+            <!-- Balkan, Kesim ve Hat -->
             <div class="form-section">
                 <div class="section-title">Balkan, Kesim ve Hat Ayarları</div>
                 <div class="grid-container">
@@ -183,10 +183,10 @@
             </div>
         </form>
 
-        <!-- Tablo -->
+        <!-- Kayıtlı Reçeteler Tablosu -->
         <div class="form-section" style="padding:15px;">
             <h3 style="margin-bottom: 10px;">Kayıtlı Reçeteler (<span id="toplamRecete">0</span>)</h3>
-            <input type="text" id="arama" class="search-box" onkeyup="ara()" placeholder="Arama yapın...">
+            <input type="text" id="arama" class="search-box" onkeyup="ara()" placeholder="Reçete ara...">
             <table>
                 <thead>
                     <tr>
@@ -204,7 +204,7 @@
         </div>
     </div>
 
-    <!-- Detay Modal -->
+    <!-- Detay Modalı -->
     <div id="detayModal" class="modal">
         <div class="modal-content">
             <h3>Reçete Detayı - <span id="detay_baslik_no">-</span></h3>
@@ -226,9 +226,41 @@
         </div>
     </div>
 
-    <!-- Kütüphaneler -->
+    <!-- Kütüphaneler ve Doğrudan Login Script'i -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <script>
+        // Sayfa açıldığında giriş durumunu kontrol et
+        document.addEventListener("DOMContentLoaded", function () {
+            if (localStorage.getItem("adminOturum") === "true") {
+                document.getElementById("loginModal").style.display = "none";
+            }
+        });
+
+        // Doğrudan çalışan giriş fonksiyonu
+        function dogrudanGirisYap() {
+            var u = document.getElementById("login_user").value.trim();
+            var p = document.getElementById("login_pass").value.trim();
+            var err = document.getElementById("loginError");
+            var modal = document.getElementById("loginModal");
+
+            if (u === "bunyamin" && p === "Busra.5744") {
+                localStorage.setItem("adminOturum", "true");
+                modal.style.display = "none";
+                err.style.display = "none";
+            } else {
+                err.style.display = "block";
+            }
+        }
+
+        function adminCikis() {
+            localStorage.removeItem("adminOturum");
+            location.reload();
+        }
+    </script>
+
+    <!-- Ana JS Dosyası -->
     <script src="Script.js"></script>
 </body>
 </html>
