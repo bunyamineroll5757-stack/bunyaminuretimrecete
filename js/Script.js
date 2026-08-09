@@ -1,6 +1,6 @@
 // ======================================================
 // ÜRETİM REÇETE YÖNETİM SİSTEMİ
-// Script.js - ÇALIŞAN TAM VE DÜZELTİLMİŞ SÜRÜM
+// Script.js - DÜZELTİLMİŞ TAM SÜRÜM
 // ======================================================
 
 
@@ -325,7 +325,11 @@ async function otomatikReceteNo() {
 // KAYDET
 // ======================================================
 
-async function kaydet() {
+async function kaydet(event) {
+
+    if (event) {
+        event.preventDefault();
+    }
 
     try {
 
@@ -434,6 +438,10 @@ async function kaydet() {
             makine_adi: makineAdi,
 
             hiz: hiz,
+
+            sicaklik: sicaklik,
+
+            basinc: basinc,
 
             uretim_ayarlari: ayarlar
 
@@ -616,9 +624,9 @@ async function receteleriListele() {
 
             const hiz = r.hiz || ayarlar.hiz || "";
 
-            const sicaklik = ayarlar.sicaklik || "";
+            const sicaklik = r.sicaklik || ayarlar.sicaklik || "";
 
-            const basinc = ayarlar.basinc || "";
+            const basinc = r.basinc || ayarlar.basinc || "";
 
 
             liste.innerHTML += `
@@ -842,13 +850,13 @@ async function detayGoster(id) {
 
         setText(
             "detay_sicaklik",
-            ayarlar.sicaklik || "-"
+            data.sicaklik || ayarlar.sicaklik || "-"
         );
 
 
         setText(
             "detay_basinc",
-            ayarlar.basinc || "-"
+            data.basinc || ayarlar.basinc || "-"
         );
 
 
@@ -1055,13 +1063,13 @@ async function duzenle(id) {
 
         setValue(
             "sicaklik",
-            ayarlar.sicaklik || ""
+            data.sicaklik || ayarlar.sicaklik || ""
         );
 
 
         setValue(
             "basinc",
-            ayarlar.basinc || ""
+            data.basinc || ayarlar.basinc || ""
         );
 
 
@@ -1225,6 +1233,10 @@ async function guncelle() {
             makine_adi: makineAdi,
 
             hiz: hiz,
+
+            sicaklik: sicaklik,
+
+            basinc: basinc,
 
             uretim_ayarlari: ayarlar
 
