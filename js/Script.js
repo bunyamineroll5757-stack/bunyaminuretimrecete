@@ -1973,24 +1973,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-// ==========================================
-// ADMIN GİRİŞ KONTROLÜ
-// ==========================================
-
-const ADMIN_USER = "bunyamin";
-const ADMIN_PASS = "Busra.5744"; 
-
-document.addEventListener("DOMContentLoaded", function () {
-    const oturumAcik = localStorage.getItem("adminOturum");
-    const loginModal = document.getElementById("loginModal");
-
-    if (oturumAcik === "true") {
-        if (loginModal) loginModal.style.display = "none";
-    } else {
-        if (loginModal) loginModal.style.display = "flex";
-    }
-});
-
 function adminGiris() {
     const userEl = document.getElementById("login_user");
     const passEl = document.getElementById("login_pass");
@@ -2015,6 +1997,3 @@ function adminCikis() {
     localStorage.removeItem("adminOturum");
     location.reload();
 }
-
-
-    
