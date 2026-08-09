@@ -1,6 +1,6 @@
 // ======================================================
 // ÜRETİM REÇETE YÖNETİM SİSTEMİ
-// Script.js - DÜZELTİLMİŞ VE NOTLAR SÜTUNU EKLENMİŞ TAM SÜRÜM
+// Script.js - DÜZELTİLMİŞ TAM SÜRÜM
 // ======================================================
 
 
@@ -443,9 +443,7 @@ async function kaydet(event) {
 
             basinc: basinc,
 
-            notlar: notlar, // Veritabanındaki 'notlar' sütununun NULL kalmaması için eklendi
-
-            ayarlar: ayarlarObj,
+            notlar: notlar,
 
             uretim_ayarlari: ayarlarObj
 
@@ -617,7 +615,7 @@ async function receteleriListele() {
         data.forEach(function(r) {
 
             let ayarlarObj =
-                r.ayarlar || r.uretim_ayarlari || {};
+                r.uretim_ayarlari || r.ayarlar || {};
 
 
             const receteNo = r.recete_no || "";
@@ -819,7 +817,7 @@ async function detayGoster(id) {
 
 
         const ayarlarObj =
-            data.ayarlar || data.uretim_ayarlari || {};
+            data.uretim_ayarlari || data.ayarlar || {};
 
 
         setText(
@@ -1038,7 +1036,7 @@ async function duzenle(id) {
 
 
         const ayarlarObj =
-            data.ayarlar || data.uretim_ayarlari || {};
+            data.uretim_ayarlari || data.ayarlar || {};
 
 
         setValue(
@@ -1242,9 +1240,7 @@ async function guncelle() {
 
             basinc: basinc,
 
-            notlar: notlar, // Veritabanındaki 'notlar' sütununun NULL kalmaması için eklendi
-
-            ayarlar: ayarlarObj,
+            notlar: notlar,
 
             uretim_ayarlari: ayarlarObj
 
