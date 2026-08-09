@@ -235,6 +235,20 @@
         <button class="btn-secondary" type="button" onclick="detayKapat()">Kapat</button>
     </div>
 </div>
+</div>
+
+<!-- ADMIN GİRİŞ MODAL -->
+<div id="loginModal" class="modal" style="display: flex;">
+    <div class="modal-content" style="max-width: 350px; text-align: center;">
+        <h2>Admin Girişi</h2>
+        <p style="color: #666; font-size: 14px;">Lütfen devam etmek için giriş yapın.</p>
+        <br>
+        <input id="login_user" type="text" placeholder="Kullanıcı Adı" style="margin-bottom: 10px;">
+        <input id="login_pass" type="password" placeholder="Şifre" style="margin-bottom: 15px;">
+        <button class="btn-success" type="button" style="width: 100%; padding: 12px;" onclick="adminGiris()">Giriş Yap</button>
+        <p id="loginError" style="color: red; margin-top: 10px; display: none; font-size: 13px;">Kullanıcı adı veya şifre hatalı!</p>
+    </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase.js"></script>
