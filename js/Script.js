@@ -1944,8 +1944,8 @@ async function paylas() {
 // ADMIN GİRİŞ KONTROLÜ
 // ==========================================
 
-const ADMIN_USER = "admin";
-const ADMIN_PASS = "1234"; 
+const ADMIN_USER = "bunyamin";
+const ADMIN_PASS = "Busra.5744"; 
 
 document.addEventListener("DOMContentLoaded", function () {
     const oturumAcik = localStorage.getItem("adminOturum");
