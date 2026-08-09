@@ -1884,7 +1884,6 @@ document.addEventListener(
 
 // Reçeteyi PDF Olarak İndirme
 function pdfIndir() {
-    // 1. Sadece id'si detayIcerik olan div'i yakala
     const element = document.getElementById('detayIcerik');
 
     if (!element) {
@@ -1892,56 +1891,38 @@ function pdfIndir() {
         return;
     }
 
-    // 2. Ekranı en üste kaydır
     window.scrollTo(0, 0);
 
-    // 3. Gizlenecek butonları belirle
     const butonlar = document.querySelectorAll('button, #arama, #loginModal, .modal-backdrop');
     butonlar.forEach(b => b.style.visibility = 'hidden');
 
-    // 4. Reçete Numarasını Al
-const receteNoEl = document.getElementById('detay_recete_no') || document.getElementById('recete_no');
-const receteNo = receteNoEl ? (receteNoEl.value || receteNoEl.innerText.trim()) : 'Detay';
+    let receteNo = 'Detay';
+    const receteNoEl = document.getElementById('detay_recete_no') || document.getElementById('recete_no');
+    
+    if (receteNoEl) {
+        receteNo = receteNoEl.value || receteNoEl.innerText.trim() || 'Detay';
+    }
 
-// 5. PDF Ayarları
-const opt = {
-    margin:       [5, 5, 5, 5],
-    filename:     `Recete_${receteNo}.pdf`,
-    image:        { type: 'jpeg', quality: 0.98 },
-    html2canvas:  { 
-        scale: 2, 
-        useCORS: true, 
-        logging: false,
-        windowWidth: 1200
-    },
-    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-};
-
-    // 6. PDF Oluştur ve İndir
-    html2pdf().set(opt).from(element).save().then(() => {
-        butonlar.forEach(b => b.style.visibility = 'visible');
-    }).catch(err => {
-        console.error("PDF Hatası:", err);
-        butonlar.forEach(b => b.style.visibility = 'visible');
-    });
-}lse,
-            windowWidth: document.body.scrollWidth,
-            scrollY: -window.scrollY
+    const opt = {
+        margin:       [5, 5, 5, 5],
+        filename:     'Recete_' + receteNo + '.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { 
+            scale: 2, 
+            useCORS: true, 
+            logging: false,
+            windowWidth: 1200, 
         },
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
-    // 6. PDF Oluştur
     html2pdf().set(opt).from(element).save().then(() => {
         butonlar.forEach(b => b.style.visibility = 'visible');
     }).catch(err => {
         console.error("PDF Hatası:", err);
         butonlar.forEach(b => b.style.visibility = 'visible');
-        alert("PDF oluşturulamadı: " + err.message);
     });
 }
-}
-
 // Reçeteyi WhatsApp/E-Posta ile Paylaşma
 async function paylas() {
     const getVal = (id) => {
