@@ -1884,36 +1884,47 @@ document.addEventListener(
 
 // Reçeteyi PDF Olarak İndirme
 function pdfIndir() {
-    // 1. Yazdırılacak alanı seç (Sayfa üstündeki boşlukları atlayıp doğrudan içeriği alır)
-    const element = document.getElementById('detayIcerik') || 
-                    document.querySelector('.container') || 
-                    document.body;
+    // 1. Sadece id'si detayIcerik olan div'i yakala
+    const element = document.getElementById('detayIcerik');
 
     if (!element) {
-        alert("Yazdırılacak içerik bulunamadı!");
+        alert("Yazdırılacak detay alanı (detayIcerik) bulunamadı!");
         return;
     }
 
-    // 2. Mobilde kaymayı önlemek için ekranı en üste kaydır
+    // 2. Ekranı en üste kaydır
     window.scrollTo(0, 0);
 
-    // 3. İndirme anında butonları gizle
+    // 3. Gizlenecek butonları belirle
     const butonlar = document.querySelectorAll('button, #arama, #loginModal, .modal-backdrop');
     butonlar.forEach(b => b.style.visibility = 'hidden');
 
-    // 4. Reçete Numarasını Al
+    // 4. Reçete numarasını al
     const receteNoEl = document.getElementById('detay_recete_no') || document.getElementById('recete_no');
     const receteNo = receteNoEl ? (receteNoEl.value || receteNoEl.innerText.trim()) : 'Detay';
 
-    // 5. PDF Ayarları (Mobil genişlik ve kayma düzeltmeleri)
+    // 5. PDF Ayarları
     const opt = {
-        margin:       [10, 5, 10, 5],
+        margin:       [5, 5, 5, 5],
         filename:     `Recete_${receteNo}.pdf`,
         image:        { type: 'jpeg', quality: 0.98 },
         html2canvas:  { 
             scale: 2, 
             useCORS: true, 
             logging: false,
+            windowWidth: 1200 // Mobilde masaüstü görünümü simüle ederek kaymayı önler
+        },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    // 6. PDF Oluştur ve İndir
+    html2pdf().set(opt).from(element).save().then(() => {
+        butonlar.forEach(b => b.style.visibility = 'visible');
+    }).catch(err => {
+        console.error("PDF Hatası:", err);
+        butonlar.forEach(b => b.style.visibility = 'visible');
+    });
+}lse,
             windowWidth: document.body.scrollWidth,
             scrollY: -window.scrollY
         },
