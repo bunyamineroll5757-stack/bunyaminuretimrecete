@@ -21,11 +21,12 @@ window.adminCikis = function() {
 
 // ======================================================
 // ÜRETİM REÇETE YÖNETİM SİSTEMİ
-// Script.js - DÜZELTİLMİŞ VE TAM SÜRÜM
+// Script.js - DÜZELTİLMİŞ TAM SÜRÜM
 // ======================================================
 
 let secilenId = null;
 let detaydakiId = null;
+let detaydakiVeri = null; // Kopyalama için detay nesnesini hafızada tutar
 
 // ======================================================
 // SUPABASE KONTROLÜ
@@ -310,6 +311,7 @@ async function detayGoster(id) {
         }
 
         detaydakiId = id;
+        detaydakiVeri = data; // Tüm veriyi hafızaya alıyoruz (Kopyalamada kullanmak için)
         const ayarlarObj = data.uretim_ayarlari || data.ayarlar || {};
 
         setText("detay_recete_no", data.recete_no || "-");
@@ -321,7 +323,7 @@ async function detayGoster(id) {
         setText("detay_basinc", data.basinc || ayarlarObj.basinc || "-");
         setText("detay_notlar", data.notlar || ayarlarObj.notlar || "Not yok");
 
-        // Tüm detay alanlarını dinamik eşleme (JSON nesnesindeki değerler)
+        // Tüm detay alanlarını dinamik eşleme
         Object.keys(ayarlarObj).forEach(key => {
             setText("detay_" + key, ayarlarObj[key]);
         });
@@ -496,32 +498,39 @@ function yeniRecete() {
 function temizle() { temizleForm(); }
 
 // ======================================================
-// KOPYALA
+// KOPYALA (DÜZELTİLDİ: TÜM SİSTEMİ FORMA AKTARIR)
 // ======================================================
 function detayKopyala() {
-    const urunAdi = getText("detay_urun_adi");
-    const makineAdi = getText("detay_makine_adi");
-    const hiz = getText("detay_hiz");
-    const sicaklik = getText("detay_sicaklik");
-    const basinc = getText("detay_basinc");
-    const notlar = getText("detay_notlar");
+    if (!detaydakiVeri) {
+        alert("Kopyalanacak veri bulunamadı.");
+        return;
+    }
 
+    temizleForm(); // Önce formu sıfırla
+
+    const data = detaydakiVeri;
+    const ayarlarObj = data.uretim_ayarlari || data.ayarlar || {};
+
+    // Temel alanlar (Reçete no boş bırakılır ki yenisi otomatik verilsin)
     setValue("recete_no", "");
-    setValue("urun_adi", urunAdi === "-" ? "" : urunAdi);
-    setValue("makine_adi", makineAdi === "-" ? "" : makineAdi);
-    setValue("hiz", hiz === "-" ? "" : hiz);
-    setValue("sicaklik", sicaklik === "-" ? "" : sicaklik);
-    setValue("basinc", basinc === "-" ? "" : basinc);
-    setValue("notlar", notlar === "Not yok" ? "" : notlar);
+    setValue("urun_adi", data.urun_adi || "");
+    setValue("makine_adi", data.makine_adi || ayarlarObj.makine_adi || "");
+    setValue("hiz", data.hiz || ayarlarObj.hiz || "");
+    setValue("sicaklik", data.sicaklik || ayarlarObj.sicaklik || "");
+    setValue("basinc", data.basinc || ayarlarObj.basinc || "");
+    setValue("notlar", data.notlar || ayarlarObj.notlar || "");
 
-    secilenId = null;
+    // Üretim ayarlarını (tüm makine girdilerini) yükle
+    uretimAyarlariYukle(ayarlarObj);
+
+    secilenId = null; // Güncelleme değil, YENİ KAYIT olacağını belirttik
     const buton = document.getElementById("kaydetBtn");
     if (buton) buton.innerText = "Kaydet";
 
     detayKapat();
     document.getElementById("urun_adi")?.focus();
 
-    alert("Reçete kopyalandı.\nBilgiler forma aktarıldı.\nYeni reçete olarak kaydetmek için Kaydet'e basın.");
+    alert("Reçete başarıyla kopyalandı.\nTüm makine ayarları forma yüklendi.\nYeni kayıt oluşturmak için 'Kaydet' butonuna basın.");
 }
 
 function getText(id) {
