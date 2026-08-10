@@ -709,29 +709,32 @@ function pdfIndir() {
     html2pdf().set(ayarlar).from(eleman).save();
 }
 
-function paylas() {
-    const receteNo = document.getElementById('detay_recete_no')?.innerText || '-';
-    const urunAdi = document.getElementById('detay_urun_adi')?.innerText || '-';
-    const makine = document.getElementById('detay_makine_adi')?.innerText || '-';
-    const hiz = document.getElementById('detay_hiz')?.innerText || '-';
-    const sicaklik = document.getElementById('detay_sicaklik')?.innerText || '-';
-    const basinc = document.getElementById('detay_basinc')?.innerText || '-';
-    const gram = document.getElementById('detay_ayar_gram')?.innerText || '-';
-    const renk = document.getElementById('detay_ayar_renk')?.innerText || '-';
-    const hatHizi = document.getElementById('detay_ayar_hat_hizi')?.innerText || '-';
+async function paylas() {
+    const eleman = document.getElementById('detayIcerikAlani');
+    const receteNo = document.getElementById('detay_recete_no')?.innerText || 'Recete';
 
-    const metin = `📋 *ÜRETİM REÇETESİ DETAYI* 📋\n\n` +
-        `🔹 *Reçete No:* ${receteNo}\n` +
-        `🔹 *Ürün Adı:* ${urunAdi}\n` +
-        `🔹 *Makine:* ${makine}\n` +
-        `🔹 *Hız:* ${hiz} | *Sıcaklık:* ${sicaklik} | *Basınç:* ${basinc}\n` +
-        `----------------------------\n` +
-        `⚙️ *Öne Çıkan Ayarlar*\n` +
-        `• Gram: ${gram}\n` +
-        `• Renk: ${renk}\n` +
-        `• Hat Hızı: ${hatHizi}\n\n` +
-        `_Detaylı reçete bilgileri sistemden oluşturulmuştur._`;
+    const ayarlar = {
+        margin: 5,
+        filename: `Recete_${receteNo}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
 
-    const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(metin)}`;
-    window.open(whatsappUrl, '_blank');
+    try {
+        const pdfBlob = await html2pdf().set(ayarlar).from(eleman).output('blob');
+        const pdfDosyasi = new File([pdfBlob], `Recete_${receteNo}.pdf`, { type: 'application/pdf' });
+
+        if (navigator.canShare && navigator.canShare({ files: [pdfDosyasi] })) {
+            await navigator.share({
+                files: [pdfDosyasi],
+                title: `Üretim Reçetesi - ${receteNo}`,
+                text: `Üretim Reçetesi PDF (${receteNo})`
+            });
+        } else {
+            alert("Cihazınız doğrudan PDF paylaşımını desteklemiyor.");
+        }
+    } catch (hata) {
+        alert("PDF paylaşım hatası: " + hata.message);
+    }
 }
