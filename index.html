@@ -13,7 +13,7 @@
     <!-- PDF Oluşturma Kütüphanesi -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
-    <link rel="stylesheet" href="css/style.css?v=8">
+    <link rel="stylesheet" href="css/style.css?v=9">
 
     <style>
         body { font-family: Arial, sans-serif; margin: 0; background: #f4f6f8; }
@@ -39,7 +39,7 @@
         .detay-satir { padding: 6px; border-bottom: 1px solid #ddd; }
         .durum { padding: 10px; margin-bottom: 15px; border-radius: 8px; display: none; }
 
-        /* TABLONUN DIŞ KAPSAYICISI (MOBİLDE SIKIŞTIRAN YAPI) */
+        /* TABLONUN DIŞ KAPSAYICISI */
         .excel-container {
             background: white;
             border-radius: 6px;
@@ -49,95 +49,85 @@
             overflow-x: auto;
         }
 
-        /* ORANTILI VE TAŞMAYAN TABLO YAPISI */
+        /* ORANTILI VE YÜKSEK OKUNABİLİRLİKLİ TABLO YAPISI */
         .excel-table {
             width: 100%;
-            min-width: 600px; /* Tablo formunun bozulmasını engeller */
+            min-width: 600px;
             border-collapse: collapse;
-            font-size: 11px;
+            font-size: 13px;
             color: #000;
         }
         .excel-table td {
-            border: 1px solid #000 !important; /* Siyah belirgin çizgiler */
-            padding: 4px;
+            border: 1px solid #000 !important;
+            padding: 5px;
             vertical-align: middle;
         }
         .excel-table .section-header {
             background-color: #FFFF00 !important;
-            font-weight: bold;
+            font-weight: 800 !important;
             text-align: center;
-            font-size: 12px;
+            font-size: 13px !important;
+            color: #000000 !important;
             letter-spacing: 0.5px;
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
         }
         
-        /* 1. ŞABLON ETİKETLERİ (DÜZENLE BUTONUNDAKİ MAVİ TONU) */
+        /* 1. TÜM ETİKETLERİ RAKAM ALANLARIYLA AYNI BOYUT VE KALINLIĞA GETİRME */
         .excel-table .label, 
         .excel-table td.label {
-            font-weight: bold !important;
-            background-color: #f8f9fa;
-            font-size: 10px;
+            font-weight: 800 !important;
+            background-color: #ffffff !important;
+            font-size: 13px !important; /* Rakam alanıyla aynı boyut */
             white-space: nowrap;
-            width: 1%; /* Etiketin sadece yazısı kadar yer kaplamasını sağlar */
-            color: #1976d2 !important; /* Düzenle Butonu Mavisi */
+            width: 1%;
+            color: #000000 !important; /* Net Okunabilirlik İçin Siyah */
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
         }
         
-        /* 2. SAYI VE DEĞER KUTULARI (BÜYÜTÜLMÜŞ, KALIN VE SİYAH) */
-        .excel-table input {
+        /* 2. RAKAM / DEĞER GİRİŞ ALANLARI VE KALICI METİNLER */
+        .excel-table input,
+        .excel-table td span, 
+        .excel-table td:not(.label):not(.section-header) {
             border: none;
             background: transparent;
-            color: #000000 !important; /* Net Koyu Siyah */
-            font-weight: 800 !important; /* Kalın Font */
+            color: #000000 !important;
+            font-weight: 800 !important;
             padding: 2px;
             font-size: 13px !important;
             text-align: center;
             width: 100%;
             min-width: 45px;
             box-sizing: border-box;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
         }
         .excel-table input::placeholder {
-            color: #1976d2;
-            opacity: 0.4;
+            color: #666;
+            opacity: 0.5;
         }
         .excel-table input:focus {
             outline: 1px solid #1976d2;
             background: #e3f2fd;
         }
 
-        /* ========================================================
-           REÇETE DETAY TABLOSU RENK VE YAZI TİPİ DÜZENLEMELERİ
-           ======================================================== */
-
-        /* Detay Görünümündeki Sayısal Değerler */
-        .excel-table td span, 
-        .excel-table td:not(.label):not(.section-header) {
-            color: #000000 !important;
-            font-weight: 800 !important;
-            font-size: 13px;
-        }
-
-        /* MOBİL DİKEY EKRANDA TAMAMEN SIĞDIRMA */
+        /* MOBİL EKRAN UYARLAMASI */
         @media (max-width: 600px) {
             .excel-table {
                 min-width: 100%;
-                font-size: 9px;
             }
             .excel-table td {
-                padding: 2px;
+                padding: 3px;
             }
-            .excel-table .label {
-                font-size: 8.5px;
-            }
-            .excel-table input {
-                font-size: 11px !important;
-                min-width: 30px;
+            .excel-table .label,
+            .excel-table input,
+            .excel-table td span {
+                font-size: 11px !important; /* Mobilde taşmayı önlemek için orantılı boyut */
             }
         }
 
-        /* YAZDIRMA VE PDF ÇIKTISI TASARIM KORUMASI */
+        /* YAZDIRMA VE PDF ÇIKTISI OKUNABİLİRLİK KORUMASI */
         @media print {
             body { 
                 background: white; 
@@ -152,27 +142,23 @@
             .excel-table { width: 100% !important; border: 1px solid #000 !important; table-layout: fixed; }
             .excel-table td { border: 1px solid #000 !important; padding: 4px !important; }
             
-            /* Renklerin PDF/Baskıda Birebir Çıkması İçin */
             .excel-table .section-header {
                 background-color: #FFFF00 !important;
                 color: #000000 !important;
+                font-size: 12px !important;
+                font-weight: 800 !important;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
+            
             .excel-table .label, 
-            .excel-table td.label {
-                color: #1976d2 !important;
-                font-weight: bold !important;
-                background-color: #f8f9fa !important;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
+            .excel-table td.label,
             .excel-table input,
             .excel-table td span, 
             .excel-table td:not(.label):not(.section-header) {
                 color: #000000 !important;
                 font-weight: 800 !important;
-                font-size: 12px !important;
+                font-size: 12px !important; /* PDF'te tam uyum sağlayan sabit boyut */
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
@@ -390,7 +376,6 @@
     <div class="modal-content">
         <h2>Üretim Reçetesi Detayı</h2>
         
-        <!-- JavaScript Tarafından Dinamik Doldurulacak Alan -->
         <div id="detayIcerikAlani">
             <div class="excel-container">
                 <table class="excel-table">
