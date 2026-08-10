@@ -840,3 +840,20 @@ td button:last-child:hover {
     }
 
 }
+/* ==========================================
+   REÇETE DETAY TABLOSU RENK DÜZENLEMESİ
+   ========================================== */
+
+/* 1. Şablon Üzerindeki Sabit Başlıklar (Açık Yeşil ve Kalın) */
+.excel-table td.label, 
+.excel-table .section-header, 
+.excel-table th {
+    font-weight: bold !important;
+    color: #2e7d32 !important; /* Canlı Açık Yeşil */
+}
+
+/* 2. Sizin Doldurduğunuz Veriler (Koyu Siyah) */
+.excel-table td:not(.label):not(.section-header) {
+    font-weight: 600 !important;
+    color: #000000 !important; /* Net Koyu Siyah */
+}
