@@ -537,48 +537,68 @@ function ara() {
 }
 
 // ======================================================
-// PDF İNDİRME (DÜZELTİLDİ: INPUT VERİLERİ DÂHİL TAM ÇIKTI)
+// DOĞRUDAN HTML2PDF İLE İNDİRME (PENCERE AÇMADAN)
 // ======================================================
 function pdfIndir() {
-    const element = document.querySelector('.excel-container') || 
-                    document.querySelector('.container') || 
-                    document.body;
-
-    if (!element) {
-        alert("Yazdırılacak üretim ayarları tablosu bulunamadı!");
+    // 1. Ana tablo veya kapsayıcıyı bul
+    const container = document.querySelector('.excel-container') || document.querySelector('.container') || document.body;
+    if (!container) {
+        alert("Tablo bulunamadı!");
         return;
     }
 
+    // 2. Klon oluştur
+    const clone = container.cloneNode(true);
+
+    // 3. Ekranda doldurulan tüm input/select/textarea değerlerini klona aktar
+    const origInputs = container.querySelectorAll('input, select, textarea');
+    const cloneInputs = clone.querySelectorAll('input, select, textarea');
+
+    origInputs.forEach((orig, index) => {
+        const val = orig.value || '';
+        const cloneEl = cloneInputs[index];
+        if (cloneEl) {
+            const span = document.createElement('span');
+            span.textContent = val !== '' ? val : '-';
+            span.style.fontWeight = 'bold';
+            span.style.fontSize = '12px';
+            if (cloneEl.parentNode) {
+                cloneEl.parentNode.replaceChild(span, cloneEl);
+            }
+        }
+    });
+
+    // 4. Yazdırılmayacak buton vb. elemanları klondan temizle
+    const noPrintElements = clone.querySelectorAll('button, .btn, .no-print');
+    noPrintElements.forEach(el => el.remove());
+
+    // 5. PDF Kapsayıcısı hazırlığı
+    const pdfWrapper = document.createElement('div');
+    pdfWrapper.style.padding = '10px';
+    pdfWrapper.style.backgroundColor = '#ffffff';
+    pdfWrapper.style.color = '#000000';
+    pdfWrapper.appendChild(clone);
+
+    // 6. Dosya Adı
     const receteEl = document.getElementById('recete_no');
     const receteNo = (receteEl && receteEl.value.trim()) ? receteEl.value.trim() : 'Recete';
 
+    // 7. html2pdf Yapılandırması
     const opt = {
         margin:       [5, 5, 5, 5],
         filename:     `Recete_${receteNo}.pdf`,
         image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { 
-            scale: 2, 
-            useCORS: true,
-            logging: false,
-            onclone: (clonedDoc) => {
-                const inputs = clonedDoc.querySelectorAll('input, select, textarea');
-                inputs.forEach(input => {
-                    if (input.value) {
-                        input.setAttribute('value', input.value);
-                    }
-                });
-            }
-        },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        html2canvas:  { scale: 2, useCORS: true, logging: false },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
+    // 8. Doğrudan İndirme Tetikleme
     if (typeof html2pdf !== 'undefined') {
-        html2pdf().set(opt).from(element).save();
+        html2pdf().set(opt).from(pdfWrapper).save();
     } else {
-        alert('PDF kütüphanesi yüklenemedi. Lütfen index.html dosyasını kontrol edin.');
+        alert("html2pdf kütüphanesi yüklenemedi. index.html dosyasını kontrol edin.");
     }
 }
-
 // ======================================================
 // YAZDIRMA
 // ======================================================
