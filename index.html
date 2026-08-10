@@ -13,7 +13,7 @@
     <!-- PDF Oluşturma Kütüphanesi -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
-    <link rel="stylesheet" href="css/style.css?v=5">
+    <link rel="stylesheet" href="css/style.css?v=6">
 
     <style>
         body { font-family: Arial, sans-serif; margin: 0; background: #f4f6f8; }
@@ -79,11 +79,11 @@
             width: 1%; /* Etiketin sadece yazısı kadar yer kaplamasını sağlar */
         }
         
-        /* DEĞER YAZMA KUTULARI (4-5 RAKAM SIĞACAK BOYUT) */
+        /* DEĞER YAZMA KUTULARI (DÜZENLE BUTONUNDAKİ MAVİ TONU) */
         .excel-table input {
             border: none;
             background: transparent;
-            color: #d32f2f;
+            color: #1976d2 !important; /* Düzenle butonu mavisi */
             font-weight: bold;
             padding: 2px;
             font-size: 11px;
@@ -94,20 +94,20 @@
         }
         .excel-table input::placeholder {
             color: #1976d2;
-            opacity: 0.8;
+            opacity: 0.5;
         }
         .excel-table input:focus {
             outline: 1px solid #1976d2;
-            background: #fff;
+            background: #e3f2fd; /* Hafif mavi arka plan efekti */
         }
 
         /* ========================================================
            REÇETE DETAY TABLOSU RENK VE YAZI TİPİ DÜZENLEMELERİ
            ======================================================== */
         
-        /* 1. Şablon Üzerindeki Sabit Başlıklar / Etiketler (SİL Butonu ile Birebir Aynı Koyu Kırmızı) */
+        /* 1. Şablon Üzerindeki Sabit Başlıklar / Etiketler (SİL Butonu Kırmızı Tonu) */
         .excel-table td.label {
-            color: #b71c1c !important; /* Canlı ve Koyu Kırmızı */
+            color: #b71c1c !important;
             font-weight: 800 !important;
             opacity: 1 !important;
         }
@@ -151,7 +151,7 @@
                 print-color-adjust: exact !important;
             }
             .excel-table input {
-                color: #d32f2f !important;
+                color: #1976d2 !important;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
