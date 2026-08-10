@@ -664,3 +664,74 @@ function adminCikis() {
     localStorage.removeItem("adminOturum");
     location.reload();
 }
+// ==========================================
+// YAZDIRMA, PDF VE PAYLAŞ FONKSİYONLARI
+// ==========================================
+
+function detayYazdir() {
+    const icerik = document.getElementById('detayIcerikAlani').innerHTML;
+    const yazdirPenceresi = window.open('', '', 'height=600,width=800');
+    
+    yazdirPenceresi.document.write('<html><head><title>Reçete Detayı</title>');
+    yazdirPenceresi.document.write('<style>');
+    yazdirPenceresi.document.write(`
+        body { font-family: Arial, sans-serif; padding: 10px; }
+        .excel-container { width: 100%; }
+        .excel-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+        .excel-table td { border: 1px solid #000; padding: 4px; }
+        .excel-table .section-header { background-color: #FFFF00 !important; font-weight: bold; text-align: center; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .excel-table .label { font-weight: bold; background-color: #f8f9fa; }
+    `);
+    yazdirPenceresi.document.write('</style></head><body>');
+    yazdirPenceresi.document.write(icerik);
+    yazdirPenceresi.document.write('</body></html>');
+    
+    yazdirPenceresi.document.close();
+    yazdirPenceresi.focus();
+    setTimeout(() => {
+        yazdirPenceresi.print();
+        yazdirPenceresi.close();
+    }, 500);
+}
+
+function pdfIndir() {
+    const eleman = document.getElementById('detayIcerikAlani');
+    const receteNo = document.getElementById('detay_recete_no')?.innerText || 'Recete';
+    
+    const ayarlar = {
+        margin:       5,
+        filename:     `Recete_${receteNo}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true, scrollY: 0 },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    html2pdf().set(ayarlar).from(eleman).save();
+}
+
+function paylas() {
+    const receteNo = document.getElementById('detay_recete_no')?.innerText || '-';
+    const urunAdi = document.getElementById('detay_urun_adi')?.innerText || '-';
+    const makine = document.getElementById('detay_makine_adi')?.innerText || '-';
+    const hiz = document.getElementById('detay_hiz')?.innerText || '-';
+    const sicaklik = document.getElementById('detay_sicaklik')?.innerText || '-';
+    const basinc = document.getElementById('detay_basinc')?.innerText || '-';
+    const gram = document.getElementById('detay_ayar_gram')?.innerText || '-';
+    const renk = document.getElementById('detay_ayar_renk')?.innerText || '-';
+    const hatHizi = document.getElementById('detay_ayar_hat_hizi')?.innerText || '-';
+
+    const metin = `📋 *ÜRETİM REÇETESİ DETAYI* 📋\n\n` +
+        `🔹 *Reçete No:* ${receteNo}\n` +
+        `🔹 *Ürün Adı:* ${urunAdi}\n` +
+        `🔹 *Makine:* ${makine}\n` +
+        `🔹 *Hız:* ${hiz} | *Sıcaklık:* ${sicaklik} | *Basınç:* ${basinc}\n` +
+        `----------------------------\n` +
+        `⚙️ *Öne Çıkan Ayarlar*\n` +
+        `• Gram: ${gram}\n` +
+        `• Renk: ${renk}\n` +
+        `• Hat Hızı: ${hatHizi}\n\n` +
+        `_Detaylı reçete bilgileri sistemden oluşturulmuştur._`;
+
+    const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(metin)}`;
+    window.open(whatsappUrl, '_blank');
+}
