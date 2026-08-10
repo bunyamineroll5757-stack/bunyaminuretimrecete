@@ -220,21 +220,21 @@ async function receteleriListele() {
             const sicaklik = r.sicaklik || ayarlarObj.sicaklik || "";
             const basinc = r.basinc || ayarlarObj.basinc || "";
 
-            liste.innerHTML += `
-                <tr>
-                    <td>${guvenliMetin(receteNo)}</td>
-                    <td>${guvenliMetin(urunAdi)}</td>
-                    <td>${guvenliMetin(makine)}</td>
-                    <td>${guvenliMetin(hiz)}</td>
-                    <td>${guvenliMetin(sicaklik)}</td>
-                    <td>${guvenliMetin(basinc)}</td>
-                    <td>
-                        <button type="button" class="btn" onclick="detayGoster(${r.id})">Detay</button>
-                        <button type="button" class="btn" onclick="duzenle(${r.id})">Düzenle</button>
-                        <button type="button" class="btn-danger" onclick="sil(${r.id})">Sil</button>
-                    </td>
-                </tr>
-            `;
+        liste.innerHTML += `
+            <tr onclick="detayGoster('${r.id}')" style="cursor: pointer;">
+                <td>${guvenliMetin(receteNo)}</td>
+                <td>${guvenliMetin(urunAdi)}</td>
+                <td>${guvenliMetin(makine)}</td>
+                <td>${guvenliMetin(hiz)}</td>
+                <td>${guvenliMetin(sicaklik)}</td>
+                <td>${guvenliMetin(basinc)}</td>
+                <td>
+                    <button type="button" class="btn" onclick="event.stopPropagation(); detayGoster('${r.id}')">Detay</button>
+                    <button type="button" class="btn" onclick="event.stopPropagation(); duzenle('${r.id}')">Düzenle</button>
+                    <button type="button" class="btn-danger" onclick="event.stopPropagation(); sil('${r.id}')">Sil</button>
+                </td>
+            </tr>
+        `;
         });
 
         const toplam = document.getElementById("toplamRecete");
