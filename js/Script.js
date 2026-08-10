@@ -537,84 +537,65 @@ function ara() {
 }
 
 // ======================================================
-// SAF METIN TABANLI PDF (BOŞ ÇIKMA İHTİMALİ YOKTUR)
+// KESİN ÇÖZÜM: EKRANDAKİ TABLOYU BİREBİR PDF YAPAR
 // ======================================================
 function pdfIndir() {
-    const getV = (id) => {
-        const el = document.getElementById(id);
-        return (el && el.value && el.value.trim() !== "") ? el.value.trim() : "-";
-    };
-
-    const receteNo = getV('recete_no');
+    // 1. Ana tablo veya konteyneri seç
+    const container = document.querySelector('.excel-container') || document.querySelector('.container') || document.body;
     
-    // Geçici metin alanı oluştur
-    const win = window.open('', '_blank');
-    if (!win) {
-        alert("Lütfen taranan pencere engelleyicisini kaldırın.");
-        return;
-    }
+    // 2. Orijinal yapıyı bozmamak için klon oluştur
+    const clone = container.cloneNode(true);
+    
+    // 3. Klon içindeki tüm input ve select öğelerinin değerlerini metne dönüştür
+    const origInputs = container.querySelectorAll('input, select, textarea');
+    const cloneInputs = clone.querySelectorAll('input, select, textarea');
+    
+    origInputs.forEach((orig, index) => {
+        const val = orig.value || '';
+        const cloneEl = cloneInputs[index];
+        if (cloneEl) {
+            const span = document.createElement('span');
+            span.textContent = val;
+            span.style.fontWeight = 'bold';
+            span.style.fontSize = '12px';
+            if (cloneEl.parentNode) {
+                cloneEl.parentNode.replaceChild(span, cloneEl);
+            }
+        }
+    });
 
-    const htmlIcerik = `
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>Recete_${receteNo}</title>
-            <style>
-                body { font-family: sans-serif; padding: 20px; color: #000; }
-                h2 { text-align: center; border-bottom: 2px solid #000; padding-bottom: 8px; }
-                table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-                th, td { border: 1px solid #333; padding: 8px; font-size: 12px; text-align: left; }
-                th { background-color: #eee; }
-                .baslik { background-color: #ddd; font-weight: bold; }
-                @media print {
-                    button { display: none; }
-                }
-            </style>
-        </head>
-        <body>
-            <button onclick="window.print()" style="padding:10px 20px; margin-bottom:15px; cursor:pointer;">PDF Olarak Kaydet / Yazdır</button>
-            <h2>ÜRETİM REÇETESİ VE EBAT DETAYLARI</h2>
-            <table>
-                <tr class="baslik"><th colspan="4">GENEL BİLGİLER</th></tr>
-                <tr><td><b>Reçete No:</b> ${getV('recete_no')}</td><td><b>Ürün Adı:</b> ${getV('urun_adi')}</td><td><b>Makine:</b> ${getV('makine_adi')}</td><td><b>Tarih:</b> ${getV('ayar_tarih')}</td></tr>
-                <tr><td><b>Hız:</b> ${getV('hiz')}</td><td><b>Sıcaklık:</b> ${getV('sicaklik')}</td><td><b>Basınç:</b> ${getV('basinc')}</td><td><b>Gramaj:</b> ${getV('ayar_gram')}</td></tr>
-                <tr class="baslik"><th colspan="4">TARAK & SERVOLAP</th></tr>
-                <tr><td><b>Servolap:</b> ${getV('ayar_servolap')}</td><td><b>Tarak Hızı:</b> ${getV('ayar_tarak_hizi')}</td><td><b>Ana Tambur:</b> ${getV('ayar_ana_tambur')}</td><td><b>Sıyırıcı:</b> ${getV('ayar_siyirici')}</td></tr>
-                <tr class="baslik"><th colspan="4">TÜLBENT, SERME & HAT</th></tr>
-                <tr><td><b>Tülbent Katı:</b> ${getV('ayar_tulbent_kati')}</td><td><b>Serme Ön:</b> ${getV('ayar_serme_eni_on')}</td><td><b>Serme Arka:</b> ${getV('ayar_serme_eni_arka')}</td><td><b>Hat Hızı:</b> ${getV('ayar_hat_hizi')}</td></tr>
-                <tr class="baslik"><th colspan="4">KESİM EBATLARI & SARIM</th></tr>
-                <tr><td><b>Kesim Eni:</b> ${getV('ayar_kesim_eni')}</td><td><b>Çap:</b> ${getV('ayar_cap')}</td><td><b>Sarım Metresi:</b> ${getV('ayar_sarim_metresi')}</td><td><b>Saatlik KG:</b> ${getV('ayar_saatlik_kg')}</td></tr>
-                <tr class="baslik"><th colspan="4">NOTLAR</th></tr>
-                <tr><td colspan="4">${getV('notlar')}</td></tr>
-            </table>
-            <script>
-                window.onload = function() {
-                    setTimeout(function() { window.print(); }, 500);
-                }
-            <\/script>
-        </body>
-        </html>
-    `;
+    // 4. PDF için geçici ve temiz görünüm kapsayıcısı ayarla
+    const pdfWrapper = document.createElement('div');
+    pdfWrapper.style.padding = '15px';
+    pdfWrapper.style.backgroundColor = '#ffffff';
+    pdfWrapper.style.color = '#000000';
+    pdfWrapper.appendChild(clone);
 
-    win.document.open();
-    win.document.write(htmlIcerik);
-    win.document.close();
-}
-// ======================================================
-// YAZDIRMA
-// ======================================================
-function detayYazdir() {
-    window.print();
-}
+    // 5. Reçete No al
+    const receteEl = document.getElementById('recete_no');
+    const receteNo = (receteEl && receteEl.value.trim()) ? receteEl.value.trim() : 'Recete';
 
-// ======================================================
-// PAYLAŞ (DÜZELTİLDİ: KESİM EBATLARI VE TÜM PARAMETRELER DÂHİL)
-// ======================================================
-async function paylas() {
-    const getV = (id) => {
-        const el = document.getElementById(id);
-        return (el && el.value && el.value.trim() !== "") ? el.value.trim() : "-";
+    // 6. html2pdf Ayarları
+    const opt = {
+        margin:       [5, 5, 5, 5],
+        filename:     `Recete_${receteNo}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { 
+            scale: 2, 
+            useCORS: true, 
+            logging: false,
+            windowWidth: 1024 // Mobil ekranda dikey sıkışmayı önler
+        },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
+
+    // 7. PDF Oluştur ve İndir
+    if (typeof html2pdf !== 'undefined') {
+        html2pdf().set(opt).from(pdfWrapper).save();
+    } else {
+        alert("PDF kütüphanesi yüklenemedi. Lütfen sayfayı yenileyin.");
+    }
+}
 
     const metin = 
 `📄 *ÜRETİM REÇETESİ TAM DETAYI*
