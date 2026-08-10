@@ -8,13 +8,13 @@
 
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚙️</text></svg>">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <link rel="stylesheet" href="css/style.css?v=10">
+    <link rel="stylesheet" href="css/style.css?v=12">
 
     <style>
         body { font-family: Arial, sans-serif; margin: 0; background: #f4f6f8; }
-        .container { max-width: 100%; margin: auto; padding: 6px; box-sizing: border-box; }
+        .container { max-width: 100%; margin: auto; padding: 4px; box-sizing: border-box; }
         h1 { text-align: center; font-size: 18px; margin: 10px 0; }
-        .panel { background: white; padding: 10px; margin-bottom: 12px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .panel { background: white; padding: 8px; margin-bottom: 12px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .ayar-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
         input, textarea, button { box-sizing: border-box; font-size: 12px; }
         input, textarea { width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 4px; }
@@ -33,30 +33,31 @@
         .modal-content { background: white; max-width: 700px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 10px; border-radius: 12px; box-sizing: border-box; }
         .durum { padding: 10px; margin-bottom: 15px; border-radius: 8px; display: none; }
 
-        /* MOBİL UYUMLU MASAÜSTÜ / DERSİİ TABLO YAPISI */
+        /* DİKEY EKRANA %100 SIĞAN TABLO YAPISI */
         .excel-container {
             background: white;
             border-radius: 6px;
             padding: 0;
             width: 100%;
             box-sizing: border-box;
-            overflow-x: hidden; /* Taşmayı engelle */
+            overflow: hidden; /* Sağ tarafa taşmayı kesin olarak engeller */
         }
 
         .excel-table {
-            width: 100%;
-            max-width: 100%;
-            table-layout: fixed; /* Hücre genişliklerini ekrana zorunlu sığdırır */
+            width: 100% !important;
+            max-width: 100% !important;
+            table-layout: fixed; /* Hücreleri ekrana eşit sığmaya zorlar */
             border-collapse: collapse;
-            font-size: 12px;
+            font-size: 10px;
             color: #000;
         }
 
         .excel-table td {
             border: 1px solid #000 !important;
-            padding: 3px 2px;
+            padding: 3px 1px;
             vertical-align: middle;
-            word-wrap: break-word;
+            white-space: normal !important; /* Uzun kelimeleri alt satıra geçirir */
+            word-break: break-word; /* Ekrandan taşmayı engeller */
             overflow-wrap: break-word;
         }
 
@@ -64,9 +65,9 @@
             background-color: #FFFF00 !important;
             font-weight: 800 !important;
             text-align: center;
-            font-size: 12px !important;
+            font-size: 11px !important;
             color: #000000 !important;
-            letter-spacing: 0.2px;
+            letter-spacing: 0px;
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
         }
@@ -75,7 +76,7 @@
         .excel-table td.label {
             font-weight: 800 !important;
             background-color: #ffffff !important;
-            font-size: 11px !important;
+            font-size: 10px !important;
             color: #000000 !important;
             text-align: left;
             line-height: 1.1;
@@ -90,8 +91,8 @@
             background: transparent;
             color: #000000 !important;
             font-weight: 800 !important;
-            padding: 1px;
-            font-size: 11px !important;
+            padding: 0;
+            font-size: 10px !important;
             text-align: center;
             width: 100%;
             box-sizing: border-box;
@@ -104,21 +105,6 @@
             background: #e3f2fd;
         }
 
-        /* MOBİL EKRAN TAM UYUMU */
-        @media (max-width: 600px) {
-            .container { padding: 4px; }
-            .modal-content { padding: 8px; }
-            .excel-table { font-size: 10px; }
-            .excel-table td { padding: 2px 1px; }
-            .excel-table .section-header { font-size: 11px !important; }
-            .excel-table .label, 
-            .excel-table td.label,
-            .excel-table input,
-            .excel-table td span {
-                font-size: 10px !important;
-            }
-        }
-
         /* YAZDIRMA VE PDF ÇIKTISI */
         @media print {
             body { background: white; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
@@ -127,7 +113,7 @@
             .panel { border: none; padding: 0; margin-bottom: 10px; box-shadow: none; }
             .excel-container { padding: 0; overflow: visible; }
             .excel-table { width: 100% !important; border: 1px solid #000 !important; table-layout: fixed; }
-            .excel-table td { border: 1px solid #000 !important; padding: 3px !important; }
+            .excel-table td { border: 1px solid #000 !important; padding: 2px !important; }
             
             .excel-table .section-header {
                 background-color: #FFFF00 !important;
@@ -185,6 +171,15 @@
 
         <div class="excel-container">
             <table class="excel-table">
+                <colgroup>
+                    <col style="width: 22%;">
+                    <col style="width: 11%;">
+                    <col style="width: 22%;">
+                    <col style="width: 11%;">
+                    <col style="width: 23%;">
+                    <col style="width: 11%;">
+                </colgroup>
+                
                 <!-- ÜRETİM AYARLARI -->
                 <tr><td colspan="6" class="section-header">ÜRETİM AYARLARI</td></tr>
                 <tr>
@@ -362,6 +357,14 @@
         <div id="detayIcerikAlani">
             <div class="excel-container">
                 <table class="excel-table">
+                    <colgroup>
+                        <col style="width: 22%;">
+                        <col style="width: 11%;">
+                        <col style="width: 22%;">
+                        <col style="width: 11%;">
+                        <col style="width: 23%;">
+                        <col style="width: 11%;">
+                    </colgroup>
                     <tr><td colspan="6" class="section-header">GENEL BİLGİLER</td></tr>
                     <tr>
                         <td class="label">REÇETE NO</td><td><span id="detay_recete_no"></span></td>
