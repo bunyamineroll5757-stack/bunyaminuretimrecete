@@ -349,17 +349,11 @@
 <!-- DETAY PENCERESİ -->
 <div id="detayModal" class="modal">
     <div class="modal-content">
-        <div id="detayIcerik">
-            <h2>Üretim Reçetesi</h2>
-            <div class="detay-satir"><b>Reçete No:</b> <span id="detay_recete_no">-</span></div>
-            <div class="detay-satir"><b>Başlık:</b> <span id="detay_baslik_no">-</span></div>
-            <div class="detay-satir"><b>Ürün Adı:</b> <span id="detay_urun_adi">-</span></div>
-            <div class="detay-satir"><b>Makine Adı:</b> <span id="detay_makine_adi">-</span></div>
-            <div class="detay-satir"><b>Hız:</b> <span id="detay_hiz">-</span></div>
-            <div class="detay-satir"><b>Sıcaklık:</b> <span id="detay_sicaklik">-</span></div>
-            <div class="detay-satir"><b>Basınç:</b> <span id="detay_basinc">-</span></div>
-            <div class="detay-satir"><b>Notlar:</b> <div id="detay_notlar">Not yok</div></div>
-        </div>
+        <h2>Üretim Reçetesi Detayı</h2>
+        
+        <!-- JavaScript Tarafından Dinamik Doldurulacak Alan -->
+        <div id="detayIcerikAlani"></div>
+
         <br>
         <button class="btn" type="button" onclick="detaydanDuzenle()">Düzenle</button>
         <button class="btn-success" type="button" onclick="detayKopyala()">Kopyala</button>
