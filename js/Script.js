@@ -295,7 +295,7 @@ function getText(id) {
 }
 
 // ======================================================
-// DETAY PENCERESİ VE KOPYALAMA
+// GÜNCELLENMİŞ DETAY GÖSTER (TÜM AYARLAR & KESİM EBATLARI)
 // ======================================================
 async function detayGoster(id) {
     try {
@@ -312,68 +312,59 @@ async function detayGoster(id) {
         }
 
         detaydakiId = id;
-        const ayarlarObj = data.uretim_ayarlari || data.ayarlar || {};
+        const a = data.uretim_ayarlari || data.ayarlar || {};
 
-        setText("detay_recete_no", data.recete_no || "-");
-        setText("detay_baslik_no", data.recete_no || "-");
-        setText("detay_urun_adi", data.urun_adi || "-");
-        setText("detay_makine_adi", data.makine_adi || ayarlarObj.makine_adi || "-");
-        setText("detay_hiz", data.hiz || ayarlarObj.hiz || "-");
-        setText("detay_sicaklik", data.sicaklik || ayarlarObj.sicaklik || "-");
-        setText("detay_basinc", data.basinc || ayarlarObj.basinc || "-");
-        setText("detay_notlar", data.notlar || ayarlarObj.notlar || "Not yok");
+        // Ana formdaki alanlara da yükleyelim ki PDF fonksiyonu oradan doğrudan okuyabilsin
+        setValue("recete_no", data.recete_no || "");
+        setValue("urun_adi", data.urun_adi || "");
+        setValue("makine_adi", data.makine_adi || a.makine_adi || "");
+        setValue("hiz", data.hiz || a.hiz || "");
+        setValue("sicaklik", data.sicaklik || a.sicaklik || "");
+        setValue("basinc", data.basinc || a.basinc || "");
+        setValue("notlar", data.notlar || a.notlar || "");
+        if (typeof uretimAyarlariYukle === 'function') uretimAyarlariYukle(a);
+
+        // Modal İçeriğini Doldurma
+        const detayIcerik = document.getElementById("detayIcerikAlani");
+        if (detayIcerik) {
+            detayIcerik.innerHTML = `
+                <div style="max-height: 70vh; overflow-y: auto; text-align: left; font-size: 13px; line-height: 1.5;">
+                    <h3 style="border-bottom: 2px solid #333; padding-bottom: 5px; margin-top:0;">Reçete No: ${data.recete_no || '-'}</h3>
+                    
+                    <p><b>Ürün Adı:</b> ${data.urun_adi || '-'}</p>
+                    <p><b>Makine:</b> ${data.makine_adi || a.makine_adi || '-'}</p>
+                    <p><b>Hız / Sıcaklık / Basınç:</b> ${data.hiz || a.hiz || '-'} / ${data.sicaklik || a.sicaklik || '-'} / ${data.basinc || a.basinc || '-'}</p>
+                    <p><b>Gramaj / Renk / Tarih:</b> ${a.ayar_gram || '-'} / ${a.ayar_renk || '-'} / ${a.ayar_tarih || '-'}</p>
+                    
+                    <h4 style="background:#eee; padding:5px; margin-bottom:5px;">TARAK & SERVOLAP</h4>
+                    <p><b>Servolap:</b> ${a.ayar_servolap || '-'} | <b>Tarak Hızı:</b> ${a.ayar_tarak_hizi || '-'}</p>
+                    <p><b>Ana Tambur:</b> ${a.ayar_ana_tambur || '-'} | <b>Sıyırıcı:</b> ${a.ayar_siyirici || '-'}</p>
+                    
+                    <h4 style="background:#eee; padding:5px; margin-bottom:5px;">TÜLBENT, SERME & HAT</h4>
+                    <p><b>Tülbent Katı:</b> ${a.ayar_tulbent_kati || '-'} | <b>Hat Hızı:</b> ${a.ayar_hat_hizi || '-'}</p>
+                    <p><b>Serme Ön / Arka:</b> ${a.ayar_serme_eni_on || '-'} / ${a.ayar_serme_eni_arka || '-'}</p>
+                    <p><b>Fırın Isısı:</b> ${a.ayar_firin_isisi || '-'} | <b>Fırın:</b> ${a.ayar_firin || '-'}</p>
+                    
+                    <h4 style="background:#ffd1d1; padding:5px; margin-bottom:5px; color:#900;">✂️ KESİM EBATLARI & SARIM</h4>
+                    <p><b>Kesim Eni:</b> ${a.ayar_kesim_eni || '-'}</p>
+                    <p><b>Çap:</b> ${a.ayar_cap || '-'}</p>
+                    <p><b>Sarım Metresi:</b> ${a.ayar_sarim_metresi || '-'}</p>
+                    <p><b>Saatlik KG:</b> ${a.ayar_saatlik_kg || '-'}</p>
+
+                    <h4 style="background:#eee; padding:5px; margin-bottom:5px;">NOTLAR</h4>
+                    <p>${data.notlar || a.notlar || 'Not yok'}</p>
+                </div>
+            `;
+        }
 
         const modal = document.getElementById("detayModal");
         if (modal) modal.style.display = "flex";
 
     } catch (hata) {
         console.error("DETAY HATASI:", hata);
-        alert("Reçete alınamadı:\n" + hata.message);
+        alert("Reçete ayrıntıları alınamadı.");
     }
 }
-
-function detayKapat() {
-    const modal = document.getElementById("detayModal");
-    if (modal) modal.style.display = "none";
-}
-
-async function detaydanDuzenle() {
-    if (detaydakiId === null) {
-        alert("Düzenlenecek reçete bulunamadı.");
-        return;
-    }
-    const id = detaydakiId;
-    detayKapat();
-    await duzenle(id);
-}
-
-function detayKopyala() {
-    const urunAdi = getText("detay_urun_adi");
-    const makineAdi = getText("detay_makine_adi");
-    const hiz = getText("detay_hiz");
-    const sicaklik = getText("detay_sicaklik");
-    const basinc = getText("detay_basinc");
-    const notlar = getText("detay_notlar");
-
-    setValue("recete_no", "");
-    setValue("urun_adi", urunAdi === "-" ? "" : urunAdi);
-    setValue("makine_adi", makineAdi === "-" ? "" : makineAdi);
-    setValue("hiz", hiz === "-" ? "" : hiz);
-    setValue("sicaklik", sicaklik === "-" ? "" : sicaklik);
-    setValue("basinc", basinc === "-" ? "" : basinc);
-    setValue("notlar", notlar === "Not yok" ? "" : notlar);
-
-    secilenId = null;
-    const buton = document.getElementById("kaydetBtn");
-    if (buton) buton.innerText = "Kaydet";
-
-    detayKapat();
-    const urun = document.getElementById("urun_adi");
-    if (urun) urun.focus();
-
-    alert("Reçete kopyalandı.\nBilgiler forma aktarıldı.\nYeni reçete olarak kaydetmek için Kaydet'e basın.");
-}
-
 // ======================================================
 // DÜZENLE VE GÜNCELLE
 // ======================================================
