@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+    <!-- Mobil Chrome'da ekrana tam oturmasını ve yakınlaştırmayı sağlayan viewport -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Üretim Reçete Yönetim Sistemi</title>
 
@@ -16,12 +17,12 @@
 
     <style>
         body { font-family: Arial, sans-serif; margin: 0; background: #f4f6f8; }
-        .container { max-width: 100%; margin: auto; padding: 5px; box-sizing: border-box; }
+        .container { max-width: 100%; margin: auto; padding: 8px; box-sizing: border-box; }
         h1 { text-align: center; font-size: 18px; margin: 10px 0; }
-        .panel { background: white; padding: 8px; margin-bottom: 12px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .panel { background: white; padding: 10px; margin-bottom: 12px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
         .ayar-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
         input, textarea, button { box-sizing: border-box; font-size: 12px; }
-        input, textarea { width: 100%; padding: 5px; border: 1px solid #ccc; border-radius: 4px; }
+        input, textarea { width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 4px; }
         textarea { min-height: 50px; }
         button { padding: 8px 10px; border: 0; border-radius: 5px; cursor: pointer; margin: 2px; }
         .btn { background: #1976d2; color: white; }
@@ -38,59 +39,57 @@
         .detay-satir { padding: 6px; border-bottom: 1px solid #ddd; }
         .durum { padding: 10px; margin-bottom: 15px; border-radius: 8px; display: none; }
 
-        /* EXCEL TABLO - SÜTUN DÜZENİ VE ÇİZGİ AYARLARI */
+        /* TABLONUN DIŞ KAPSAYICISI (MOBİLDE SIKIŞTIRAN YAPI) */
         .excel-container {
             background: white;
             border-radius: 6px;
-            padding: 0;
+            padding: 2px;
             width: 100%;
             box-sizing: border-box;
-            overflow: hidden;
+            overflow-x: auto;
         }
+
+        /* ORANTILI VE TAŞMAYAN TABLO YAPISI */
         .excel-table {
             width: 100%;
-            table-layout: fixed; /* Sütun genişliklerini sabit tutar, taşmayı engeller */
+            min-width: 600px; /* Tablo formunun bozulmasını engeller */
             border-collapse: collapse;
-            font-size: 10px;
+            font-size: 11px;
             color: #000;
         }
         .excel-table td {
-            border: 1px solid #000 !important; /* Dikey ve yatay siyah net çizgiler */
-            padding: 3px 2px;
+            border: 1px solid #000 !important; /* Siyah belirgin çizgiler */
+            padding: 4px;
             vertical-align: middle;
-            text-align: center;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
         }
         .excel-table .section-header {
             background-color: #FFFF00 !important;
             font-weight: bold;
             text-align: center;
-            font-size: 11px;
+            font-size: 12px;
             letter-spacing: 0.5px;
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
         }
         .excel-table .label {
             font-weight: bold;
-            background-color: #f5f5f5;
-            font-size: 9px;
-            text-align: left;
-            padding-left: 3px;
+            background-color: #f8f9fa;
+            font-size: 10px;
+            white-space: nowrap;
+            width: 1%; /* Etiketin sadece yazısı kadar yer kaplamasını sağlar */
         }
         
-        /* GİRİŞ KUTULARINI 3-4 RAKAM SIĞACAK KADAR SIKIŞTIRMA */
+        /* DEĞER YAZMA KUTULARI (4-5 RAKAM SIĞACAK BOYUT) */
         .excel-table input {
             border: none;
             background: transparent;
             color: #d32f2f;
             font-weight: bold;
-            padding: 0;
+            padding: 2px;
             font-size: 11px;
             text-align: center;
             width: 100%;
-            max-width: 45px; /* Inputların devasa büyümesini engeller */
+            min-width: 45px;
             box-sizing: border-box;
         }
         .excel-table input::placeholder {
@@ -100,6 +99,24 @@
         .excel-table input:focus {
             outline: 1px solid #1976d2;
             background: #fff;
+        }
+
+        /* MOBİL DİKEY EKRANDA TAMAMEN SIĞDIRMA HİLESİ */
+        @media (max-width: 600px) {
+            .excel-table {
+                min-width: 100%; /* Ekran genişliğine tam oturur */
+                font-size: 9px;
+            }
+            .excel-table td {
+                padding: 2px;
+            }
+            .excel-table .label {
+                font-size: 8.5px;
+            }
+            .excel-table input {
+                font-size: 9.5px;
+                min-width: 30px;
+            }
         }
 
         /* YAZDIRMA VE PDF KORUMA KODLARI */
@@ -160,26 +177,17 @@
 
         <div class="excel-container">
             <table class="excel-table">
-                <!-- SÜTUN GENİŞLİK AYARLARI (6 SÜTUN) -->
-                <colgroup>
-                    <col style="width: 26%;">
-                    <col style="width: 12%;">
-                    <col style="width: 12%;">
-                    <col style="width: 26%;">
-                    <col style="width: 12%;">
-                    <col style="width: 12%;">
-                </colgroup>
-
                 <!-- ÜRETİM AYARLARI -->
                 <tr><td colspan="6" class="section-header">ÜRETİM AYARLARI</td></tr>
                 <tr>
                     <td class="label">GRAM</td><td><input id="ayar_gram"></td>
-                    <td class="label">RENK</td><td colspan="3"><input id="ayar_renk" style="max-width: 100%;"></td>
+                    <td class="label">RENK</td><td><input id="ayar_renk"></td>
+                    <td class="label">TARİH</td><td><input id="ayar_tarih"></td>
                 </tr>
                 <tr>
                     <td class="label">SERVOLAP</td><td><input id="ayar_servolap"></td>
                     <td class="label">TARAK HIZI</td><td><input id="ayar_tarak_hizi"></td>
-                    <td class="label">TARİH</td><td><input id="ayar_tarih"></td>
+                    <td class="label">FİRMA ADI</td><td><input id="ayar_firma_adi"></td>
                 </tr>
 
                 <!-- TARAK AYARLARI -->
@@ -194,7 +202,7 @@
                 </tr>
                 <tr>
                     <td class="label">İŞÇİ</td><td><input id="ayar_isci"></td>
-                    <td class="label" colspan="2">FİRMA ADI</td><td colspan="2"><input id="ayar_firma_adi" style="max-width: 100%;"></td>
+                    <td colspan="4"></td>
                 </tr>
                 <tr>
                     <td class="label">ÜST SEVK DOFERİ</td><td><input id="ayar_ust_sevk_doferi"></td>
@@ -290,7 +298,7 @@
                     <td class="label">BALKAN 3</td><td><input id="ayar_balkan3" placeholder="%"></td>
                 </tr>
                 <tr>
-                    <td colspan="6"><input id="ayar_hammadde" placeholder="" style="max-width: 100%; text-align: left; padding-left: 5px;"></td>
+                    <td colspan="6"><input id="ayar_hammadde" placeholder="" style="text-align: left; padding-left: 5px;"></td>
                 </tr>
 
                 <!-- KESİM EBATLARI -->
