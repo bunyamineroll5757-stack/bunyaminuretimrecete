@@ -8,7 +8,7 @@
 
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚙️</text></svg>">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <link rel="stylesheet" href="css/style.css?v=12">
+    <link rel="stylesheet" href="css/style.css?v=13">
 
     <style>
         body { font-family: Arial, sans-serif; margin: 0; background: #f4f6f8; }
@@ -33,20 +33,20 @@
         .modal-content { background: white; max-width: 700px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 10px; border-radius: 12px; box-sizing: border-box; }
         .durum { padding: 10px; margin-bottom: 15px; border-radius: 8px; display: none; }
 
-        /* DİKEY EKRANA %100 SIĞAN TABLO YAPISI */
+        /* GÖRSELE ÖZEL RENK VE SIĞMA TASARIMI */
         .excel-container {
             background: white;
-            border-radius: 6px;
+            border-radius: 4px;
             padding: 0;
             width: 100%;
             box-sizing: border-box;
-            overflow: hidden; /* Sağ tarafa taşmayı kesin olarak engeller */
+            overflow: hidden;
         }
 
         .excel-table {
             width: 100% !important;
             max-width: 100% !important;
-            table-layout: fixed; /* Hücreleri ekrana eşit sığmaya zorlar */
+            table-layout: fixed;
             border-collapse: collapse;
             font-size: 10px;
             color: #000;
@@ -54,39 +54,54 @@
 
         .excel-table td {
             border: 1px solid #000 !important;
-            padding: 3px 1px;
+            padding: 2px 1px;
             vertical-align: middle;
-            white-space: normal !important; /* Uzun kelimeleri alt satıra geçirir */
-            word-break: break-word; /* Ekrandan taşmayı engeller */
+            white-space: normal !important;
+            word-break: break-word;
             overflow-wrap: break-word;
+            height: 22px;
         }
 
+        /* GÖRSELDEKİ MAVİ BAŞLIKLAR */
         .excel-table .section-header {
-            background-color: #FFFF00 !important;
+            background-color: #3b82f6 !important;
             font-weight: 800 !important;
             text-align: center;
             font-size: 11px !important;
             color: #000000 !important;
-            letter-spacing: 0px;
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
         }
         
+        /* GÖRSELDEKİ YEŞİL ETİKETLER */
         .excel-table .label, 
         .excel-table td.label {
             font-weight: 800 !important;
-            background-color: #ffffff !important;
+            background-color: #4ade80 !important;
             font-size: 10px !important;
             color: #000000 !important;
             text-align: left;
             line-height: 1.1;
+            padding-left: 3px;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
+
+        /* GÖRSELDEKİ TURUNCU NOTLAR ALANI */
+        .excel-table .label-orange {
+            font-weight: 800 !important;
+            background-color: #ffedd5 !important;
+            font-size: 10px !important;
+            color: #000000 !important;
+            text-align: left;
+            padding-left: 3px;
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
         }
         
         .excel-table input,
         .excel-table td span, 
-        .excel-table td:not(.label):not(.section-header) {
+        .excel-table td:not(.label):not(.section-header):not(.label-orange) {
             border: none;
             background: transparent;
             color: #000000 !important;
@@ -116,20 +131,16 @@
             .excel-table td { border: 1px solid #000 !important; padding: 2px !important; }
             
             .excel-table .section-header {
-                background-color: #FFFF00 !important;
+                background-color: #3b82f6 !important;
                 color: #000000 !important;
-                font-size: 11px !important;
-                font-weight: 800 !important;
             }
-            
-            .excel-table .label, 
-            .excel-table td.label,
-            .excel-table input,
-            .excel-table td span, 
-            .excel-table td:not(.label):not(.section-header) {
+            .excel-table .label {
+                background-color: #4ade80 !important;
                 color: #000000 !important;
-                font-weight: 800 !important;
-                font-size: 10px !important;
+            }
+            .excel-table .label-orange {
+                background-color: #ffedd5 !important;
+                color: #000000 !important;
             }
         }
     </style>
@@ -165,19 +176,19 @@
         <button class="btn-danger" type="button" onclick="adminCikis()">Çıkış Yap</button>
     </div>
 
-    <!-- ÜRETİM AYARLARI (EXCEL FORMATINDA) -->
+    <!-- ÜRETİM AYARLARI (EXCEL FORMATINDA - YENİ RENKLER) -->
     <div class="panel">
         <h2>Üretim Ayarları</h2>
 
         <div class="excel-container">
             <table class="excel-table">
                 <colgroup>
-                    <col style="width: 22%;">
-                    <col style="width: 11%;">
-                    <col style="width: 22%;">
-                    <col style="width: 11%;">
-                    <col style="width: 23%;">
-                    <col style="width: 11%;">
+                    <col style="width: 25%;">
+                    <col style="width: 15%;">
+                    <col style="width: 25%;">
+                    <col style="width: 15%;">
+                    <col style="width: 10%;">
+                    <col style="width: 10%;">
                 </colgroup>
                 
                 <!-- ÜRETİM AYARLARI -->
@@ -185,12 +196,12 @@
                 <tr>
                     <td class="label">GRAM</td><td><input id="ayar_gram"></td>
                     <td class="label">RENK</td><td><input id="ayar_renk"></td>
-                    <td class="label">TARİH</td><td><input id="ayar_tarih"></td>
+                    <td class="label" colspan="2">TARİH</td>
                 </tr>
                 <tr>
                     <td class="label">SERVOLAP</td><td><input id="ayar_servolap"></td>
                     <td class="label">TARAK HIZI</td><td><input id="ayar_tarak_hizi"></td>
-                    <td class="label">FİRMA ADI</td><td><input id="ayar_firma_adi"></td>
+                    <td class="label" colspan="2">FİRMA ADI</td>
                 </tr>
 
                 <!-- TARAK AYARLARI -->
@@ -216,7 +227,7 @@
                     <td class="label" colspan="2">ALT DOFER ALICI</td><td colspan="2"><input id="ayar_alt_dofer_alici"></td>
                 </tr>
                 <tr>
-                    <td class="label">ÜST SEVK BANDI</td><td><input id="ayar_ust_sevk_bandi"></td>
+                    <td class="label">UST SEVK BANDI</td><td><input id="ayar_ust_sevk_bandi"></td>
                     <td class="label" colspan="2">ALT SEVK BANDI</td><td colspan="2"><input id="ayar_alt_sevk_bandi"></td>
                 </tr>
 
@@ -263,10 +274,11 @@
                 </tr>
 
                 <!-- SU JETİ AYARLARI -->
-                <tr><td colspan="6" class="section-header">SU JETİ AYARLARI</td></tr>
                 <tr>
-                    <td class="label">BAR</td><td class="label" colspan="2">HZ</td>
-                    <td class="label" colspan="2">BESLEME 1</td><td><input id="ayar_besleme1"></td>
+                    <td class="section-header" colspan="2">SU JETİ AYARLARI</td>
+                    <td class="section-header">BAR</td>
+                    <td class="section-header">HZ</td>
+                    <td class="label" colspan="2">BESLEME 1</td>
                 </tr>
                 <tr>
                     <td class="label">POMPA 1</td><td colspan="2"><input id="ayar_pompa1"></td>
@@ -296,12 +308,14 @@
                 <!-- HAMMADDE AYARLARI -->
                 <tr><td colspan="6" class="section-header">HAMMADDE AYARLARI</td></tr>
                 <tr>
-                    <td class="label">BALKAN 1</td><td><input id="ayar_balkan1"></td>
-                    <td class="label">BALKAN 2</td><td><input id="ayar_balkan2"></td>
-                    <td class="label">BALKAN 3</td><td><input id="ayar_balkan3"></td>
+                    <td class="label">BALKAN 1</td><td>%</td>
+                    <td class="label">BALKAN 2</td><td>%</td>
+                    <td class="label">BALKAN 3</td><td>%</td>
                 </tr>
                 <tr>
-                    <td colspan="6"><input id="ayar_hammadde" style="text-align: left; padding-left: 5px;"></td>
+                    <td colspan="2"><input id="ayar_balkan1"></td>
+                    <td colspan="2"><input id="ayar_balkan2"></td>
+                    <td colspan="2"><input id="ayar_balkan3"></td>
                 </tr>
 
                 <!-- KESİM EBATLARI -->
@@ -317,6 +331,10 @@
                 <tr>
                     <td class="label" colspan="2">FIRIN ISISI</td><td><input id="ayar_firin_isisi"></td>
                     <td class="label" colspan="2">HAT HIZI</td><td><input id="ayar_hat_hizi"></td>
+                </tr>
+                <tr>
+                    <td class="label-orange" colspan="2">NOTLAR</td>
+                    <td colspan="4"><input id="ayar_notlar_input"></td>
                 </tr>
             </table>
         </div>
@@ -358,38 +376,35 @@
             <div class="excel-container">
                 <table class="excel-table">
                     <colgroup>
-                        <col style="width: 22%;">
-                        <col style="width: 11%;">
-                        <col style="width: 22%;">
-                        <col style="width: 11%;">
-                        <col style="width: 23%;">
-                        <col style="width: 11%;">
+                        <col style="width: 25%;">
+                        <col style="width: 15%;">
+                        <col style="width: 25%;">
+                        <col style="width: 15%;">
+                        <col style="width: 10%;">
+                        <col style="width: 10%;">
                     </colgroup>
                     <tr><td colspan="6" class="section-header">GENEL BİLGİLER</td></tr>
                     <tr>
                         <td class="label">REÇETE NO</td><td><span id="detay_recete_no"></span></td>
                         <td class="label">ÜRÜN ADI</td><td><span id="detay_urun_adi"></span></td>
-                        <td class="label">MAKİNE</td><td><span id="detay_makine_adi"></span></td>
+                        <td class="label" colspan="2">MAKİNE</td>
                     </tr>
                     <tr>
                         <td class="label">HIZ</td><td><span id="detay_hiz"></span></td>
                         <td class="label">SICAKLIK</td><td><span id="detay_sicaklik"></span></td>
-                        <td class="label">BASINÇ</td><td><span id="detay_basinc"></span></td>
-                    </tr>
-                    <tr>
-                        <td class="label">NOTLAR</td><td colspan="5"><span id="detay_notlar"></span></td>
+                        <td class="label" colspan="2">BASINÇ</td>
                     </tr>
 
                     <tr><td colspan="6" class="section-header">ÜRETİM AYARLARI</td></tr>
                     <tr>
                         <td class="label">GRAM</td><td><span id="detay_ayar_gram"></span></td>
                         <td class="label">RENK</td><td><span id="detay_ayar_renk"></span></td>
-                        <td class="label">TARİH</td><td><span id="detay_ayar_tarih"></span></td>
+                        <td class="label" colspan="2">TARİH</td>
                     </tr>
                     <tr>
                         <td class="label">SERVOLAP</td><td><span id="detay_ayar_servolap"></span></td>
                         <td class="label">TARAK HIZI</td><td><span id="detay_ayar_tarak_hizi"></span></td>
-                        <td class="label">FİRMA ADI</td><td><span id="detay_ayar_firma_adi"></span></td>
+                        <td class="label" colspan="2">FİRMA ADI</td>
                     </tr>
 
                     <tr><td colspan="6" class="section-header">TARAK AYARLARI</td></tr>
@@ -414,7 +429,7 @@
                         <td class="label" colspan="2">ALT DOFER ALICI</td><td colspan="2"><span id="detay_ayar_alt_dofer_alici"></span></td>
                     </tr>
                     <tr>
-                        <td class="label">ÜST SEVK BANDI</td><td><span id="detay_ayar_ust_sevk_bandi"></span></td>
+                        <td class="label">UST SEVK BANDI</td><td><span id="detay_ayar_ust_sevk_bandi"></span></td>
                         <td class="label" colspan="2">ALT SEVK BANDI</td><td colspan="2"><span id="detay_ayar_alt_sevk_bandi"></span></td>
                     </tr>
 
@@ -458,10 +473,11 @@
                         <td class="label" colspan="2">TRİO 6 ÇEKİM</td><td><span id="detay_ayar_trio6"></span></td>
                     </tr>
 
-                    <tr><td colspan="6" class="section-header">SU JETİ AYARLARI</td></tr>
                     <tr>
-                        <td class="label">BAR</td><td class="label" colspan="2">HZ</td>
-                        <td class="label" colspan="2">BESLEME 1</td><td><span id="detay_ayar_besleme1"></span></td>
+                        <td class="section-header" colspan="2">SU JETİ AYARLARI</td>
+                        <td class="section-header">BAR</td>
+                        <td class="section-header">HZ</td>
+                        <td class="label" colspan="2">BESLEME 1</td>
                     </tr>
                     <tr>
                         <td class="label">POMPA 1</td><td colspan="2"><span id="detay_ayar_pompa1"></span></td>
@@ -490,12 +506,14 @@
 
                     <tr><td colspan="6" class="section-header">HAMMADDE AYARLARI</td></tr>
                     <tr>
-                        <td class="label">BALKAN 1</td><td><span id="detay_ayar_balkan1"></span></td>
-                        <td class="label">BALKAN 2</td><td><span id="detay_ayar_balkan2"></span></td>
-                        <td class="label">BALKAN 3</td><td><span id="detay_ayar_balkan3"></span></td>
+                        <td class="label">BALKAN 1</td><td>%</td>
+                        <td class="label">BALKAN 2</td><td>%</td>
+                        <td class="label">BALKAN 3</td><td>%</td>
                     </tr>
                     <tr>
-                        <td colspan="6"><span id="detay_ayar_hammadde"></span></td>
+                        <td colspan="2"><span id="detay_ayar_balkan1"></span></td>
+                        <td colspan="2"><span id="detay_ayar_balkan2"></span></td>
+                        <td colspan="2"><span id="detay_ayar_balkan3"></span></td>
                     </tr>
 
                     <tr><td colspan="6" class="section-header">KESİM EBATLARI</td></tr>
@@ -510,6 +528,10 @@
                     <tr>
                         <td class="label" colspan="2">FIRIN ISISI</td><td><span id="detay_ayar_firin_isisi"></span></td>
                         <td class="label" colspan="2">HAT HIZI</td><td><span id="detay_ayar_hat_hizi"></span></td>
+                    </tr>
+                    <tr>
+                        <td class="label-orange" colspan="2">NOTLAR</td>
+                        <td colspan="4"><span id="detay_notlar_span"></span></td>
                     </tr>
                 </table>
             </div>
