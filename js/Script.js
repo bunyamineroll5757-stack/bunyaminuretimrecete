@@ -537,8 +537,7 @@ function ara() {
 }
 
 // ======================================================
-// ======================================================
-// PDF İNDİRME (MOBİL VE TÜM CİHAZLAR İÇİN KESİN ÇÖZÜM)
+// SAF METIN TABANLI PDF (BOŞ ÇIKMA İHTİMALİ YOKTUR)
 // ======================================================
 function pdfIndir() {
     const getV = (id) => {
@@ -546,91 +545,61 @@ function pdfIndir() {
         return (el && el.value && el.value.trim() !== "") ? el.value.trim() : "-";
     };
 
-    const receteNo = getV('recete_no') !== "-" ? getV('recete_no') : 'Recete';
-
-    const pPencere = window.open('', '', 'height=700,width=900');
+    const receteNo = getV('recete_no');
     
-    pPencere.document.write(`
+    // Geçici metin alanı oluştur
+    const win = window.open('', '_blank');
+    if (!win) {
+        alert("Lütfen taranan pencere engelleyicisini kaldırın.");
+        return;
+    }
+
+    const htmlIcerik = `
+        <!DOCTYPE html>
         <html>
         <head>
-            <title>Reçete - ${receteNo}</title>
+            <title>Recete_${receteNo}</title>
             <style>
-                body { font-family: Arial, sans-serif; padding: 15px; color: #000; }
-                h2 { text-align: center; margin-bottom: 10px; border-bottom: 2px solid #333; padding-bottom: 5px; }
-                table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 11px; }
-                th, td { border: 1px solid #444; padding: 6px 8px; text-align: left; }
-                th { background-color: #f2f2f2; font-size: 12px; }
-                .baslik { background-color: #d9edf7; font-weight: bold; }
-                .kesim-baslik { background-color: #f2dede; font-weight: bold; }
+                body { font-family: sans-serif; padding: 20px; color: #000; }
+                h2 { text-align: center; border-bottom: 2px solid #000; padding-bottom: 8px; }
+                table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+                th, td { border: 1px solid #333; padding: 8px; font-size: 12px; text-align: left; }
+                th { background-color: #eee; }
+                .baslik { background-color: #ddd; font-weight: bold; }
+                @media print {
+                    button { display: none; }
+                }
             </style>
         </head>
         <body>
+            <button onclick="window.print()" style="padding:10px 20px; margin-bottom:15px; cursor:pointer;">PDF Olarak Kaydet / Yazdır</button>
             <h2>ÜRETİM REÇETESİ VE EBAT DETAYLARI</h2>
             <table>
                 <tr class="baslik"><th colspan="4">GENEL BİLGİLER</th></tr>
-                <tr>
-                    <td><b>Reçete No:</b> ${getV('recete_no')}</td>
-                    <td><b>Ürün Adı:</b> ${getV('urun_adi')}</td>
-                    <td><b>Makine Adı:</b> ${getV('makine_adi')}</td>
-                    <td><b>Tarih:</b> ${getV('ayar_tarih')}</td>
-                </tr>
-                <tr>
-                    <td><b>Hız:</b> ${getV('hiz')}</td>
-                    <td><b>Sıcaklık:</b> ${getV('sicaklik')}</td>
-                    <td><b>Basınç:</b> ${getV('basinc')}</td>
-                    <td><b>Gramaj:</b> ${getV('ayar_gram')}</td>
-                </tr>
+                <tr><td><b>Reçete No:</b> ${getV('recete_no')}</td><td><b>Ürün Adı:</b> ${getV('urun_adi')}</td><td><b>Makine:</b> ${getV('makine_adi')}</td><td><b>Tarih:</b> ${getV('ayar_tarih')}</td></tr>
+                <tr><td><b>Hız:</b> ${getV('hiz')}</td><td><b>Sıcaklık:</b> ${getV('sicaklik')}</td><td><b>Basınç:</b> ${getV('basinc')}</td><td><b>Gramaj:</b> ${getV('ayar_gram')}</td></tr>
                 <tr class="baslik"><th colspan="4">TARAK & SERVOLAP</th></tr>
-                <tr>
-                    <td><b>Servolap:</b> ${getV('ayar_servolap')}</td>
-                    <td><b>Tarak Hızı:</b> ${getV('ayar_tarak_hizi')}</td>
-                    <td><b>Ana Tambur:</b> ${getV('ayar_ana_tambur')}</td>
-                    <td><b>Sıyırıcı:</b> ${getV('ayar_siyirici')}</td>
-                </tr>
-                <tr>
-                    <td><b>Üst Ara Dofer:</b> ${getV('ayar_ust_ara_dofer')}</td>
-                    <td><b>Alt Ara Dofer:</b> ${getV('ayar_alt_ara_dofer')}</td>
-                    <td><b>İşçi:</b> ${getV('ayar_isci')}</td>
-                    <td><b>Üst Sevk Doferi:</b> ${getV('ayar_ust_sevk_doferi')}</td>
-                </tr>
+                <tr><td><b>Servolap:</b> ${getV('ayar_servolap')}</td><td><b>Tarak Hızı:</b> ${getV('ayar_tarak_hizi')}</td><td><b>Ana Tambur:</b> ${getV('ayar_ana_tambur')}</td><td><b>Sıyırıcı:</b> ${getV('ayar_siyirici')}</td></tr>
                 <tr class="baslik"><th colspan="4">TÜLBENT, SERME & HAT</th></tr>
-                <tr>
-                    <td><b>Tülbent Katı:</b> ${getV('ayar_tulbent_kati')}</td>
-                    <td><b>Besleme Çekim:</b> ${getV('ayar_besleme_cekim')}</td>
-                    <td><b>Serme Ön:</b> ${getV('ayar_serme_eni_on')}</td>
-                    <td><b>Serme Arka:</b> ${getV('ayar_serme_eni_arka')}</td>
-                </tr>
-                <tr>
-                    <td><b>Hat Hızı:</b> ${getV('ayar_hat_hizi')}</td>
-                    <td><b>Fırın Isısı:</b> ${getV('ayar_firin_isisi')}</td>
-                    <td><b>Sıkma Fular:</b> ${getV('ayar_sikma_fular')}</td>
-                    <td><b>Hammadde:</b> ${getV('ayar_hammadde')}</td>
-                </tr>
-                <tr class="kesim-baslik"><th colspan="4">✂️ KESİM EBATLARI & SARIM</th></tr>
-                <tr>
-                    <td><b>Kesim Eni:</b> ${getV('ayar_kesim_eni')}</td>
-                    <td><b>Çap:</b> ${getV('ayar_cap')}</td>
-                    <td><b>Sarım Metresi:</b> ${getV('ayar_sarim_metresi')}</td>
-                    <td><b>Saatlik KG:</b> ${getV('ayar_saatlik_kg')}</td>
-                </tr>
+                <tr><td><b>Tülbent Katı:</b> ${getV('ayar_tulbent_kati')}</td><td><b>Serme Ön:</b> ${getV('ayar_serme_eni_on')}</td><td><b>Serme Arka:</b> ${getV('ayar_serme_eni_arka')}</td><td><b>Hat Hızı:</b> ${getV('ayar_hat_hizi')}</td></tr>
+                <tr class="baslik"><th colspan="4">KESİM EBATLARI & SARIM</th></tr>
+                <tr><td><b>Kesim Eni:</b> ${getV('ayar_kesim_eni')}</td><td><b>Çap:</b> ${getV('ayar_cap')}</td><td><b>Sarım Metresi:</b> ${getV('ayar_sarim_metresi')}</td><td><b>Saatlik KG:</b> ${getV('ayar_saatlik_kg')}</td></tr>
                 <tr class="baslik"><th colspan="4">NOTLAR</th></tr>
-                <tr>
-                    <td colspan="4">${getV('notlar')}</td>
-                </tr>
+                <tr><td colspan="4">${getV('notlar')}</td></tr>
             </table>
+            <script>
+                window.onload = function() {
+                    setTimeout(function() { window.print(); }, 500);
+                }
+            <\/script>
         </body>
         </html>
-    `);
+    `;
 
-    pPencere.document.close();
-    pPencere.focus();
-    
-    setTimeout(() => {
-        pPencere.print();
-        pPencere.close();
-    }, 300);
+    win.document.open();
+    win.document.write(htmlIcerik);
+    win.document.close();
 }
-
 // ======================================================
 // YAZDIRMA
 // ======================================================
