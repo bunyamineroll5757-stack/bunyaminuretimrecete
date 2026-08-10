@@ -562,7 +562,6 @@ function pdfIndir() {
                 cloneEl.parentNode.replaceChild(span, cloneEl);
             }
         }
-    });
 
     // 4. PDF için geçici ve temiz görünüm kapsayıcısı ayarla
     const pdfWrapper = document.createElement('div');
