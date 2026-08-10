@@ -38,9 +38,10 @@
         .detay-satir { padding: 8px; border-bottom: 1px solid #ddd; }
         .durum { padding: 10px; margin-bottom: 15px; border-radius: 8px; display: none; }
 
-        /* EXCEL BİREBİR TABLO STİLLERİ */
+        /* EXCEL TABLO STİLLERİ */
         .excel-container {
-            overflow-x: auto;
+            overflow-x: auto; /* Yatay kaydırmaya izin verir */
+            -webkit-overflow-scrolling: touch; /* Mobilde akıcı dokunmatik kaydırma */
             background: white;
             border-radius: 8px;
             padding: 5px;
@@ -49,13 +50,14 @@
         }
         .excel-table {
             width: 100%;
+            min-width: 650px; /* Tablonun ezilmesini önleyen minimum genişlik */
             border-collapse: collapse;
             font-size: 13px;
             color: #000;
         }
         .excel-table td {
             border: 1px solid #666;
-            padding: 4px 6px;
+            padding: 5px 8px;
             vertical-align: middle;
         }
         .excel-table .section-header {
@@ -92,48 +94,14 @@
             background: #fff;
         }
 
-        /* MOBİL EKRAN OPTİMİZASYONLARI (SIĞDIRMA VE DÜZENLEME) */
+        /* MOBİL UYUM DÜZENLEMELERİ */
         @media (max-width: 600px) {
-            .container { padding: 5px !important; }
-            .panel { padding: 8px !important; margin-bottom: 10px !important; }
+            .container { padding: 8px !important; }
+            .panel { padding: 10px !important; }
             .ayar-grid { grid-template-columns: 1fr; }
-            h1 { font-size: 18px; margin: 10px 0; }
-            
-            .excel-container {
-                padding: 0 !important;
-                overflow-x: hidden !important; /* Taşmayı engeller */
-            }
-
-            .excel-table {
-                width: 100% !important;
-                table-layout: fixed !important; /* Hücreleri ekrana eşit sığdırır */
-                font-size: 10px !important;
-            }
-
-            .excel-table td {
-                padding: 3px 2px !important;
-                word-wrap: break-word !important;
-                overflow-wrap: break-word !important;
-                white-space: normal !important; /* Metinlerin alt satıra geçmesini sağlar */
-            }
-
-            .excel-table .label {
-                font-size: 9px !important;
-                line-height: 1.1 !important;
-                white-space: normal !important;
-            }
-
-            .excel-table .section-header {
-                font-size: 11px !important;
-                padding: 4px 2px !important;
-            }
-
-            .excel-table input {
-                font-size: 10px !important;
-                padding: 1px 0 !important;
-            }
-            
-            th, td { font-size: 11px !important; padding: 4px !important; }
+            h1 { font-size: 18px; }
+            .excel-table { font-size: 11px; }
+            .excel-table input { font-size: 11px; }
         }
 
         /* YAZDIRMA VE PDF KORUMA KODLARI */
@@ -142,7 +110,7 @@
             .modal, button, .btn, #arama, #loginModal { display: none !important; }
             .container { max-width: 100%; padding: 0; margin: 0; }
             .panel { border: none; padding: 0; margin-bottom: 10px; }
-            .excel-table { width: 100% !important; border: 1px solid #000 !important; table-layout: auto !important; }
+            .excel-table { width: 100% !important; min-width: 100% !important; border: 1px solid #000 !important; }
             .excel-table td { border: 1px solid #000 !important; }
             .excel-table .section-header {
                 background-color: #FFFF00 !important;
