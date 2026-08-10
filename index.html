@@ -13,7 +13,7 @@
     <!-- PDF Oluşturma Kütüphanesi -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
-    <link rel="stylesheet" href="css/style.css?v=4">
+    <link rel="stylesheet" href="css/style.css?v=5">
 
     <style>
         body { font-family: Arial, sans-serif; margin: 0; background: #f4f6f8; }
@@ -105,10 +105,11 @@
            REÇETE DETAY TABLOSU RENK VE YAZI TİPİ DÜZENLEMELERİ
            ======================================================== */
         
-        /* 1. Şablon Üzerindeki Sabit Başlıklar / Etiketler (Sil Butonu Kırmızısı) */
+        /* 1. Şablon Üzerindeki Sabit Başlıklar / Etiketler (SİL Butonu ile Birebir Aynı Koyu Kırmızı) */
         .excel-table td.label {
-            color: #d32f2f !important;
-            font-weight: bold !important;
+            color: #b71c1c !important; /* Canlı ve Koyu Kırmızı */
+            font-weight: 800 !important;
+            opacity: 1 !important;
         }
 
         /* 2. Doldurulan / Dinamik Değerler (Koyu Siyah ve Belirgin) */
