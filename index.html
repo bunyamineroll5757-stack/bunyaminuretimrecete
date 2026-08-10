@@ -3,16 +3,11 @@
 
 <head>
     <meta charset="UTF-8">
-    <!-- Mobil Chrome'da ekrana tam oturmasını ve yakınlaştırmayı sağlayan viewport -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Üretim Reçete Yönetim Sistemi</title>
 
-    <!-- Favicon 404 Uyarısını Engelleme -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚙️</text></svg>">
-
-    <!-- PDF Oluşturma Kütüphanesi -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
     <link rel="stylesheet" href="css/style.css?v=5">
 
     <style>
@@ -36,10 +31,9 @@
         th { background: #ffe600; }
         .modal { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, .6); justify-content: center; align-items: center; padding: 10px; z-index: 9999; }
         .modal-content { background: white; max-width: 700px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 15px; border-radius: 12px; }
-        .detay-satir { padding: 6px; border-bottom: 1px solid #ddd; }
         .durum { padding: 10px; margin-bottom: 15px; border-radius: 8px; display: none; }
 
-        /* TABLONUN DIŞ KAPSAYICISI (MOBİLDE SIKIŞTIRAN YAPI) */
+        /* TABLO DIŞ KAPSAYICISI */
         .excel-container {
             background: white;
             border-radius: 6px;
@@ -49,18 +43,19 @@
             overflow-x: auto;
         }
 
-        /* ORANTILI VE TAŞMAYAN TABLO YAPISI */
+        /* %25 - %25 - %25 - %25 EŞİT DÜZENLİ TABLO YAPISI */
         .excel-table {
-            width: 100%;
-            min-width: 600px; /* Tablo formunun bozulmasını engeller */
+            width: 100% !important;
+            table-layout: fixed !important; /* Sütun genişliklerini sabit tutar */
             border-collapse: collapse;
             font-size: 11px;
             color: #000;
         }
         .excel-table td {
-            border: 1px solid #000 !important; /* Siyah belirgin çizgiler */
+            border: 1px solid #000 !important;
             padding: 4px;
             vertical-align: middle;
+            word-break: break-word;
         }
         .excel-table .section-header {
             background-color: #FFFF00 !important;
@@ -71,87 +66,55 @@
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
         }
-        .excel-table .label {
-            font-weight: bold;
+        .excel-table .label, .excel-table td.label {
+            font-weight: 800 !important;
+            color: #b71c1c !important;
             background-color: #f8f9fa;
             font-size: 10px;
-            white-space: nowrap;
-            width: 1%; /* Etiketin sadece yazısı kadar yer kaplamasını sağlar */
         }
         
-        /* DEĞER YAZMA KUTULARI (4-5 RAKAM SIĞACAK BOYUT) */
+        /* INPUT VE DEĞER ALANLARI */
         .excel-table input {
             border: none;
             background: transparent;
-            color: #d32f2f;
+            color: #000000;
             font-weight: bold;
             padding: 2px;
             font-size: 11px;
             text-align: center;
             width: 100%;
-            min-width: 45px;
             box-sizing: border-box;
-        }
-        .excel-table input::placeholder {
-            color: #1976d2;
-            opacity: 0.8;
         }
         .excel-table input:focus {
             outline: 1px solid #1976d2;
             background: #fff;
         }
 
-        /* ========================================================
-           REÇETE DETAY TABLOSU RENK VE YAZI TİPİ DÜZENLEMELERİ
-           ======================================================== */
-        
-        /* 1. Şablon Üzerindeki Sabit Başlıklar / Etiketler (SİL Butonu ile Birebir Aynı Koyu Kırmızı) */
-        .excel-table td.label {
-            color: #b71c1c !important; /* Canlı ve Koyu Kırmızı */
-            font-weight: 800 !important;
-            opacity: 1 !important;
-        }
-
-        /* 2. Doldurulan / Dinamik Değerler (Koyu Siyah ve Belirgin) */
         .excel-table td span, 
         .excel-table td:not(.label):not(.section-header) {
             color: #000000 !important;
             font-weight: 700 !important;
+            text-align: center;
         }
 
-        /* MOBİL DİKEY EKRANDA TAMAMEN SIĞDIRMA HİLESİ */
+        /* MOBİL UYUMLULUK */
         @media (max-width: 600px) {
-            .excel-table {
-                min-width: 100%; /* Ekran genişliğine tam oturur */
-                font-size: 9px;
-            }
-            .excel-table td {
-                padding: 2px;
-            }
-            .excel-table .label {
-                font-size: 8.5px;
-            }
-            .excel-table input {
-                font-size: 9.5px;
-                min-width: 30px;
-            }
+            .excel-table { font-size: 9px; }
+            .excel-table td { padding: 2px; }
+            .excel-table .label, .excel-table td.label { font-size: 8.5px; }
+            .excel-table input { font-size: 9.5px; }
         }
 
-        /* YAZDIRMA VE PDF KORUMA KODLARI */
+        /* YAZDIRMA VE PDF YAPISI */
         @media print {
             body { background: white; }
             .modal, button, .btn, #arama, #loginModal { display: none !important; }
             .container { max-width: 100%; padding: 0; margin: 0; }
             .panel { border: none; padding: 0; margin-bottom: 10px; }
-            .excel-table { width: 100% !important; border: 1px solid #000 !important; }
+            .excel-table { width: 100% !important; border: 1px solid #000 !important; table-layout: fixed !important; }
             .excel-table td { border: 1px solid #000 !important; }
             .excel-table .section-header {
                 background-color: #FFFF00 !important;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-            .excel-table input {
-                color: #d32f2f !important;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
@@ -189,149 +152,176 @@
         <button class="btn-danger" type="button" onclick="adminCikis()">Çıkış Yap</button>
     </div>
 
-    <!-- ÜRETİM AYARLARI (EXCEL FORMATINDA) -->
+    <!-- ÜRETİM AYARLARI -->
     <div class="panel">
         <h2>Üretim Ayarları</h2>
 
         <div class="excel-container">
             <table class="excel-table">
+                <colgroup>
+                    <col style="width: 25%;">
+                    <col style="width: 25%;">
+                    <col style="width: 25%;">
+                    <col style="width: 25%;">
+                </colgroup>
+
+                <!-- GENEL BİLGİLER -->
+                <tr><td colspan="4" class="section-header">GENEL BİLGİLER</td></tr>
+                <tr>
+                    <td class="label">REÇETE NO</td><td><input id="genel_recete_no"></td>
+                    <td class="label">ÜRÜN ADI</td><td><input id="genel_urun_adi"></td>
+                </tr>
+                <tr>
+                    <td class="label">MAKİNE</td><td><input id="genel_makine"></td>
+                    <td class="label">HIZ</td><td><input id="genel_hiz"></td>
+                </tr>
+                <tr>
+                    <td class="label">SICAKLIK</td><td><input id="genel_sicaklik"></td>
+                    <td class="label">BASINÇ</td><td><input id="genel_basinc"></td>
+                </tr>
+
                 <!-- ÜRETİM AYARLARI -->
-                <tr><td colspan="6" class="section-header">ÜRETİM AYARLARI</td></tr>
+                <tr><td colspan="4" class="section-header">ÜRETİM AYARLARI</td></tr>
                 <tr>
                     <td class="label">GRAM</td><td><input id="ayar_gram"></td>
                     <td class="label">RENK</td><td><input id="ayar_renk"></td>
-                    <td class="label">TARİH</td><td><input id="ayar_tarih"></td>
                 </tr>
                 <tr>
+                    <td class="label">TARİH</td><td><input id="ayar_tarih"></td>
                     <td class="label">SERVOLAP</td><td><input id="ayar_servolap"></td>
+                </tr>
+                <tr>
                     <td class="label">TARAK HIZI</td><td><input id="ayar_tarak_hizi"></td>
                     <td class="label">FİRMA ADI</td><td><input id="ayar_firma_adi"></td>
                 </tr>
 
                 <!-- TARAK AYARLARI -->
-                <tr><td colspan="6" class="section-header">TARAK AYARLARI</td></tr>
+                <tr><td colspan="4" class="section-header">TARAK AYARLARI</td></tr>
                 <tr>
                     <td class="label">ANA TAMBUR</td><td><input id="ayar_ana_tambur"></td>
-                    <td class="label" colspan="2">ALT ARA DOFER</td><td colspan="2"><input id="ayar_alt_ara_dofer"></td>
+                    <td class="label">ALT ARA DOFER</td><td><input id="ayar_alt_ara_dofer"></td>
                 </tr>
                 <tr>
                     <td class="label">SIYIRICI</td><td><input id="ayar_siyirici"></td>
-                    <td class="label" colspan="2">ÜST ARA DOFER</td><td colspan="2"><input id="ayar_ust_ara_dofer"></td>
+                    <td class="label">ÜST ARA DOFER</td><td><input id="ayar_ust_ara_dofer"></td>
                 </tr>
                 <tr>
                     <td class="label">İŞÇİ</td><td><input id="ayar_isci"></td>
-                    <td colspan="4"></td>
+                    <td colspan="2"></td>
                 </tr>
                 <tr>
                     <td class="label">ÜST SEVK DOFERİ</td><td><input id="ayar_ust_sevk_doferi"></td>
-                    <td class="label" colspan="2">ALT SEVK DOFERİ</td><td colspan="2"><input id="ayar_alt_sevk_doferi"></td>
+                    <td class="label">ALT SEVK DOFERİ</td><td><input id="ayar_alt_sevk_doferi"></td>
                 </tr>
                 <tr>
                     <td class="label">ÜST DOFER ALICI</td><td><input id="ayar_ust_dofer_alici"></td>
-                    <td class="label" colspan="2">ALT DOFER ALICI</td><td colspan="2"><input id="ayar_alt_dofer_alici"></td>
+                    <td class="label">ALT DOFER ALICI</td><td><input id="ayar_alt_dofer_alici"></td>
                 </tr>
                 <tr>
                     <td class="label">ÜST SEVK BANDI</td><td><input id="ayar_ust_sevk_bandi"></td>
-                    <td class="label" colspan="2">ALT SEVK BANDI</td><td colspan="2"><input id="ayar_alt_sevk_bandi"></td>
+                    <td class="label">ALT SEVK BANDI</td><td><input id="ayar_alt_sevk_bandi"></td>
                 </tr>
 
                 <!-- SERİCİ AYARLARI -->
-                <tr><td colspan="6" class="section-header">SERİCİ AYARLARI</td></tr>
+                <tr><td colspan="4" class="section-header">SERİCİ AYARLARI</td></tr>
                 <tr>
-                    <td class="label" colspan="2">TÜLBENT KATI</td><td><input id="ayar_tulbent_kati"></td>
-                    <td class="label" colspan="2">BESLEME ÇEKİM</td><td><input id="ayar_besleme_cekim"></td>
+                    <td class="label">TÜLBENT KATI</td><td><input id="ayar_tulbent_kati"></td>
+                    <td class="label">BESLEME ÇEKİM</td><td><input id="ayar_besleme_cekim"></td>
                 </tr>
                 <tr>
-                    <td class="label" colspan="2">SERME ENİ ÖN</td><td><input id="ayar_serme_eni_on"></td>
-                    <td class="label" colspan="2">BANT ÇEKİM</td><td><input id="ayar_bant_cekim"></td>
+                    <td class="label">SERME ENİ ÖN</td><td><input id="ayar_serme_eni_on"></td>
+                    <td class="label">BANT ÇEKİM</td><td><input id="ayar_bant_cekim"></td>
                 </tr>
                 <tr>
-                    <td class="label" colspan="2">SERME ENİ ARKA</td><td><input id="ayar_serme_eni_arka"></td>
-                    <td class="label" colspan="2">ARABA ÇEKİM</td><td><input id="ayar_araba_cekim"></td>
+                    <td class="label">SERME ENİ ARKA</td><td><input id="ayar_serme_eni_arka"></td>
+                    <td class="label">ARABA ÇEKİM</td><td><input id="ayar_araba_cekim"></td>
                 </tr>
                 <tr>
-                    <td class="label" colspan="2">ÇKŞ YÜKSEKLİĞİ SAĞ</td><td><input id="ayar_cikis_yuksekligi_sag"></td>
-                    <td class="label" colspan="2">ÇKŞ HAFIZA FAKTÖRÜ</td><td><input id="ayar_cikis_hafiza"></td>
+                    <td class="label">ÇKŞ YÜKSEKLİĞİ SAĞ</td><td><input id="ayar_cikis_yuksekligi_sag"></td>
+                    <td class="label">ÇKŞ HAFIZA FAKTÖRÜ</td><td><input id="ayar_cikis_hafiza"></td>
                 </tr>
                 <tr>
-                    <td class="label" colspan="2">ÇKŞ YÜKSEKLİĞİ SOL</td><td><input id="ayar_cikis_yuksekligi_sol"></td>
-                    <td class="label" colspan="2">ÖN ÇKŞ HAFIZA FAKTÖRÜ</td><td><input id="ayar_on_cikis_hafiza"></td>
+                    <td class="label">ÇKŞ YÜKSEKLİĞİ SOL</td><td><input id="ayar_cikis_yuksekligi_sol"></td>
+                    <td class="label">ÖN ÇKŞ HAFIZA FAKTÖRÜ</td><td><input id="ayar_on_cikis_hafiza"></td>
                 </tr>
                 <tr>
-                    <td colspan="3"></td>
-                    <td class="label" colspan="2">ARKA ÇKŞ HFZA FAKTÖRÜ</td><td><input id="ayar_arka_cikis_hafiza"></td>
+                    <td colspan="2"></td>
+                    <td class="label">ARKA ÇKŞ HFZA FAKTÖRÜ</td><td><input id="ayar_arka_cikis_hafiza"></td>
                 </tr>
 
                 <!-- ÇEKTİRME AYARLARI -->
-                <tr><td colspan="6" class="section-header">ÇEKTİRME AYARLARI</td></tr>
+                <tr><td colspan="4" class="section-header">ÇEKTİRME AYARLARI</td></tr>
                 <tr>
-                    <td class="label" colspan="2">TRİO 1 ÇEKİM</td><td><input id="ayar_trio1"></td>
-                    <td class="label" colspan="2">TRİO 4 ÇEKİM</td><td><input id="ayar_trio4"></td>
+                    <td class="label">TRİO 1 ÇEKİM</td><td><input id="ayar_trio1"></td>
+                    <td class="label">TRİO 4 ÇEKİM</td><td><input id="ayar_trio4"></td>
                 </tr>
                 <tr>
-                    <td class="label" colspan="2">TRİO 2 ÇEKİM</td><td><input id="ayar_trio2"></td>
-                    <td class="label" colspan="2">TRİO 5 ÇEKİM</td><td><input id="ayar_trio5"></td>
+                    <td class="label">TRİO 2 ÇEKİM</td><td><input id="ayar_trio2"></td>
+                    <td class="label">TRİO 5 ÇEKİM</td><td><input id="ayar_trio5"></td>
                 </tr>
                 <tr>
-                    <td class="label" colspan="2">TRİO 3 ÇEKİM</td><td><input id="ayar_trio3"></td>
-                    <td class="label" colspan="2">TRİO 6 ÇEKİM</td><td><input id="ayar_trio6"></td>
+                    <td class="label">TRİO 3 ÇEKİM</td><td><input id="ayar_trio3"></td>
+                    <td class="label">TRİO 6 ÇEKİM</td><td><input id="ayar_trio6"></td>
                 </tr>
 
                 <!-- SU JETİ AYARLARI -->
-                <tr><td colspan="6" class="section-header">SU JETİ AYARLARI</td></tr>
+                <tr><td colspan="4" class="section-header">SU JETİ AYARLARI</td></tr>
                 <tr>
-                    <td class="label">BAR</td><td class="label" colspan="2">HZ</td>
-                    <td class="label" colspan="2">BESLEME 1</td><td><input id="ayar_besleme1"></td>
+                    <td class="label">BAR</td><td class="label">HZ</td>
+                    <td class="label">BESLEME 1</td><td><input id="ayar_besleme1"></td>
                 </tr>
                 <tr>
-                    <td class="label">POMPA 1</td><td colspan="2"><input id="ayar_pompa1"></td>
-                    <td class="label" colspan="2">TAMBUR 1</td><td><input id="ayar_tambur1"></td>
+                    <td class="label">POMPA 1</td><td><input id="ayar_pompa1"></td>
+                    <td class="label">TAMBUR 1</td><td><input id="ayar_tambur1"></td>
                 </tr>
                 <tr>
-                    <td class="label">POMPA 2</td><td colspan="2"><input id="ayar_pompa2"></td>
-                    <td class="label" colspan="2">TAMBUR 2</td><td><input id="ayar_tambur2"></td>
+                    <td class="label">POMPA 2</td><td><input id="ayar_pompa2"></td>
+                    <td class="label">TAMBUR 2</td><td><input id="ayar_tambur2"></td>
                 </tr>
                 <tr>
-                    <td class="label">POMPA 3</td><td colspan="2"><input id="ayar_pompa3"></td>
-                    <td class="label" colspan="2">TAMBUR 3</td><td><input id="ayar_tambur3"></td>
+                    <td class="label">POMPA 3</td><td><input id="ayar_pompa3"></td>
+                    <td class="label">TAMBUR 3</td><td><input id="ayar_tambur3"></td>
                 </tr>
                 <tr>
-                    <td class="label">POMPA 4</td><td colspan="2"><input id="ayar_pompa4"></td>
-                    <td class="label" colspan="2">BESLEME 2</td><td><input id="ayar_besleme2"></td>
+                    <td class="label">POMPA 4</td><td><input id="ayar_pompa4"></td>
+                    <td class="label">BESLEME 2</td><td><input id="ayar_besleme2"></td>
                 </tr>
                 <tr>
-                    <td class="label">POMPA 5</td><td colspan="2"><input id="ayar_pompa5"></td>
-                    <td class="label" colspan="2">SIKMA FULAR</td><td><input id="ayar_sikma_fular"></td>
+                    <td class="label">POMPA 5</td><td><input id="ayar_pompa5"></td>
+                    <td class="label">SIKMA FULAR</td><td><input id="ayar_sikma_fular"></td>
                 </tr>
                 <tr>
-                    <td class="label">POMPA 6</td><td colspan="2"><input id="ayar_pompa6"></td>
-                    <td class="label" colspan="2">FIRIN</td><td><input id="ayar_firin"></td>
+                    <td class="label">POMPA 6</td><td><input id="ayar_pompa6"></td>
+                    <td class="label">FIRIN</td><td><input id="ayar_firin"></td>
                 </tr>
 
                 <!-- HAMMADDE AYARLARI -->
-                <tr><td colspan="6" class="section-header">HAMMADDE AYARLARI</td></tr>
+                <tr><td colspan="4" class="section-header">HAMMADDE AYARLARI</td></tr>
                 <tr>
-                    <td class="label">BALKAN 1</td><td><input id="ayar_balkan1" placeholder=""></td>
-                    <td class="label">BALKAN 2</td><td><input id="ayar_balkan2" placeholder=""></td>
-                    <td class="label">BALKAN 3</td><td><input id="ayar_balkan3" placeholder=""></td>
+                    <td class="label">BALKAN 1</td><td><input id="ayar_balkan1"></td>
+                    <td class="label">BALKAN 2</td><td><input id="ayar_balkan2"></td>
                 </tr>
                 <tr>
-                    <td colspan="6"><input id="ayar_hammadde" placeholder="" style="text-align: left; padding-left: 5px;"></td>
+                    <td class="label">BALKAN 3</td><td><input id="ayar_balkan3"></td>
+                    <td colspan="2"></td>
+                </tr>
+                <tr>
+                    <td colspan="4"><input id="ayar_hammadde" style="text-align: left; padding-left: 5px;"></td>
                 </tr>
 
                 <!-- KESİM EBATLARI -->
-                <tr><td colspan="6" class="section-header">KESİM EBATLARI</td></tr>
+                <tr><td colspan="4" class="section-header">KESİM EBATLARI</td></tr>
                 <tr>
-                    <td class="label" colspan="2">KESİM ENİ</td><td><input id="ayar_kesim_eni"></td>
-                    <td class="label">ÇAP</td><td colspan="2"><input id="ayar_cap"></td>
+                    <td class="label">KESİM ENİ</td><td><input id="ayar_kesim_eni"></td>
+                    <td class="label">ÇAP</td><td><input id="ayar_cap"></td>
                 </tr>
                 <tr>
-                    <td class="label" colspan="2">SARIM METRESİ</td><td><input id="ayar_sarim_metresi"></td>
-                    <td class="label" colspan="2">SAATLİK KG</td><td><input id="ayar_saatlik_kg"></td>
+                    <td class="label">SARIM METRESİ</td><td><input id="ayar_sarim_metresi"></td>
+                    <td class="label">SAATLİK KG</td><td><input id="ayar_saatlik_kg"></td>
                 </tr>
                 <tr>
-                    <td class="label" colspan="2">FIRIN ISISI</td><td><input id="ayar_firin_isisi"></td>
-                    <td class="label" colspan="2">HAT HIZI</td><td><input id="ayar_hat_hizi"></td>
+                    <td class="label">FIRIN ISISI</td><td><input id="ayar_firin_isisi"></td>
+                    <td class="label">HAT HIZI</td><td><input id="ayar_hat_hizi"></td>
                 </tr>
             </table>
         </div>
@@ -369,155 +359,168 @@
     <div class="modal-content">
         <h2>Üretim Reçetesi Detayı</h2>
         
-        <!-- JavaScript Tarafından Dinamik Doldurulacak Alan -->
         <div id="detayIcerikAlani">
             <div class="excel-container">
                 <table class="excel-table">
-                    <tr><td colspan="6" class="section-header">GENEL BİLGİLER</td></tr>
+                    <colgroup>
+                        <col style="width: 25%;">
+                        <col style="width: 25%;">
+                        <col style="width: 25%;">
+                        <col style="width: 25%;">
+                    </colgroup>
+                    
+                    <tr><td colspan="4" class="section-header">GENEL BİLGİLER</td></tr>
                     <tr>
                         <td class="label">REÇETE NO</td><td><span id="detay_recete_no"></span></td>
                         <td class="label">ÜRÜN ADI</td><td><span id="detay_urun_adi"></span></td>
-                        <td class="label">MAKİNE</td><td><span id="detay_makine_adi"></span></td>
                     </tr>
                     <tr>
+                        <td class="label">MAKİNE</td><td><span id="detay_makine_adi"></span></td>
                         <td class="label">HIZ</td><td><span id="detay_hiz"></span></td>
+                    </tr>
+                    <tr>
                         <td class="label">SICAKLIK</td><td><span id="detay_sicaklik"></span></td>
                         <td class="label">BASINÇ</td><td><span id="detay_basinc"></span></td>
                     </tr>
                     <tr>
-                        <td class="label">NOTLAR</td><td colspan="5"><span id="detay_notlar"></span></td>
+                        <td class="label">NOTLAR</td><td colspan="3"><span id="detay_notlar"></span></td>
                     </tr>
 
-                    <tr><td colspan="6" class="section-header">ÜRETİM AYARLARI</td></tr>
+                    <tr><td colspan="4" class="section-header">ÜRETİM AYARLARI</td></tr>
                     <tr>
                         <td class="label">GRAM</td><td><span id="detay_ayar_gram"></span></td>
                         <td class="label">RENK</td><td><span id="detay_ayar_renk"></span></td>
-                        <td class="label">TARİH</td><td><span id="detay_ayar_tarih"></span></td>
                     </tr>
                     <tr>
+                        <td class="label">TARİH</td><td><span id="detay_ayar_tarih"></span></td>
                         <td class="label">SERVOLAP</td><td><span id="detay_ayar_servolap"></span></td>
+                    </tr>
+                    <tr>
                         <td class="label">TARAK HIZI</td><td><span id="detay_ayar_tarak_hizi"></span></td>
                         <td class="label">FİRMA ADI</td><td><span id="detay_ayar_firma_adi"></span></td>
                     </tr>
 
-                    <tr><td colspan="6" class="section-header">TARAK AYARLARI</td></tr>
+                    <tr><td colspan="4" class="section-header">TARAK AYARLARI</td></tr>
                     <tr>
                         <td class="label">ANA TAMBUR</td><td><span id="detay_ayar_ana_tambur"></span></td>
-                        <td class="label" colspan="2">ALT ARA DOFER</td><td colspan="2"><span id="detay_ayar_alt_ara_dofer"></span></td>
+                        <td class="label">ALT ARA DOFER</td><td><span id="detay_ayar_alt_ara_dofer"></span></td>
                     </tr>
                     <tr>
                         <td class="label">SIYIRICI</td><td><span id="detay_ayar_siyirici"></span></td>
-                        <td class="label" colspan="2">ÜST ARA DOFER</td><td colspan="2"><span id="detay_ayar_ust_ara_dofer"></span></td>
+                        <td class="label">ÜST ARA DOFER</td><td><span id="detay_ayar_ust_ara_dofer"></span></td>
                     </tr>
                     <tr>
                         <td class="label">İŞÇİ</td><td><span id="detay_ayar_isci"></span></td>
-                        <td colspan="4"></td>
+                        <td colspan="2"></td>
                     </tr>
                     <tr>
                         <td class="label">ÜST SEVK DOFERİ</td><td><span id="detay_ayar_ust_sevk_doferi"></span></td>
-                        <td class="label" colspan="2">ALT SEVK DOFERİ</td><td colspan="2"><span id="detay_ayar_alt_sevk_doferi"></span></td>
+                        <td class="label">ALT SEVK DOFERİ</td><td><span id="detay_ayar_alt_sevk_doferi"></span></td>
                     </tr>
                     <tr>
                         <td class="label">ÜST DOFER ALICI</td><td><span id="detay_ayar_ust_dofer_alici"></span></td>
-                        <td class="label" colspan="2">ALT DOFER ALICI</td><td colspan="2"><span id="detay_ayar_alt_dofer_alici"></span></td>
+                        <td class="label">ALT DOFER ALICI</td><td><span id="detay_ayar_alt_dofer_alici"></span></td>
                     </tr>
                     <tr>
                         <td class="label">ÜST SEVK BANDI</td><td><span id="detay_ayar_ust_sevk_bandi"></span></td>
-                        <td class="label" colspan="2">ALT SEVK BANDI</td><td colspan="2"><span id="detay_ayar_alt_sevk_bandi"></span></td>
+                        <td class="label">ALT SEVK BANDI</td><td><span id="detay_ayar_alt_sevk_bandi"></span></td>
                     </tr>
 
-                    <tr><td colspan="6" class="section-header">SERİCİ AYARLARI</td></tr>
+                    <tr><td colspan="4" class="section-header">SERİCİ AYARLARI</td></tr>
                     <tr>
-                        <td class="label" colspan="2">TÜLBENT KATI</td><td><span id="detay_ayar_tulbent_kati"></span></td>
-                        <td class="label" colspan="2">BESLEME ÇEKİM</td><td><span id="detay_ayar_besleme_cekim"></span></td>
+                        <td class="label">TÜLBENT KATI</td><td><span id="detay_ayar_tulbent_kati"></span></td>
+                        <td class="label">BESLEME ÇEKİM</td><td><span id="detay_ayar_besleme_cekim"></span></td>
                     </tr>
                     <tr>
-                        <td class="label" colspan="2">SERME ENİ ÖN</td><td><span id="detay_ayar_serme_eni_on"></span></td>
-                        <td class="label" colspan="2">BANT ÇEKİM</td><td><span id="detay_ayar_bant_cekim"></span></td>
+                        <td class="label">SERME ENİ ÖN</td><td><span id="detay_ayar_serme_eni_on"></span></td>
+                        <td class="label">BANT ÇEKİM</td><td><span id="detay_ayar_bant_cekim"></span></td>
                     </tr>
                     <tr>
-                        <td class="label" colspan="2">SERME ENİ ARKA</td><td><span id="detay_ayar_serme_eni_arka"></span></td>
-                        <td class="label" colspan="2">ARABA ÇEKİM</td><td><span id="detay_ayar_araba_cekim"></span></td>
+                        <td class="label">SERME ENİ ARKA</td><td><span id="detay_ayar_serme_eni_arka"></span></td>
+                        <td class="label">ARABA ÇEKİM</td><td><span id="detay_ayar_araba_cekim"></span></td>
                     </tr>
                     <tr>
-                        <td class="label" colspan="2">ÇKŞ YÜKSEKLİĞİ SAĞ</td><td><span id="detay_ayar_cikis_yuksekligi_sag"></span></td>
-                        <td class="label" colspan="2">ÇKŞ HAFIZA FAKTÖRÜ</td><td><span id="detay_ayar_cikis_hafiza"></span></td>
+                        <td class="label">ÇKŞ YÜKSEKLİĞİ SAĞ</td><td><span id="detay_ayar_cikis_yuksekligi_sag"></span></td>
+                        <td class="label">ÇKŞ HAFIZA FAKTÖRÜ</td><td><span id="detay_ayar_cikis_hafiza"></span></td>
                     </tr>
                     <tr>
-                        <td class="label" colspan="2">ÇKŞ YÜKSEKLİĞİ SOL</td><td><span id="detay_ayar_cikis_yuksekligi_sol"></span></td>
-                        <td class="label" colspan="2">ÖN ÇKŞ HAFIZA FAKTÖRÜ</td><td><span id="detay_ayar_on_cikis_hafiza"></span></td>
+                        <td class="label">ÇKŞ YÜKSEKLİĞİ SOL</td><td><span id="detay_ayar_cikis_yuksekligi_sol"></span></td>
+                        <td class="label">ÖN ÇKŞ HAFIZA FAKTÖRÜ</td><td><span id="detay_ayar_on_cikis_hafiza"></span></td>
                     </tr>
                     <tr>
-                        <td colspan="3"></td>
-                        <td class="label" colspan="2">ARKA ÇKŞ HFZA FAKTÖRÜ</td><td><span id="detay_ayar_arka_cikis_hafiza"></span></td>
-                    </tr>
-
-                    <tr><td colspan="6" class="section-header">ÇEKTİRME AYARLARI</td></tr>
-                    <tr>
-                        <td class="label" colspan="2">TRİO 1 ÇEKİM</td><td><span id="detay_ayar_trio1"></span></td>
-                        <td class="label" colspan="2">TRİO 4 ÇEKİM</td><td><span id="detay_ayar_trio4"></span></td>
-                    </tr>
-                    <tr>
-                        <td class="label" colspan="2">TRİO 2 ÇEKİM</td><td><span id="detay_ayar_trio2"></span></td>
-                        <td class="label" colspan="2">TRİO 5 ÇEKİM</td><td><span id="detay_ayar_trio5"></span></td>
-                    </tr>
-                    <tr>
-                        <td class="label" colspan="2">TRİO 3 ÇEKİM</td><td><span id="detay_ayar_trio3"></span></td>
-                        <td class="label" colspan="2">TRİO 6 ÇEKİM</td><td><span id="detay_ayar_trio6"></span></td>
+                        <td colspan="2"></td>
+                        <td class="label">ARKA ÇKŞ HFZA FAKTÖRÜ</td><td><span id="detay_ayar_arka_cikis_hafiza"></span></td>
                     </tr>
 
-                    <tr><td colspan="6" class="section-header">SU JETİ AYARLARI</td></tr>
+                    <tr><td colspan="4" class="section-header">ÇEKTİRME AYARLARI</td></tr>
                     <tr>
-                        <td class="label">BAR</td><td class="label" colspan="2">HZ</td>
-                        <td class="label" colspan="2">BESLEME 1</td><td><span id="detay_ayar_besleme1"></span></td>
+                        <td class="label">TRİO 1 ÇEKİM</td><td><span id="detay_ayar_trio1"></span></td>
+                        <td class="label">TRİO 4 ÇEKİM</td><td><span id="detay_ayar_trio4"></span></td>
                     </tr>
                     <tr>
-                        <td class="label">POMPA 1</td><td colspan="2"><span id="detay_ayar_pompa1"></span></td>
-                        <td class="label" colspan="2">TAMBUR 1</td><td><span id="detay_ayar_tambur1"></span></td>
+                        <td class="label">TRİO 2 ÇEKİM</td><td><span id="detay_ayar_trio2"></span></td>
+                        <td class="label">TRİO 5 ÇEKİM</td><td><span id="detay_ayar_trio5"></span></td>
                     </tr>
                     <tr>
-                        <td class="label">POMPA 2</td><td colspan="2"><span id="detay_ayar_pompa2"></span></td>
-                        <td class="label" colspan="2">TAMBUR 2</td><td><span id="detay_ayar_tambur2"></span></td>
-                    </tr>
-                    <tr>
-                        <td class="label">POMPA 3</td><td colspan="2"><span id="detay_ayar_pompa3"></span></td>
-                        <td class="label" colspan="2">TAMBUR 3</td><td><span id="detay_ayar_tambur3"></span></td>
-                    </tr>
-                    <tr>
-                        <td class="label">POMPA 4</td><td colspan="2"><span id="detay_ayar_pompa4"></span></td>
-                        <td class="label" colspan="2">BESLEME 2</td><td><span id="detay_ayar_besleme2"></span></td>
-                    </tr>
-                    <tr>
-                        <td class="label">POMPA 5</td><td colspan="2"><span id="detay_ayar_pompa5"></span></td>
-                        <td class="label" colspan="2">SIKMA FULAR</td><td><span id="detay_ayar_sikma_fular"></span></td>
-                    </tr>
-                    <tr>
-                        <td class="label">POMPA 6</td><td colspan="2"><span id="detay_ayar_pompa6"></span></td>
-                        <td class="label" colspan="2">FIRIN</td><td><span id="detay_ayar_firin"></span></td>
+                        <td class="label">TRİO 3 ÇEKİM</td><td><span id="detay_ayar_trio3"></span></td>
+                        <td class="label">TRİO 6 ÇEKİM</td><td><span id="detay_ayar_trio6"></span></td>
                     </tr>
 
-                    <tr><td colspan="6" class="section-header">HAMMADDE AYARLARI</td></tr>
+                    <tr><td colspan="4" class="section-header">SU JETİ AYARLARI</td></tr>
+                    <tr>
+                        <td class="label">BAR</td><td class="label">HZ</td>
+                        <td class="label">BESLEME 1</td><td><span id="detay_ayar_besleme1"></span></td>
+                    </tr>
+                    <tr>
+                        <td class="label">POMPA 1</td><td><span id="detay_ayar_pompa1"></span></td>
+                        <td class="label">TAMBUR 1</td><td><span id="detay_ayar_tambur1"></span></td>
+                    </tr>
+                    <tr>
+                        <td class="label">POMPA 2</td><td><span id="detay_ayar_pompa2"></span></td>
+                        <td class="label">TAMBUR 2</td><td><span id="detay_ayar_tambur2"></span></td>
+                    </tr>
+                    <tr>
+                        <td class="label">POMPA 3</td><td><span id="detay_ayar_pompa3"></span></td>
+                        <td class="label">TAMBUR 3</td><td><span id="detay_ayar_tambur3"></span></td>
+                    </tr>
+                    <tr>
+                        <td class="label">POMPA 4</td><td><span id="detay_ayar_pompa4"></span></td>
+                        <td class="label">BESLEME 2</td><td><span id="detay_ayar_besleme2"></span></td>
+                    </tr>
+                    <tr>
+                        <td class="label">POMPA 5</td><td><span id="detay_ayar_pompa5"></span></td>
+                        <td class="label">SIKMA FULAR</td><td><span id="detay_ayar_sikma_fular"></span></td>
+                    </tr>
+                    <tr>
+                        <td class="label">POMPA 6</td><td><span id="detay_ayar_pompa6"></span></td>
+                        <td class="label">FIRIN</td><td><span id="detay_ayar_firin"></span></td>
+                    </tr>
+
+                    <tr><td colspan="4" class="section-header">HAMMADDE AYARLARI</td></tr>
                     <tr>
                         <td class="label">BALKAN 1</td><td><span id="detay_ayar_balkan1"></span></td>
                         <td class="label">BALKAN 2</td><td><span id="detay_ayar_balkan2"></span></td>
-                        <td class="label">BALKAN 3</td><td><span id="detay_ayar_balkan3"></span></td>
                     </tr>
                     <tr>
-                        <td colspan="6"><span id="detay_ayar_hammadde"></span></td>
+                        <td class="label">BALKAN 3</td><td><span id="detay_ayar_balkan3"></span></td>
+                        <td colspan="2"></td>
+                    </tr>
+                    <tr>
+                        <td colspan="4"><span id="detay_ayar_hammadde"></span></td>
                     </tr>
 
-                    <tr><td colspan="6" class="section-header">KESİM EBATLARI</td></tr>
+                    <tr><td colspan="4" class="section-header">KESİM EBATLARI</td></tr>
                     <tr>
-                        <td class="label" colspan="2">KESİM ENİ</td><td><span id="detay_ayar_kesim_eni"></span></td>
-                        <td class="label">ÇAP</td><td colspan="2"><span id="detay_ayar_cap"></span></td>
+                        <td class="label">KESİM ENİ</td><td><span id="detay_ayar_kesim_eni"></span></td>
+                        <td class="label">ÇAP</td><td><span id="detay_ayar_cap"></span></td>
                     </tr>
                     <tr>
-                        <td class="label" colspan="2">SARIM METRESİ</td><td><span id="detay_ayar_sarim_metresi"></span></td>
-                        <td class="label" colspan="2">SAATLİK KG</td><td><span id="detay_ayar_saatlik_kg"></span></td>
+                        <td class="label">SARIM METRESİ</td><td><span id="detay_ayar_sarim_metresi"></span></td>
+                        <td class="label">SAATLİK KG</td><td><span id="detay_ayar_saatlik_kg"></span></td>
                     </tr>
                     <tr>
-                        <td class="label" colspan="2">FIRIN ISISI</td><td><span id="detay_ayar_firin_isisi"></span></td>
-                        <td class="label" colspan="2">HAT HIZI</td><td><span id="detay_ayar_hat_hizi"></span></td>
+                        <td class="label">FIRIN ISISI</td><td><span id="detay_ayar_firin_isisi"></span></td>
+                        <td class="label">HAT HIZI</td><td><span id="detay_ayar_hat_hizi"></span></td>
                     </tr>
                 </table>
             </div>
