@@ -840,3 +840,29 @@ td button:last-child:hover {
     }
 
 }
+/* MOBİL DİKEY (EKRANA SIĞAN) DÜZEN */
+@media (max-width: 600px) {
+    .excel-container {
+        overflow-x: hidden !important; /* Sağa/sola kaydırmayı kapatır */
+        width: 100% !important;
+    }
+    .excel-table {
+        table-layout: auto !important; /* Sütunları dikey ekrana sığdırır */
+        width: 100% !important;
+        min-width: 0 !important;
+        font-size: 8.5px !important;
+    }
+    .excel-table td {
+        padding: 2px 1px !important;
+        word-break: break-word !important;
+    }
+    .excel-table .label, .excel-table td.label {
+        font-size: 8px !important;
+        font-weight: bold !important;
+    }
+    .excel-table input {
+        font-size: 8.5px !important;
+        padding: 0 !important;
+        height: 18px !important;
+    }
+}
