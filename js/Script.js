@@ -1,6 +1,6 @@
 // ======================================================
 // ÜRETİM REÇETE YÖNETİM SİSTEMİ
-// Script.js - TAM SÜRÜM
+// Script.js - TÜM SORUNLARI DÜZELTİLMİŞ TAM SÜRÜM
 // ======================================================
 
 // ======================================================
@@ -537,18 +537,20 @@ function ara() {
 }
 
 // ======================================================
-// PDF İNDİRME (KESİM EBATLARI VE TABLO HEDEFİ)
+// PDF İNDİRME (DÜZELTİLDİ: INPUT VERİLERİ DÂHİL TAM ÇIKTI)
 // ======================================================
 function pdfIndir() {
-    const element = document.querySelector('.excel-container') || document.getElementById('detayIcerik');
+    const element = document.querySelector('.excel-container') || 
+                    document.querySelector('.container') || 
+                    document.body;
 
     if (!element) {
-        alert("Yazdırılacak reçete tablosu bulunamadı!");
+        alert("Yazdırılacak üretim ayarları tablosu bulunamadı!");
         return;
     }
 
-    const receteEl = document.getElementById('recete_no') || document.getElementById('detay_recete_no');
-    const receteNo = (receteEl && receteEl.value) ? receteEl.value.trim() : 'Recete';
+    const receteEl = document.getElementById('recete_no');
+    const receteNo = (receteEl && receteEl.value.trim()) ? receteEl.value.trim() : 'Recete';
 
     const opt = {
         margin:       [5, 5, 5, 5],
@@ -558,9 +560,16 @@ function pdfIndir() {
             scale: 2, 
             useCORS: true,
             logging: false,
-            windowWidth: 800
+            onclone: (clonedDoc) => {
+                const inputs = clonedDoc.querySelectorAll('input, select, textarea');
+                inputs.forEach(input => {
+                    if (input.value) {
+                        input.setAttribute('value', input.value);
+                    }
+                });
+            }
         },
-        jsPDF:         { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
     if (typeof html2pdf !== 'undefined') {
@@ -578,29 +587,65 @@ function detayYazdir() {
 }
 
 // ======================================================
-// PAYLAŞMA (WHATSAPP / ARAYÜZ)
+// PAYLAŞ (DÜZELTİLDİ: KESİM EBATLARI VE TÜM PARAMETRELER DÂHİL)
 // ======================================================
 async function paylas() {
-    const receteNo = getText('detay_recete_no') || document.getElementById('recete_no')?.value || '-';
-    const urunAdi = getText('detay_urun_adi') || document.getElementById('urun_adi')?.value || '-';
-    const makine = getText('detay_makine_adi') || document.getElementById('makine_adi')?.value || '-';
-    const hiz = getText('detay_hiz') || document.getElementById('hiz')?.value || '-';
-    const sicaklik = getText('detay_sicaklik') || document.getElementById('sicaklik')?.value || '-';
-    const basinc = getText('detay_basinc') || document.getElementById('basinc')?.value || '-';
+    const getV = (id) => {
+        const el = document.getElementById(id);
+        return (el && el.value && el.value.trim() !== "") ? el.value.trim() : "-";
+    };
 
-    const metin = `📄 *Üretim Reçetesi Detayı*\n\n` +
-                  `*Reçete No:* ${receteNo}\n` +
-                  `*Ürün Adı:* ${urunAdi}\n` +
-                  `*Makine:* ${makine}\n` +
-                  `*Hız:* ${hiz}\n` +
-                  `*Sıcaklık:* ${sicaklik}\n` +
-                  `*Basınç:* ${basinc}\n\n` +
-                  `Üretim Reçete Sisteminden Gönderildi.`;
+    const metin = 
+`📄 *ÜRETİM REÇETESİ TAM DETAYI*
+
+📌 *GENEL BİLGİLER*
+• Reçete No: ${getV('recete_no')}
+• Ürün Adı: ${getV('urun_adi')}
+• Makine Adı: ${getV('makine_adi')}
+• Hız: ${getV('hiz')} | Sıcaklık: ${getV('sicaklik')} | Basınç: ${getV('basinc')}
+• Gramaj: ${getV('ayar_gram')} | Renk: ${getV('ayar_renk')}
+• Tarih: ${getV('ayar_tarih')} | Firma: ${getV('ayar_firma_adi')}
+
+🌀 *TARAK & SERVOLAP*
+• Servolap: ${getV('ayar_servolap')} | Tarak Hızı: ${getV('ayar_tarak_hizi')}
+• Ana Tambur: ${getV('ayar_ana_tambur')} | Alt Ara Dofer: ${getV('ayar_alt_ara_dofer')}
+• Sıyırıcı: ${getV('ayar_siyirici')} | Üst Ara Dofer: ${getV('ayar_ust_ara_dofer')}
+• İşçi: ${getV('ayar_isci')} | Üst Sevk Doferi: ${getV('ayar_ust_sevk_doferi')}
+• Alt Sevk Doferi: ${getV('ayar_alt_sevk_doferi')} | Üst Dofer Alıcı: ${getV('ayar_ust_dofer_alici')}
+• Alt Dofer Alıcı: ${getV('ayar_alt_dofer_alici')} | Üst Sevk Bandı: ${getV('ayar_ust_sevk_bandi')}
+• Alt Sevk Bandı: ${getV('ayar_alt_sevk_bandi')}
+
+📐 *TÜLBENT & SERME*
+• Tülbent Katı: ${getV('ayar_tulbent_kati')} | Besleme Çekim: ${getV('ayar_besleme_cekim')}
+• Serme Eni Ön: ${getV('ayar_serme_eni_on')} | Serme Eni Arka: ${getV('ayar_serme_eni_arka')}
+• Bant Çekim: ${getV('ayar_bant_cekim')} | Araba Çekim: ${getV('ayar_araba_cekim')}
+
+💧 *TRİO & POMPALAR*
+• Trio (1-6): ${getV('ayar_trio1')} / ${getV('ayar_trio2')} / ${getV('ayar_trio3')} / ${getV('ayar_trio4')} / ${getV('ayar_trio5')} / ${getV('ayar_trio6')}
+• Pompalar (1-6): ${getV('ayar_pompa1')} / ${getV('ayar_pompa2')} / ${getV('ayar_pompa3')} / ${getV('ayar_pompa4')} / ${getV('ayar_pompa5')} / ${getV('ayar_pompa6')}
+
+🔥 *HAT, FIRIN & BALKAN*
+• Besleme 1-2: ${getV('ayar_besleme1')} / ${getV('ayar_besleme2')}
+• Tambur 1-3: ${getV('ayar_tambur1')} / ${getV('ayar_tambur2')} / ${getV('ayar_tambur3')}
+• Sıkma Fular: ${getV('ayar_sikma_fular')} | Fırın: ${getV('ayar_firin')}
+• Fırın Isısı: ${getV('ayar_firin_isisi')} | Hat Hızı: ${getV('ayar_hat_hizi')}
+• Balkan (1-3): ${getV('ayar_balkan1')} / ${getV('ayar_balkan2')} / ${getV('ayar_balkan3')}
+• Hammadde: ${getV('ayar_hammadde')}
+
+✂️ *KESİM EBATLARI & SARIM*
+• Kesim Eni: ${getV('ayar_kesim_eni')}
+• Çap: ${getV('ayar_cap')}
+• Sarım Metresi: ${getV('ayar_sarim_metresi')}
+• Saatlik KG: ${getV('ayar_saatlik_kg')}
+
+📝 *NOTLAR:*
+${getV('notlar')}
+`;
 
     if (navigator.share) {
         try {
             await navigator.share({
-                title: `Reçete No: ${receteNo}`,
+                title: `Reçete No: ${getV('recete_no')}`,
                 text: metin
             });
         } catch (err) {
