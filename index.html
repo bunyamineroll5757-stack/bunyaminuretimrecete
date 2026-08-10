@@ -44,6 +44,8 @@
             background: white;
             border-radius: 8px;
             padding: 5px;
+            width: 100%;
+            box-sizing: border-box;
         }
         .excel-table {
             width: 100%;
@@ -79,17 +81,59 @@
             font-size: 13px;
             text-align: center;
             width: 100%;
+            box-sizing: border-box;
+        }
+        .excel-table input::placeholder {
+            color: #1976d2;
+            opacity: 0.8;
         }
         .excel-table input:focus {
             outline: 1px solid #1976d2;
             background: #fff;
         }
 
+        /* MOBİL EKRAN OPTİMİZASYONLARI (SIĞDIRMA VE DÜZENLEME) */
         @media (max-width: 600px) {
+            .container { padding: 5px !important; }
+            .panel { padding: 8px !important; margin-bottom: 10px !important; }
             .ayar-grid { grid-template-columns: 1fr; }
-            h1 { font-size: 20px; }
-            th, td, .excel-table { font-size: 12px; }
-            .excel-table td { padding: 3px 4px; }
+            h1 { font-size: 18px; margin: 10px 0; }
+            
+            .excel-container {
+                padding: 0 !important;
+                overflow-x: hidden !important; /* Taşmayı engeller */
+            }
+
+            .excel-table {
+                width: 100% !important;
+                table-layout: fixed !important; /* Hücreleri ekrana eşit sığdırır */
+                font-size: 10px !important;
+            }
+
+            .excel-table td {
+                padding: 3px 2px !important;
+                word-wrap: break-word !important;
+                overflow-wrap: break-word !important;
+                white-space: normal !important; /* Metinlerin alt satıra geçmesini sağlar */
+            }
+
+            .excel-table .label {
+                font-size: 9px !important;
+                line-height: 1.1 !important;
+                white-space: normal !important;
+            }
+
+            .excel-table .section-header {
+                font-size: 11px !important;
+                padding: 4px 2px !important;
+            }
+
+            .excel-table input {
+                font-size: 10px !important;
+                padding: 1px 0 !important;
+            }
+            
+            th, td { font-size: 11px !important; padding: 4px !important; }
         }
 
         /* YAZDIRMA VE PDF KORUMA KODLARI */
@@ -98,7 +142,7 @@
             .modal, button, .btn, #arama, #loginModal { display: none !important; }
             .container { max-width: 100%; padding: 0; margin: 0; }
             .panel { border: none; padding: 0; margin-bottom: 10px; }
-            .excel-table { width: 100% !important; border: 1px solid #000 !important; }
+            .excel-table { width: 100% !important; border: 1px solid #000 !important; table-layout: auto !important; }
             .excel-table td { border: 1px solid #000 !important; }
             .excel-table .section-header {
                 background-color: #FFFF00 !important;
@@ -266,9 +310,9 @@
                 <!-- HAMMADDE AYARLARI -->
                 <tr><td colspan="6" class="section-header">HAMMADDE AYARLARI</td></tr>
                 <tr>
-                    <td class="label">BALKAN 1</td><td><input id="ayar_balkan1" placeholder=""></td>
-                    <td class="label">BALKAN 2</td><td><input id="ayar_balkan2" placeholder=""></td>
-                    <td class="label">BALKAN 3</td><td><input id="ayar_balkan3" placeholder=""></td>
+                    <td class="label">BALKAN 1</td><td><input id="ayar_balkan1" placeholder="%"></td>
+                    <td class="label">BALKAN 2</td><td><input id="ayar_balkan2" placeholder="%"></td>
+                    <td class="label">BALKAN 3</td><td><input id="ayar_balkan3" placeholder="%"></td>
                 </tr>
                 <tr>
                     <td colspan="6"><input id="ayar_hammadde" placeholder="" style="text-align: left; padding-left: 10px;"></td>
