@@ -3,42 +3,44 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Üretim Reçete Yönetim Sistemi</title>
 
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚙️</text></svg>">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <link rel="stylesheet" href="css/style.css?v=13">
+    <link rel="stylesheet" href="css/style.css?v=14">
 
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; background: #f4f6f8; }
-        .container { max-width: 100%; margin: auto; padding: 4px; box-sizing: border-box; }
-        h1 { text-align: center; font-size: 18px; margin: 10px 0; }
-        .panel { background: white; padding: 8px; margin-bottom: 12px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .ayar-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
-        input, textarea, button { box-sizing: border-box; font-size: 12px; }
-        input, textarea { width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 4px; }
-        textarea { min-height: 50px; }
-        button { padding: 8px 10px; border: 0; border-radius: 5px; cursor: pointer; margin: 2px; }
+        * { box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f4f6f8; width: 100vw; overflow-x: hidden; }
+        .container { width: 100%; max-width: 100%; padding: 4px; margin: 0; }
+        h1 { text-align: center; font-size: 16px; margin: 6px 0; }
+        .panel { background: white; padding: 6px; margin-bottom: 8px; border-radius: 6px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); width: 100%; }
+        .panel h2 { font-size: 14px; margin: 4px 0 8px 0; }
+        .ayar-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; }
+        input, textarea, button { font-size: 11px; }
+        input, textarea { width: 100%; padding: 4px; border: 1px solid #ccc; border-radius: 4px; }
+        textarea { min-height: 40px; }
+        button { padding: 6px 8px; border: 0; border-radius: 4px; cursor: pointer; margin: 2px 0; width: 100%; }
         .btn { background: #1976d2; color: white; }
         .btn-danger { background: #d32f2f; color: white; }
         .btn-success { background: #2e7d32; color: white; }
         .btn-secondary { background: #666; color: white; }
         .btn-warning { background: #f57c00; color: white; }
-        .table-wrap { overflow-x: auto; }
+        .table-wrap { width: 100%; overflow-x: hidden; }
         table { width: 100%; border-collapse: collapse; background: white; }
-        th, td { border: 1px solid #888; padding: 4px; text-align: left; }
+        th, td { border: 1px solid #888; padding: 2px; text-align: left; }
         th { background: #ffe600; }
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, .6); justify-content: center; align-items: center; padding: 10px; z-index: 9999; }
-        .modal-content { background: white; max-width: 700px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 10px; border-radius: 12px; box-sizing: border-box; }
-        .durum { padding: 10px; margin-bottom: 15px; border-radius: 8px; display: none; }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, .6); justify-content: center; align-items: center; padding: 4px; z-index: 9999; }
+        .modal-content { background: white; width: 100%; max-height: 95vh; overflow-y: auto; padding: 6px; border-radius: 8px; box-sizing: border-box; }
+        .durum { padding: 8px; margin-bottom: 10px; border-radius: 6px; display: none; }
 
-        /* GÖRSELE ÖZEL RENK VE SIĞMA TASARIMI */
+        /* MOBİL DİKEY EKRAN %100 SIĞMA CSS */
         .excel-container {
             background: white;
-            border-radius: 4px;
             padding: 0;
-            width: 100%;
+            width: 100% !important;
+            max-width: 100% !important;
             box-sizing: border-box;
             overflow: hidden;
         }
@@ -46,55 +48,52 @@
         .excel-table {
             width: 100% !important;
             max-width: 100% !important;
-            table-layout: fixed;
+            table-layout: fixed !important;
             border-collapse: collapse;
-            font-size: 10px;
+            font-size: 9px;
             color: #000;
         }
 
         .excel-table td {
             border: 1px solid #000 !important;
-            padding: 2px 1px;
+            padding: 1px 1px !important;
             vertical-align: middle;
             white-space: normal !important;
-            word-break: break-word;
-            overflow-wrap: break-word;
-            height: 22px;
+            word-break: break-all !important;
+            overflow-wrap: anywhere !important;
+            height: 20px;
         }
 
-        /* GÖRSELDEKİ MAVİ BAŞLIKLAR */
         .excel-table .section-header {
             background-color: #3b82f6 !important;
             font-weight: 800 !important;
             text-align: center;
-            font-size: 11px !important;
+            font-size: 10px !important;
             color: #000000 !important;
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
         }
         
-        /* GÖRSELDEKİ YEŞİL ETİKETLER */
         .excel-table .label, 
         .excel-table td.label {
             font-weight: 800 !important;
             background-color: #4ade80 !important;
-            font-size: 10px !important;
+            font-size: 9px !important;
             color: #000000 !important;
             text-align: left;
-            line-height: 1.1;
-            padding-left: 3px;
+            line-height: 1.0;
+            padding-left: 2px !important;
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
         }
 
-        /* GÖRSELDEKİ TURUNCU NOTLAR ALANI */
         .excel-table .label-orange {
             font-weight: 800 !important;
             background-color: #ffedd5 !important;
-            font-size: 10px !important;
+            font-size: 9px !important;
             color: #000000 !important;
             text-align: left;
-            padding-left: 3px;
+            padding-left: 2px !important;
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
         }
@@ -107,7 +106,7 @@
             color: #000000 !important;
             font-weight: 800 !important;
             padding: 0;
-            font-size: 10px !important;
+            font-size: 9px !important;
             text-align: center;
             width: 100%;
             box-sizing: border-box;
@@ -120,28 +119,14 @@
             background: #e3f2fd;
         }
 
-        /* YAZDIRMA VE PDF ÇIKTISI */
         @media print {
             body { background: white; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
             .modal, button, .btn, #arama, #loginModal { display: none !important; }
             .container { max-width: 100%; padding: 0; margin: 0; }
-            .panel { border: none; padding: 0; margin-bottom: 10px; box-shadow: none; }
+            .panel { border: none; padding: 0; margin-bottom: 5px; box-shadow: none; }
             .excel-container { padding: 0; overflow: visible; }
-            .excel-table { width: 100% !important; border: 1px solid #000 !important; table-layout: fixed; }
-            .excel-table td { border: 1px solid #000 !important; padding: 2px !important; }
-            
-            .excel-table .section-header {
-                background-color: #3b82f6 !important;
-                color: #000000 !important;
-            }
-            .excel-table .label {
-                background-color: #4ade80 !important;
-                color: #000000 !important;
-            }
-            .excel-table .label-orange {
-                background-color: #ffedd5 !important;
-                color: #000000 !important;
-            }
+            .excel-table { width: 100% !important; border: 1px solid #000 !important; table-layout: fixed !important; }
+            .excel-table td { border: 1px solid #000 !important; padding: 1px !important; }
         }
     </style>
 </head>
@@ -176,17 +161,17 @@
         <button class="btn-danger" type="button" onclick="adminCikis()">Çıkış Yap</button>
     </div>
 
-    <!-- ÜRETİM AYARLARI (EXCEL FORMATINDA - YENİ RENKLER) -->
+    <!-- ÜRETİM AYARLARI -->
     <div class="panel">
         <h2>Üretim Ayarları</h2>
 
         <div class="excel-container">
             <table class="excel-table">
                 <colgroup>
-                    <col style="width: 25%;">
-                    <col style="width: 15%;">
-                    <col style="width: 25%;">
-                    <col style="width: 15%;">
+                    <col style="width: 28%;">
+                    <col style="width: 12%;">
+                    <col style="width: 28%;">
+                    <col style="width: 12%;">
                     <col style="width: 10%;">
                     <col style="width: 10%;">
                 </colgroup>
@@ -376,10 +361,10 @@
             <div class="excel-container">
                 <table class="excel-table">
                     <colgroup>
-                        <col style="width: 25%;">
-                        <col style="width: 15%;">
-                        <col style="width: 25%;">
-                        <col style="width: 15%;">
+                        <col style="width: 28%;">
+                        <col style="width: 12%;">
+                        <col style="width: 28%;">
+                        <col style="width: 12%;">
                         <col style="width: 10%;">
                         <col style="width: 10%;">
                     </colgroup>
@@ -549,14 +534,14 @@
 
 <!-- ADMIN GİRİŞ MODAL -->
 <div id="loginModal" class="modal" style="display: flex;">
-    <div class="modal-content" style="max-width: 350px; text-align: center;">
+    <div class="modal-content" style="max-width: 320px; text-align: center;">
         <h2>Admin Girişi</h2>
-        <p style="color: #666; font-size: 13px;">Lütfen devam etmek için giriş yapın.</p>
+        <p style="color: #666; font-size: 12px;">Lütfen devam etmek için giriş yapın.</p>
         <br>
-        <input id="login_user" type="text" placeholder="Kullanıcı Adı" style="margin-bottom: 10px;">
-        <input id="login_pass" type="password" placeholder="Şifre" style="margin-bottom: 15px;">
-        <button class="btn-success" type="button" style="width: 100%; padding: 10px;" onclick="adminGiris()">Giriş Yap</button>
-        <p id="loginError" style="color: red; margin-top: 10px; display: none; font-size: 13px;">Kullanıcı adı veya şifre hatalı!</p>
+        <input id="login_user" type="text" placeholder="Kullanıcı Adı" style="margin-bottom: 8px;">
+        <input id="login_pass" type="password" placeholder="Şifre" style="margin-bottom: 12px;">
+        <button class="btn-success" type="button" style="width: 100%; padding: 8px;" onclick="adminGiris()">Giriş Yap</button>
+        <p id="loginError" style="color: red; margin-top: 8px; display: none; font-size: 12px;">Kullanıcı adı veya şifre hatalı!</p>
     </div>
 </div>
 
