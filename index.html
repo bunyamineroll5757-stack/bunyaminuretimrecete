@@ -13,7 +13,7 @@
     <!-- PDF Oluşturma Kütüphanesi -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
-    <link rel="stylesheet" href="css/style.css?v=7">
+    <link rel="stylesheet" href="css/style.css?v=8">
 
     <style>
         body { font-family: Arial, sans-serif; margin: 0; background: #f4f6f8; }
@@ -81,16 +81,18 @@
             white-space: nowrap;
             width: 1%; /* Etiketin sadece yazısı kadar yer kaplamasını sağlar */
             color: #1976d2 !important; /* Düzenle Butonu Mavisi */
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
         }
         
-        /* 2. SAYI VE DEĞER KUTULARI (BİR BOK BÜYÜTÜLMÜŞ, KALIN VE SİYAH) */
+        /* 2. SAYI VE DEĞER KUTULARI (BÜYÜTÜLMÜŞ, KALIN VE SİYAH) */
         .excel-table input {
             border: none;
             background: transparent;
             color: #000000 !important; /* Net Koyu Siyah */
             font-weight: 800 !important; /* Kalın Font */
             padding: 2px;
-            font-size: 13px !important; /* Bir Boy Büyütüldü */
+            font-size: 13px !important;
             text-align: center;
             width: 100%;
             min-width: 45px;
@@ -102,7 +104,7 @@
         }
         .excel-table input:focus {
             outline: 1px solid #1976d2;
-            background: #e3f2fd; /* Odaklanınca hafif mavi zemin */
+            background: #e3f2fd;
         }
 
         /* ========================================================
@@ -117,10 +119,10 @@
             font-size: 13px;
         }
 
-        /* MOBİL DİKEY EKRANDA TAMAMEN SIĞDIRMA HİLESİ */
+        /* MOBİL DİKEY EKRANDA TAMAMEN SIĞDIRMA */
         @media (max-width: 600px) {
             .excel-table {
-                min-width: 100%; /* Ekran genişliğine tam oturur */
+                min-width: 100%;
                 font-size: 9px;
             }
             .excel-table td {
@@ -135,21 +137,42 @@
             }
         }
 
-        /* YAZDIRMA VE PDF KORUMA KODLARI */
+        /* YAZDIRMA VE PDF ÇIKTISI TASARIM KORUMASI */
         @media print {
-            body { background: white; }
-            .modal, button, .btn, #arama, #loginModal { display: none !important; }
-            .container { max-width: 100%; padding: 0; margin: 0; }
-            .panel { border: none; padding: 0; margin-bottom: 10px; }
-            .excel-table { width: 100% !important; border: 1px solid #000 !important; }
-            .excel-table td { border: 1px solid #000 !important; }
-            .excel-table .section-header {
-                background-color: #FFFF00 !important;
+            body { 
+                background: white; 
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
-            .excel-table input {
+            .modal, button, .btn, #arama, #loginModal { display: none !important; }
+            .container { max-width: 100%; padding: 0; margin: 0; }
+            .panel { border: none; padding: 0; margin-bottom: 10px; box-shadow: none; }
+            
+            .excel-container { padding: 0; overflow: visible; }
+            .excel-table { width: 100% !important; border: 1px solid #000 !important; table-layout: fixed; }
+            .excel-table td { border: 1px solid #000 !important; padding: 4px !important; }
+            
+            /* Renklerin PDF/Baskıda Birebir Çıkması İçin */
+            .excel-table .section-header {
+                background-color: #FFFF00 !important;
                 color: #000000 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .excel-table .label, 
+            .excel-table td.label {
+                color: #1976d2 !important;
+                font-weight: bold !important;
+                background-color: #f8f9fa !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .excel-table input,
+            .excel-table td span, 
+            .excel-table td:not(.label):not(.section-header) {
+                color: #000000 !important;
+                font-weight: 800 !important;
+                font-size: 12px !important;
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
             }
