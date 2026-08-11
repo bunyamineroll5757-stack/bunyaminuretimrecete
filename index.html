@@ -46,7 +46,7 @@
         /* %25 - %25 - %25 - %25 EŞİT DÜZENLİ TABLO YAPISI */
         .excel-table {
             width: 100% !important;
-            table-layout: fixed !important; /* Sütun genişliklerini sabit tutar */
+            table-layout: fixed !important;
             border-collapse: collapse;
             font-size: 11px;
             color: #000;
@@ -71,6 +71,7 @@
             color: #b71c1c !important;
             background-color: #f8f9fa;
             font-size: 10px;
+            text-align: center;
         }
         
         /* INPUT VE DEĞER ALANLARI */
@@ -267,12 +268,16 @@
                 <!-- SU JETİ AYARLARI -->
                 <tr><td colspan="4" class="section-header">SU JETİ AYARLARI</td></tr>
                 <tr>
-                    <td class="label">BAR</td><td class="label">HZ</td>
-                    <td class="label">BESLEME 1</td><td><input id="ayar_besleme1"></td>
+                    <td class="label">BAR</td>
+                    <td class="label">HZ</td>
+                    <td class="label">BESLEME 1</td>
+                    <td><input id="ayar_besleme1"></td>
                 </tr>
                 <tr>
-                    <td class="label">POMPA 1</td><td><input id="ayar_pompa1"></td>
-                    <td class="label">TAMBUR 1</td><td><input id="ayar_tambur1"></td>
+                    <td><input id="ayar_pompa1_bar" placeholder="Bar"></td>
+                    <td><input id="ayar_pompa1_hz" placeholder="Hz"></td>
+                    <td class="label">TAMBUR 1</td>
+                    <td><input id="ayar_tambur1"></td>
                 </tr>
                 <tr>
                     <td class="label">POMPA 2</td><td><input id="ayar_pompa2"></td>
@@ -468,12 +473,16 @@
 
                     <tr><td colspan="4" class="section-header">SU JETİ AYARLARI</td></tr>
                     <tr>
-                        <td class="label">BAR</td><td class="label">HZ</td>
-                        <td class="label">BESLEME 1</td><td><span id="detay_ayar_besleme1"></span></td>
+                        <td class="label">BAR</td>
+                        <td class="label">HZ</td>
+                        <td class="label">BESLEME 1</td>
+                        <td><span id="detay_ayar_besleme1"></span></td>
                     </tr>
                     <tr>
-                        <td class="label">POMPA 1</td><td><span id="detay_ayar_pompa1"></span></td>
-                        <td class="label">TAMBUR 1</td><td><span id="detay_ayar_tambur1"></span></td>
+                        <td><span id="detay_ayar_pompa1_bar"></span></td>
+                        <td><span id="detay_ayar_pompa1_hz"></span></td>
+                        <td class="label">TAMBUR 1</td>
+                        <td><span id="detay_ayar_tambur1"></span></td>
                     </tr>
                     <tr>
                         <td class="label">POMPA 2</td><td><span id="detay_ayar_pompa2"></span></td>
