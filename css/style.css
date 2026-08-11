@@ -865,4 +865,27 @@ td button:last-child:hover {
         padding: 0 !important;
         height: 18px !important;
     }
+/* TÜM TABLO VE YAZDIRILABİLİR ALAN METİNLERİNİ KOYU SİYAH YAPMA */
+.excel-table, 
+.excel-table td, 
+.excel-table td.label, 
+.excel-table .section-header,
+.excel-table input,
+.excel-table span {
+    color: #000000 !important;
+    font-weight: 900 !important;
+    opacity: 1 !important;
+}
+
+/* YAZDIRMA (PRINT & PDF) AYARLARI */
+@media print {
+    * {
+        color: #000000 !important;
+        font-weight: 900 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+    .excel-table td.label {
+        color: #000000 !important;
+    }
 }
