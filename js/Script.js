@@ -681,162 +681,6 @@ function adminCikis() {
 }
 
 // ==========================================
-// BAKIM & ONARIM İŞLEMLERİ
-// ==========================================
-
-async function bakimKaydet() {
-    const tarih = document.getElementById('bakim_tarih')?.value || '';
-    const makine = document.getElementById('bakim_makine')?.value || '';
-    const tip = document.getElementById('bakim_tipi')?.value || '';
-    const personel = document.getElementById('bakim_personel')?.value || '';
-    const durum = document.getElementById('bakim_durumu')?.value || '';
-    const parca = document.getElementById('bakim_parca')?.value || '';
-    const aciklama = document.getElementById('bakim_aciklama')?.value || '';
-
-    if (!makine || !tarih) {
-        alert("Lütfen en azından Tarih ve Makine/Ekipman alanlarını doldurun!");
-        return;
-    }
-
-    const bakimData = {
-        tarih: tarih,
-        makine: makine,
-        tip: tip,
-        personel: personel,
-        durum: durum,
-        parca: parca,
-        aciklama: aciklama
-    };
-
-    const db = getSupabase();
-
-    if (db) {
-        const { data, error } = await db
-            .from('bakimlar')
-            .insert([bakimData]);
-
-        if (error) {
-            console.error("Bakım kaydı eklenirken hata oluştu:", error);
-            alert("Bakım kaydı kaydedilemedi! Hata: " + error.message);
-            return;
-        }
-    } else {
-        alert("Supabase bağlantısı kurulamadığı için kaydedilemedi.");
-        return;
-    }
-
-    alert("Bakım kaydı başarıyla işlendi!");
-    bakimFormTemizle();
-    await bakimListele();
-}
-
-function bakimFormTemizle() {
-    const alanlar = ['bakim_tarih', 'bakim_makine', 'bakim_tipi', 'bakim_personel', 'bakim_durumu', 'bakim_parca', 'bakim_aciklama'];
-    alanlar.forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.value = '';
-    });
-}
-
-async function bakimListele() {
-    const tbody = document.getElementById('bakimListe');
-    if (!tbody) return;
-
-    const db = getSupabase();
-    if (!db) return;
-
-    const { data, error } = await db
-        .from('bakimlar')
-        .select('*')
-        .order('id', { ascending: false });
-
-    if (error) {
-        console.error("Bakımlar çekilemedi:", error);
-        return;
-    }
-
-    if (!data || data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Henüz kayıtlı bakım verisi yok.</td></tr>';
-        return;
-    }
-
-    window.tumBakimlar = data;
-
-    tbody.innerHTML = '';
-    data.forEach(item => {
-        tbody.innerHTML += `
-            <tr>
-                <td>
-                    <a href="javascript:void(0)" onclick="bakimDetayGoster(${item.id})" style="color: #0056b3; font-weight: bold; text-decoration: underline;">
-                        ${guvenliMetin(item.tarih)}
-                    </a>
-                </td>
-                <td>${guvenliMetin(item.makine)}</td>
-                <td>${guvenliMetin(item.tip)}</td>
-                <td>${guvenliMetin(item.personel)}</td>
-                <td>${guvenliMetin(item.durum)}</td>
-                <td>${guvenliMetin(item.aciklama)}</td>
-                <td>
-                    <button type="button" class="btn-danger" style="padding: 2px 6px; font-size:10px;" onclick="bakimSil(${item.id})">Sil</button>
-                </td>
-            </tr>
-        `;
-    });
-}
-
-function bakimDetayGoster(id) {
-    if (!window.tumBakimlar) return;
-    
-    const kayit = window.tumBakimlar.find(b => b.id === id);
-    if (!kayit) return;
-
-    setText('bdetay_tarih', kayit.tarih);
-    setText('bdetay_makine', kayit.makine);
-    setText('bdetay_tip', kayit.tip);
-    setText('bdetay_personel', kayit.personel);
-    setText('bdetay_durum', kayit.durum);
-    setText('bdetay_parca', kayit.parca);
-    setText('bdetay_aciklama', kayit.aciklama);
-
-    const modal = document.getElementById('bakimDetayModal');
-    if (modal) modal.style.display = 'flex';
-}
-
-function bakimDetayKapat() {
-    const modal = document.getElementById('bakimDetayModal');
-    if (modal) modal.style.display = 'none';
-}
-
-async function bakimSil(id) {
-    if (!confirm("Bu bakım kaydını silmek istediğinize emin misiniz?")) return;
-
-    const db = getSupabase();
-    if (!db) return;
-
-    const { error } = await db
-        .from('bakimlar')
-        .delete()
-        .eq('id', id);
-
-    if (error) {
-        alert("Silinirken hata oluştu: " + error.message);
-    } else {
-        await bakimListele();
-    }
-}
-
-function bakimAra() {
-    const aramaElemani = document.getElementById('bakimArama');
-    if (!aramaElemani) return;
-    const aramaMetni = aramaElemani.value.toLowerCase();
-    const satirListesi = document.querySelectorAll('#bakimListe tr');
-
-    satirListesi.forEach(satir => {
-        const icerik = satir.innerText.toLowerCase();
-        satir.style.display = icerik.includes(aramaMetni) ? '' : 'none';
-    });
-}
-// ==========================================
 // BAKIM & ONARIM YÖNETİMİ
 // ==========================================
 
@@ -846,15 +690,17 @@ window.tumBakimlar = [];
 // 1. BAKIM KAYITLARINI SUPABASE'DEN ÇEKME
 async function bakimYukle() {
     try {
-        if (!window.sbClient) {
-            console.error("Supabase istemcisi bulunamadı!");
+        const db = window.sbClient || (typeof getSupabase === 'function' ? getSupabase() : null);
+
+        if (!db) {
+            setTimeout(bakimYukle, 200);
             return;
         }
 
-        const { data, error } = await window.sbClient
+        const { data, error } = await db
             .from('bakimlar')
             .select('*')
-            .order('bakim_tarih', { ascending: false });
+            .order('id', { ascending: false });
 
         if (error) {
             console.error("Bakım kayıtları yüklenirken hata:", error.message);
@@ -882,14 +728,14 @@ function bakimListele(veri) {
 
     veri.forEach((item, index) => {
         const tr = document.createElement('tr');
-        const tarihFormatted = item.bakim_tarih ? item.bakim_tarih.replace('T', ' ') : '-';
+        const tarihFormatted = item.tarih ? item.tarih.replace('T', ' ') : '-';
 
         tr.innerHTML = `
             <td>${tarihFormatted}</td>
-            <td><strong>${item.bakim_makine || '-'}</strong></td>
-            <td>${item.bakim_tipi || '-'}</td>
-            <td>${item.bakim_personel || '-'}</td>
-            <td><span class="durum-etiket">${item.bakim_durumu || '-'}</span></td>
+            <td><strong>${item.makine || '-'}</strong></td>
+            <td>${item.tip || '-'}</td>
+            <td>${item.personel || '-'}</td>
+            <td><span class="durum-etiket">${item.durum || '-'}</span></td>
             <td>
                 <button class="btn" style="padding: 4px 8px; font-size: 11px;" onclick="bakimDetayGoster(${index})">Detay</button>
                 <button class="btn-danger" style="padding: 4px 8px; font-size: 11px;" onclick="bakimSil('${item.id}')">Sil</button>
@@ -901,13 +747,13 @@ function bakimListele(veri) {
 
 // 3. YENİ BAKIM KAYDI EKLEME
 async function bakimKaydet() {
-    const tarih = document.getElementById('bakim_tarih').value;
-    const makine = document.getElementById('bakim_makine').value;
-    const tipi = document.getElementById('bakim_tipi').value;
-    const personel = document.getElementById('bakim_personel').value;
-    const durumu = document.getElementById('bakim_durumu').value;
-    const parca = document.getElementById('bakim_parca').value;
-    const aciklama = document.getElementById('bakim_aciklama').value;
+    const tarih = document.getElementById('bakim_tarih')?.value || '';
+    const makine = document.getElementById('bakim_makine')?.value || '';
+    const tip = document.getElementById('bakim_tipi')?.value || '';
+    const personel = document.getElementById('bakim_personel')?.value || '';
+    const durum = document.getElementById('bakim_durumu')?.value || '';
+    const parca = document.getElementById('bakim_parca')?.value || '';
+    const aciklama = document.getElementById('bakim_aciklama')?.value || '';
 
     if (!makine) {
         alert("Lütfen makine / ekipman adını giriniz!");
@@ -915,17 +761,23 @@ async function bakimKaydet() {
     }
 
     const yeniBakim = {
-        bakim_tarih: tarih || new Date().toISOString(),
-        bakim_makine: makine,
-        bakim_tipi: tipi,
-        bakim_personel: personel,
-        bakim_durumu: durumu,
-        bakim_parca: parca,
-        bakim_aciklama: aciklama
+        tarih: tarih || new Date().toISOString(),
+        makine: makine,
+        tip: tip,
+        personel: personel,
+        durum: durum,
+        parca: parca,
+        aciklama: aciklama
     };
 
     try {
-        const { data, error } = await window.sbClient
+        const db = window.sbClient || (typeof getSupabase === 'function' ? getSupabase() : null);
+        if (!db) {
+            alert("Supabase bağlantısı kurulamadı.");
+            return;
+        }
+
+        const { error } = await db
             .from('bakimlar')
             .insert([yeniBakim]);
 
@@ -946,7 +798,10 @@ async function bakimSil(id) {
     if (!confirm("Bu bakım kaydını silmek istediğinize emin misiniz?")) return;
 
     try {
-        const { error } = await window.sbClient
+        const db = window.sbClient || (typeof getSupabase === 'function' ? getSupabase() : null);
+        if (!db) return;
+
+        const { error } = await db
             .from('bakimlar')
             .delete()
             .eq('id', id);
@@ -963,25 +818,32 @@ async function bakimSil(id) {
 
 // 5. BAKIM ARAMA
 function bakimAra() {
-    const aramaMetni = document.getElementById('bakimArama').value.toLowerCase();
+    const aramaElemani = document.getElementById('bakimArama');
+    if (!aramaElemani) return;
+    const aramaMetni = aramaElemani.value.toLowerCase();
+
     const filtreli = window.tumBakimlar.filter(item => {
-        return (item.bakim_makine && item.bakim_makine.toLowerCase().includes(aramaMetni)) ||
-               (item.bakim_personel && item.bakim_personel.toLowerCase().includes(aramaMetni)) ||
-               (item.bakim_tipi && item.bakim_tipi.toLowerCase().includes(aramaMetni)) ||
-               (item.bakim_aciklama && item.bakim_aciklama.toLowerCase().includes(aramaMetni));
+        return (item.makine && item.makine.toLowerCase().includes(aramaMetni)) ||
+               (item.personel && item.personel.toLowerCase().includes(aramaMetni)) ||
+               (item.tip && item.tip.toLowerCase().includes(aramaMetni)) ||
+               (item.aciklama && item.aciklama.toLowerCase().includes(aramaMetni));
     });
     bakimListele(filtreli);
 }
 
 // 6. FORM TEMİZLEME
 function bakimFormTemizle() {
-    document.getElementById('bakim_tarih').value = '';
-    document.getElementById('bakim_makine').value = '';
-    document.getElementById('bakim_personel').value = '';
-    document.getElementById('bakim_parca').value = '';
-    document.getElementById('bakim_aciklama').value = '';
-    document.getElementById('bakim_tipi').selectedIndex = 0;
-    document.getElementById('bakim_durumu').selectedIndex = 0;
+    const alanlar = ['bakim_tarih', 'bakim_makine', 'bakim_personel', 'bakim_parca', 'bakim_aciklama'];
+    alanlar.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+    });
+    
+    const tipEl = document.getElementById('bakim_tipi');
+    if (tipEl) tipEl.selectedIndex = 0;
+    
+    const durumEl = document.getElementById('bakim_durumu');
+    if (durumEl) durumEl.selectedIndex = 0;
 }
 
 // 7. BAKIM DETAYINI MODALDA GÖSTERME
@@ -990,7 +852,9 @@ function bakimDetayGoster(index) {
     if (!bakim) return;
 
     const icerik = document.getElementById('bakimDetayIcerik');
-    const tarihFormatted = bakim.bakim_tarih ? bakim.bakim_tarih.replace('T', ' ') : '-';
+    if (!icerik) return;
+
+    const tarihFormatted = bakim.tarih ? bakim.tarih.replace('T', ' ') : '-';
 
     icerik.innerHTML = `
         <table class="excel-table" style="width: 100%; margin-top: 10px;">
@@ -1000,42 +864,47 @@ function bakimDetayGoster(index) {
             </tr>
             <tr>
                 <td class="label">Makine / Ekipman:</td>
-                <td><strong>${bakim.bakim_makine || '-'}</strong></td>
+                <td><strong>${bakim.makine || '-'}</strong></td>
             </tr>
             <tr>
                 <td class="label">Bakım / Arıza Tipi:</td>
-                <td>${bakim.bakim_tipi || '-'}</td>
+                <td>${bakim.tip || '-'}</td>
             </tr>
             <tr>
                 <td class="label">Müdahale Eden Personel:</td>
-                <td>${bakim.bakim_personel || '-'}</td>
+                <td>${bakim.personel || '-'}</td>
             </tr>
             <tr>
                 <td class="label">Mevcut Durum:</td>
-                <td><strong>${bakim.bakim_durumu || '-'}</strong></td>
+                <td><strong>${bakim.durum || '-'}</strong></td>
             </tr>
             <tr>
                 <td class="label">Değişen Parça / Malzeme:</td>
-                <td>${bakim.bakim_parca || 'Yok / Belirtilmedi'}</td>
+                <td>${bakim.parca || 'Yok / Belirtilmedi'}</td>
             </tr>
             <tr>
                 <td class="label" style="vertical-align: top;">Açıklama / Yapılan İşlem:</td>
-                <td style="text-align: left; white-space: pre-wrap; padding: 8px;">${bakim.bakim_aciklama || 'Açıklama girilmemiş.'}</td>
+                <td style="text-align: left; white-space: pre-wrap; padding: 8px;">${bakim.aciklama || 'Açıklama girilmemiş.'}</td>
             </tr>
         </table>
     `;
 
-    document.getElementById('bakimDetayModal').style.display = 'flex';
+    const modal = document.getElementById('bakimDetayModal');
+    if (modal) modal.style.display = 'flex';
 }
 
 // 8. BAKIM MODALINI KAPATMA
 function bakimModalKapat() {
-    document.getElementById('bakimDetayModal').style.display = 'none';
+    const modal = document.getElementById('bakimDetayModal');
+    if (modal) modal.style.display = 'none';
 }
 
 // 9. BAKIM DETAYINI YAZDIRMA / PDF
 function bakimYazdirModal() {
-    const icerik = document.getElementById('bakimDetayIcerik').innerHTML;
+    const icerikEl = document.getElementById('bakimDetayIcerik');
+    if (!icerikEl) return;
+    
+    const icerik = icerikEl.innerHTML;
     const pencere = window.open('', '', 'height=600,width=800');
     pencere.document.write('<html><head><title>Bakım & Onarım Kaydı</title>');
     pencere.document.write('<style>body{font-family:Arial,sans-serif;padding:20px;} table{width:100%;border-collapse:collapse;} td{border:1px solid #000;padding:8px;} .label{font-weight:bold;background:#f0f0f0;width:35%;}</style>');
@@ -1047,7 +916,7 @@ function bakimYazdirModal() {
     pencere.print();
 }
 
-// Sayfa ilk yüklendiğinde bakım verilerini çek
+// Sayfa yüklendiğinde otomatik başlatma
 document.addEventListener('DOMContentLoaded', function() {
     bakimYukle();
 });
