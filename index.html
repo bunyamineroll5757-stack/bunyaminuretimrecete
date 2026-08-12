@@ -170,7 +170,6 @@
                 <button type="button" class="btn-danger" onclick="adminCikis()">Çıkış Yap</button>
             </form>
         </div>
-
         <!-- ÜRETİM AYARLARI -->
         <div class="panel">
             <h2>Üretim Ayarları</h2>
@@ -334,7 +333,6 @@
                 </table>
             </div>
         </div>
-
         <!-- REÇETE LİSTESİ -->
         <div class="panel">
             <h2>Kayıtlı Reçeteler: <span id="toplamRecete">0</span></h2>
@@ -430,21 +428,32 @@
 
 </div>
 
-<!-- 1. SUPABASE JS SDK KÜTÜPHANESİ -->
+<!-- REÇETE DETAY MODAL -->
+<div id="detayModal" class="modal">
+    <div class="modal-content">
+        <div id="detayIcerik"></div>
+        <br>
+        <div style="text-align: right;">
+            <button class="btn" onclick="yazdirModal()">Yazdır / PDF</button>
+            <button class="btn-secondary" onclick="modalKapat()">Kapat</button>
+        </div>
+    </div>
+</div>
+
+<!-- SUPABASE JS SDK -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<!-- 2. SUPABASE BAĞLANTI KURULUMU -->
+<!-- SUPABASE BAĞLANTI İSTEMCİSİ -->
 <script>
     const SUPABASE_URL = "https://ihsetoxxggiaeulpqhzg.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_HoqAcz7S0ANBNyQTj6fjew_YCa_71nb"
 
-    // JS tarafındaki getSupabase() fonksiyonunun yakalaması için window nesnesine atıyoruz
     if (typeof supabase !== 'undefined') {
         window.sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     }
 </script>
 
-<!-- 3. ANA JAVASCRIPT DOSYASI (Büyük 'S' harfiyle) -->
+<!-- ANA JAVASCRIPT DOSYASI -->
 <script src="js/Script.js"></script>
 
 </body>
