@@ -836,3 +836,218 @@ function bakimAra() {
         satir.style.display = icerik.includes(aramaMetni) ? '' : 'none';
     });
 }s
+// ==========================================
+// BAKIM & ONARIM YÖNETİMİ
+// ==========================================
+
+// Küresel Bakım Dizisi
+window.tumBakimlar = [];
+
+// 1. BAKIM KAYITLARINI SUPABASE'DEN ÇEKME
+async function bakimYukle() {
+    try {
+        if (!window.sbClient) {
+            console.error("Supabase istemcisi bulunamadı!");
+            return;
+        }
+
+        const { data, error } = await window.sbClient
+            .from('bakimlar')
+            .select('*')
+            .order('bakim_tarih', { ascending: false });
+
+        if (error) {
+            console.error("Bakım kayıtları yüklenirken hata:", error.message);
+            return;
+        }
+
+        window.tumBakimlar = data || [];
+        bakimListele(window.tumBakimlar);
+    } catch (err) {
+        console.error("Bakım verisi çekilemedi:", err);
+    }
+}
+
+// 2. BAKIM LİSTESİNİ TABLOYA YAZDIRMA
+function bakimListele(veri) {
+    const liste = document.getElementById('bakimListe');
+    if (!liste) return;
+
+    liste.innerHTML = '';
+
+    if (!veri || veri.length === 0) {
+        liste.innerHTML = '<tr><td colspan="6" style="text-align:center;">Kayıtlı bakım bulunamadı.</td></tr>';
+        return;
+    }
+
+    veri.forEach((item, index) => {
+        const tr = document.createElement('tr');
+        const tarihFormatted = item.bakim_tarih ? item.bakim_tarih.replace('T', ' ') : '-';
+
+        tr.innerHTML = `
+            <td>${tarihFormatted}</td>
+            <td><strong>${item.bakim_makine || '-'}</strong></td>
+            <td>${item.bakim_tipi || '-'}</td>
+            <td>${item.bakim_personel || '-'}</td>
+            <td><span class="durum-etiket">${item.bakim_durumu || '-'}</span></td>
+            <td>
+                <button class="btn" style="padding: 4px 8px; font-size: 11px;" onclick="bakimDetayGoster(${index})">Detay</button>
+                <button class="btn-danger" style="padding: 4px 8px; font-size: 11px;" onclick="bakimSil('${item.id}')">Sil</button>
+            </td>
+        `;
+        liste.appendChild(tr);
+    });
+}
+
+// 3. YENİ BAKIM KAYDI EKLEME
+async function bakimKaydet() {
+    const tarih = document.getElementById('bakim_tarih').value;
+    const makine = document.getElementById('bakim_makine').value;
+    const tipi = document.getElementById('bakim_tipi').value;
+    const personel = document.getElementById('bakim_personel').value;
+    const durumu = document.getElementById('bakim_durumu').value;
+    const parca = document.getElementById('bakim_parca').value;
+    const aciklama = document.getElementById('bakim_aciklama').value;
+
+    if (!makine) {
+        alert("Lütfen makine / ekipman adını giriniz!");
+        return;
+    }
+
+    const yeniBakim = {
+        bakim_tarih: tarih || new Date().toISOString(),
+        bakim_makine: makine,
+        bakim_tipi: tipi,
+        bakim_personel: personel,
+        bakim_durumu: durumu,
+        bakim_parca: parca,
+        bakim_aciklama: aciklama
+    };
+
+    try {
+        const { data, error } = await window.sbClient
+            .from('bakimlar')
+            .insert([yeniBakim]);
+
+        if (error) {
+            alert("Kayıt hatası: " + error.message);
+        } else {
+            alert("Bakım kaydı başarıyla eklendi.");
+            bakimFormTemizle();
+            bakimYukle();
+        }
+    } catch (err) {
+        alert("Bağlantı hatası: " + err.message);
+    }
+}
+
+// 4. BAKIM KAYDI SİLME
+async function bakimSil(id) {
+    if (!confirm("Bu bakım kaydını silmek istediğinize emin misiniz?")) return;
+
+    try {
+        const { error } = await window.sbClient
+            .from('bakimlar')
+            .delete()
+            .eq('id', id);
+
+        if (error) {
+            alert("Silme hatası: " + error.message);
+        } else {
+            bakimYukle();
+        }
+    } catch (err) {
+        alert("Bağlantı hatası: " + err.message);
+    }
+}
+
+// 5. BAKIM ARAMA
+function bakimAra() {
+    const aramaMetni = document.getElementById('bakimArama').value.toLowerCase();
+    const filtreli = window.tumBakimlar.filter(item => {
+        return (item.bakim_makine && item.bakim_makine.toLowerCase().includes(aramaMetni)) ||
+               (item.bakim_personel && item.bakim_personel.toLowerCase().includes(aramaMetni)) ||
+               (item.bakim_tipi && item.bakim_tipi.toLowerCase().includes(aramaMetni)) ||
+               (item.bakim_aciklama && item.bakim_aciklama.toLowerCase().includes(aramaMetni));
+    });
+    bakimListele(filtreli);
+}
+
+// 6. FORM TEMİZLEME
+function bakimFormTemizle() {
+    document.getElementById('bakim_tarih').value = '';
+    document.getElementById('bakim_makine').value = '';
+    document.getElementById('bakim_personel').value = '';
+    document.getElementById('bakim_parca').value = '';
+    document.getElementById('bakim_aciklama').value = '';
+    document.getElementById('bakim_tipi').selectedIndex = 0;
+    document.getElementById('bakim_durumu').selectedIndex = 0;
+}
+
+// 7. BAKIM DETAYINI MODALDA GÖSTERME
+function bakimDetayGoster(index) {
+    const bakim = window.tumBakimlar ? window.tumBakimlar[index] : null;
+    if (!bakim) return;
+
+    const icerik = document.getElementById('bakimDetayIcerik');
+    const tarihFormatted = bakim.bakim_tarih ? bakim.bakim_tarih.replace('T', ' ') : '-';
+
+    icerik.innerHTML = `
+        <table class="excel-table" style="width: 100%; margin-top: 10px;">
+            <tr>
+                <td class="label" style="width: 35%;">Tarih & Saat:</td>
+                <td><strong>${tarihFormatted}</strong></td>
+            </tr>
+            <tr>
+                <td class="label">Makine / Ekipman:</td>
+                <td><strong>${bakim.bakim_makine || '-'}</strong></td>
+            </tr>
+            <tr>
+                <td class="label">Bakım / Arıza Tipi:</td>
+                <td>${bakim.bakim_tipi || '-'}</td>
+            </tr>
+            <tr>
+                <td class="label">Müdahale Eden Personel:</td>
+                <td>${bakim.bakim_personel || '-'}</td>
+            </tr>
+            <tr>
+                <td class="label">Mevcut Durum:</td>
+                <td><strong>${bakim.bakim_durumu || '-'}</strong></td>
+            </tr>
+            <tr>
+                <td class="label">Değişen Parça / Malzeme:</td>
+                <td>${bakim.bakim_parca || 'Yok / Belirtilmedi'}</td>
+            </tr>
+            <tr>
+                <td class="label" style="vertical-align: top;">Açıklama / Yapılan İşlem:</td>
+                <td style="text-align: left; white-space: pre-wrap; padding: 8px;">${bakim.bakim_aciklama || 'Açıklama girilmemiş.'}</td>
+            </tr>
+        </table>
+    `;
+
+    document.getElementById('bakimDetayModal').style.display = 'flex';
+}
+
+// 8. BAKIM MODALINI KAPATMA
+function bakimModalKapat() {
+    document.getElementById('bakimDetayModal').style.display = 'none';
+}
+
+// 9. BAKIM DETAYINI YAZDIRMA / PDF
+function bakimYazdirModal() {
+    const icerik = document.getElementById('bakimDetayIcerik').innerHTML;
+    const pencere = window.open('', '', 'height=600,width=800');
+    pencere.document.write('<html><head><title>Bakım & Onarım Kaydı</title>');
+    pencere.document.write('<style>body{font-family:Arial,sans-serif;padding:20px;} table{width:100%;border-collapse:collapse;} td{border:1px solid #000;padding:8px;} .label{font-weight:bold;background:#f0f0f0;width:35%;}</style>');
+    pencere.document.write('</head><body>');
+    pencere.document.write('<h2 style="text-align:center;">Bakım & Onarım Kaydı Detayı</h2>');
+    pencere.document.write(icerik);
+    pencere.document.write('</body></html>');
+    pencere.document.close();
+    pencere.print();
+}
+
+// Sayfa ilk yüklendiğinde bakım verilerini çek
+document.addEventListener('DOMContentLoaded', function() {
+    bakimYukle();
+});
