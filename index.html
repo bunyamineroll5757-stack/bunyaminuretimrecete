@@ -625,45 +625,69 @@
     </div>
 </div>
 
-<script>
-    // Sekme değiştirme fonksiyonu
-    function sekmeDegistir(tabId) {
-        document.getElementById('receteTab').style.display = 'none';
-        document.getElementById('bakimTab').style.display = 'none';
-        document.getElementById(tabId).style.display = 'block';
+// Sekme değiştirme fonksiyonu
+function sekmeDegistir(tabId) {
+    document.getElementById('receteTab').style.display = 'none';
+    document.getElementById('bakimTab').style.display = 'none';
+    document.getElementById(tabId).style.display = 'block';
+
+    if (tabId === 'bakimTab') {
+        bakimListesiniGetir();
+    }
+}
+
+// Bakım kayıtlarını Supabase'den çekme
+async function bakimListesiniGetir() {
+    const { data, error } = await _supabase
+        .from('bakim_kayitlari')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+    if (error) {
+        console.error("Bakım kayıtları çekilemedi:", error);
+        return;
     }
 
-    // Bakım kaydı fonksiyonu
-    function bakimKaydet() {
-        const tarih = document.getElementById('bakim_tarih').value;
-        const makine = document.getElementById('bakim_makine').value;
-        const tip = document.getElementById('bakim_tipi').value;
-        const yapan = document.getElementById('bakim_yapan').value;
-        const aciklama = document.getElementById('bakim_aciklama').value;
+    const tablo = document.getElementById('bakimListesi');
+    tablo.innerHTML = '';
 
-        if(!tarih || !makine || !aciklama) {
-            alert("Lütfen tarih, makine ve açıklama alanlarını doldurun.");
-            return;
-        }
-
-        const tablo = document.getElementById('bakimListesi');
-        const yeniSatir = `
+    data.forEach(item => {
+        tablo.innerHTML += `
             <tr>
-                <td style="border:1px solid #000; padding:4px; text-align:center;">${tarih}</td>
-                <td style="border:1px solid #000; padding:4px; text-align:center;">${makine}</td>
-                <td style="border:1px solid #000; padding:4px; text-align:center;">${tip}</td>
-                <td style="border:1px solid #000; padding:4px; text-align:center;">${yapan}</td>
-                <td style="border:1px solid #000; padding:4px;">${aciklama}</td>
+                <td style="border:1px solid #000; padding:4px; text-align:center;">${item.tarih || ''}</td>
+                <td style="border:1px solid #000; padding:4px; text-align:center;">${item.makine || ''}</td>
+                <td style="border:1px solid #000; padding:4px; text-align:center;">${item.islem_tipi || ''}</td>
+                <td style="border:1px solid #000; padding:4px; text-align:center;">${item.yapan || ''}</td>
+                <td style="border:1px solid #000; padding:4px;">${item.aciklama || ''}</td>
             </tr>
         `;
-        tablo.innerHTML = yeniSatir + tablo.innerHTML;
+    });
+}
 
+// Yeni Bakım Kaydı Ekleme (Supabase)
+async function bakimKaydet() {
+    const tarih = document.getElementById('bakim_tarih').value;
+    const makine = document.getElementById('bakim_makine').value;
+    const islem_tipi = document.getElementById('bakim_tipi').value;
+    const yapan = document.getElementById('bakim_yapan').value;
+    const aciklama = document.getElementById('bakim_aciklama').value;
+
+    if(!tarih || !makine || !aciklama) {
+        alert("Lütfen tarih, makine ve açıklama alanlarını doldurun.");
+        return;
+    }
+
+    const { data, error } = await _supabase
+        .from('bakim_kayitlari')
+        .insert([{ tarih, makine, islem_tipi, yapan, aciklama }]);
+
+    if (error) {
+        alert("Kayıt sırasında hata oluştu: " + error.message);
+    } else {
+        alert("Bakım kaydı başarıyla eklendi!");
         document.getElementById('bakim_makine').value = '';
         document.getElementById('bakim_yapan').value = '';
         document.getElementById('bakim_aciklama').value = '';
-        alert("Bakım kaydı eklendi!");
+        bakimListesiniGetir();
     }
-</script>
-
-</body>
-</html>
+}
