@@ -152,27 +152,23 @@
     <!-- REÇETE İŞLEMLERİ SEKMESİ -->
     <div id="receteTab" class="tab-content active">
         
-        <!-- REÇETE BİLGİLERİ -->
-        <div class="panel">
-            <h2>Reçete Bilgileri</h2>
-
-            <div class="ayar-grid">
-                <input id="recete_no" placeholder="Reçete No">
-                <input id="urun_adi" placeholder="Ürün Adı">
-                <input id="makine_adi" placeholder="Makine Adı">
-                <input id="hiz" placeholder="Hız">
-                <input id="sicaklik" placeholder="Sıcaklık">
-                <input id="basinc" placeholder="Basınç">
-            </div>
-
-            <br>
-            <textarea id="notlar" placeholder="Notlar"></textarea>
-            <br>
-
-            <button id="kaydetBtn" class="btn-success" type="button" onclick="kaydet()">Kaydet</button>
-            <button id="yeniReceteBtn" class="btn-secondary" type="button">Yeni Reçete</button>
-            <button class="btn-danger" type="button" onclick="adminCikis()">Çıkış Yap</button>
+      <!-- REÇETE BİLGİLERİ FORMU -->
+<div class="card">
+    <h2>Reçete Bilgileri</h2>
+    <form id="receteForm" onsubmit="kaydet(event)">
+        <div class="form-grid">
+            <input type="text" id="recete_no" placeholder="Reçete No">
+            <input type="text" id="urun_adi" placeholder="Ürün Adı" required>
+            <input type="text" id="makine_adi" placeholder="Makine Adı">
+            <input type="date" id="recete_tarih" placeholder="Reçete Tarihi">
         </div>
+        <textarea id="notlar" placeholder="Notlar"></textarea>
+        
+        <button type="submit" id="kaydetBtn" class="btn-primary">Kaydet</button>
+        <button type="button" class="btn-success" onclick="yeniRecete()">Yeni Reçete</button>
+        <button type="button" class="btn-danger" onclick="adminCikis()">Çıkış Yap</button>
+    </form>
+</div>
 
         <!-- ÜRETİM AYARLARI -->
         <div class="panel">
