@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Üretim Reçete Yönetim Sistemi</title>
+    <title>Üretim Reçete & Bakım Yönetim Sistemi</title>
 
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚙️</text></svg>">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -13,30 +13,34 @@
     <style>
         body { font-family: Arial, sans-serif; margin: 0; background: #f4f6f8; color: #000000; }
         .container { max-width: 100%; margin: auto; padding: 8px; box-sizing: border-box; }
-        h1 { text-align: center; font-size: 18px; margin: 10px 0; color: #000000; font-weight: bold; }
+        h1 { text-align: center; font-size: 18px; margin: 10px 0; color: #000000; }
+        h2 { color: #000000; font-weight: bold; }
         .panel { background: white; padding: 10px; margin-bottom: 12px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .panel h2 { color: #000000; font-weight: bold; margin-top: 0; }
         .ayar-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
-        input, textarea, button, select { box-sizing: border-box; font-size: 12px; color: #000000; font-weight: bold; }
-        input, textarea, select { width: 100%; padding: 6px; border: 1px solid #000; border-radius: 4px; }
+        input, textarea, select, button { box-sizing: border-box; font-size: 12px; color: #000000; }
+        input, textarea, select { width: 100%; padding: 6px; border: 1px solid #000000; border-radius: 4px; color: #000000; font-weight: normal; }
         textarea { min-height: 50px; }
-        button { padding: 8px 10px; border: 0; border-radius: 5px; cursor: pointer; margin: 2px; }
+        button { padding: 8px 10px; border: 0; border-radius: 5px; cursor: pointer; margin: 2px; font-weight: bold; }
         .btn { background: #1976d2; color: white; }
         .btn-danger { background: #d32f2f; color: white; }
         .btn-success { background: #2e7d32; color: white; }
         .btn-secondary { background: #666; color: white; }
         .btn-warning { background: #f57c00; color: white; }
+        
+        /* SEKMELER (TABS) */
+        .tab-menu { display: flex; gap: 5px; margin-bottom: 10px; }
+        .tab-btn { flex: 1; padding: 10px; background: #e0e0e0; color: #000000; border: 1px solid #000000; border-radius: 5px; font-weight: bold; cursor: pointer; text-align: center; }
+        .tab-btn.active { background: #1976d2; color: #ffffff; border-color: #1976d2; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
         .table-wrap { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; background: white; }
-        th, td { border: 1px solid #000; padding: 4px; text-align: left; color: #000000; font-weight: bold; }
+        table { width: 100%; border-collapse: collapse; background: white; color: #000000; }
+        th, td { border: 1px solid #000000; padding: 4px; text-align: left; color: #000000; }
         th { background: #ffe600; color: #000000; font-weight: bold; }
         .modal { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, .6); justify-content: center; align-items: center; padding: 10px; z-index: 9999; }
-        .modal-content { background: white; max-width: 700px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 15px; border-radius: 12px; }
+        .modal-content { background: white; max-width: 700px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 15px; border-radius: 12px; color: #000000; }
         .durum { padding: 10px; margin-bottom: 15px; border-radius: 8px; display: none; }
-
-        /* SEKME BUTONLARI */
-        .tab-menu { display: flex; gap: 8px; justify-content: center; margin-bottom: 15px; }
-        .tab-btn { padding: 10px 16px; font-weight: bold; font-size: 13px; border-radius: 6px; border: 1px solid #000; cursor: pointer; }
 
         /* TABLO DIŞ KAPSAYICISI */
         .excel-container {
@@ -54,28 +58,27 @@
             table-layout: fixed !important;
             border-collapse: collapse;
             font-size: 11px;
-            color: #000000 !important;
+            color: #000000;
         }
         .excel-table td {
-            border: 1px solid #000 !important;
+            border: 1px solid #000000 !important;
             padding: 4px;
             vertical-align: middle;
             word-break: break-word;
             color: #000000 !important;
-            font-weight: bold !important;
         }
         .excel-table .section-header {
             background-color: #FFFF00 !important;
-            font-weight: bold !important;
+            font-weight: bold;
             text-align: center;
             font-size: 12px;
-            color: #000000 !important;
             letter-spacing: 0.5px;
+            color: #000000 !important;
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
         }
         .excel-table .label, .excel-table td.label {
-            font-weight: 900 !important;
+            font-weight: 800 !important;
             color: #000000 !important;
             background-color: #f8f9fa;
             font-size: 10px;
@@ -87,7 +90,7 @@
             border: none;
             background: transparent;
             color: #000000 !important;
-            font-weight: 900 !important;
+            font-weight: bold;
             padding: 2px;
             font-size: 11px;
             text-align: center;
@@ -102,7 +105,7 @@
         .excel-table td span, 
         .excel-table td:not(.label):not(.section-header) {
             color: #000000 !important;
-            font-weight: 900 !important;
+            font-weight: 700 !important;
             text-align: center;
         }
 
@@ -116,20 +119,17 @@
 
         /* YAZDIRMA VE PDF YAPISI */
         @media print {
-            * {
-                color: #000000 !important;
-                font-weight: bold !important;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-            body { background: white; }
+            body { background: white; color: #000000; }
             .modal, button, .btn, .tab-menu, #arama, #loginModal { display: none !important; }
             .container { max-width: 100%; padding: 0; margin: 0; }
             .panel { border: none; padding: 0; margin-bottom: 10px; }
-            .excel-table { width: 100% !important; border: 1px solid #000 !important; table-layout: fixed !important; }
-            .excel-table td { border: 1px solid #000 !important; color: #000000 !important; }
+            .excel-table { width: 100% !important; border: 1px solid #000000 !important; table-layout: fixed !important; }
+            .excel-table td { border: 1px solid #000000 !important; color: #000000 !important; }
             .excel-table .section-header {
                 background-color: #FFFF00 !important;
+                color: #000000 !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
             }
         }
     </style>
@@ -139,19 +139,19 @@
 
 <div class="container">
 
-    <h1>Üretim Reçete Yönetim Sistemi</h1>
-
-    <!-- SEKME BUTONLARI -->
-    <div class="tab-menu">
-        <button class="tab-btn btn" onclick="sekmeDegistir('receteTab')">📋 Reçete Yönetimi</button>
-        <button class="tab-btn btn-warning" onclick="sekmeDegistir('bakimTab')">🛠️ Bakım & Onarım Kayıtları</button>
-    </div>
+    <h1>Üretim Reçete & Bakım Yönetim Sistemi</h1>
 
     <div id="durum" class="durum"></div>
 
-    <!-- 1. SEKME: REÇETE YÖNETİMİ -->
-    <div id="receteTab">
+    <!-- SEKMELER (TABLAR) -->
+    <div class="tab-menu">
+        <button class="tab-btn active" onclick="sekmeDegistir('receteTab', this)">Reçete İşlemleri</button>
+        <button class="tab-btn" onclick="sekmeDegistir('bakimTab', this)">Bakım & Onarım</button>
+    </div>
 
+    <!-- REÇETE İŞLEMLERİ SEKMESİ -->
+    <div id="receteTab" class="tab-content active">
+        
         <!-- REÇETE BİLGİLERİ -->
         <div class="panel">
             <h2>Reçete Bilgileri</h2>
@@ -286,7 +286,7 @@
                         <td class="label">TRİO 6 ÇEKİM</td><td><input id="ayar_trio6"></td>
                     </tr>
 
-                    <!-- SU JETİ AYARLARI -->
+                   <!-- SU JETİ AYARLARI -->
                     <tr><td colspan="4" class="section-header">SU JETİ AYARLARI</td></tr>
                     <tr>
                         <td class="label"></td>
@@ -301,34 +301,24 @@
                         <td><input id="ayar_tambur1"></td>
                     </tr>
                     <tr>
-                        <td class="label">POMPA 2</td>
-                        <td><input id="ayar_pompa2"></td>
-                        <td class="label">TAMBUR 2</td>
-                        <td><input id="ayar_tambur2"></td>
+                        <td class="label">POMPA 2</td><td><input id="ayar_pompa2"></td>
+                        <td class="label">TAMBUR 2</td><td><input id="ayar_tambur2"></td>
                     </tr>
                     <tr>
-                        <td class="label">POMPA 3</td>
-                        <td><input id="ayar_pompa3"></td>
-                        <td class="label">TAMBUR 3</td>
-                        <td><input id="ayar_tambur3"></td>
+                        <td class="label">POMPA 3</td><td><input id="ayar_pompa3"></td>
+                        <td class="label">TAMBUR 3</td><td><input id="ayar_tambur3"></td>
                     </tr>
                     <tr>
-                        <td class="label">POMPA 4</td>
-                        <td><input id="ayar_pompa4"></td>
-                        <td class="label">BESLEME 2</td>
-                        <td><input id="ayar_besleme2"></td>
+                        <td class="label">POMPA 4</td><td><input id="ayar_pompa4"></td>
+                        <td class="label">BESLEME 2</td><td><input id="ayar_besleme2"></td>
                     </tr>
                     <tr>
-                        <td class="label">POMPA 5</td>
-                        <td><input id="ayar_pompa5"></td>
-                        <td class="label">SIKMA FULAR</td>
-                        <td><input id="ayar_sikma_fular"></td>
+                        <td class="label">POMPA 5</td><td><input id="ayar_pompa5"></td>
+                        <td class="label">SIKMA FULAR</td><td><input id="ayar_sikma_fular"></td>
                     </tr>
                     <tr>
-                        <td class="label">POMPA 6</td>
-                        <td><input id="ayar_pompa6"></td>
-                        <td class="label">FIRIN</td>
-                        <td><input id="ayar_firin"></td>
+                        <td class="label">POMPA 6</td><td><input id="ayar_pompa6"></td>
+                        <td class="label">FIRIN</td><td><input id="ayar_firin"></td>
                     </tr>
 
                     <!-- HAMMADDE AYARLARI -->
@@ -390,42 +380,76 @@
 
     </div>
 
-    <!-- 2. SEKME: BAKIM & ONARIM KAYITLARI -->
-    <div id="bakimTab" style="display: none;">
+    <!-- BAKIM & ONARIM SEKMESİ -->
+    <div id="bakimTab" class="tab-content">
         <div class="panel">
-            <h2>Bakım / Tamir / Parça Değişimi Ekle</h2>
+            <h2>Bakım & Onarım Kaydı Ekle / Düzenle</h2>
             <div class="ayar-grid">
-                <input id="bakim_tarih" type="date">
-                <input id="bakim_makine" placeholder="Makine Adı / Bölüm">
-                <select id="bakim_tipi">
-                    <option value="Bakım">Periyodik Bakım</option>
-                    <option value="Tamir">Tamir / Arıza</option>
-                    <option value="Parça Değişimi">Parça Değişimi</option>
-                </select>
-                <input id="bakim_yapan" placeholder="İşlemi Yapan Kişi / Firma">
+                <div>
+                    <label style="font-weight: bold; display: block; margin-bottom: 2px;">Tarih & Saat</label>
+                    <input id="bakim_tarih" type="datetime-local">
+                </div>
+                <div>
+                    <label style="font-weight: bold; display: block; margin-bottom: 2px;">Makine / Ekipman</label>
+                    <input id="bakim_makine" placeholder="Örn: Su Jeti Pompa 1">
+                </div>
+                <div>
+                    <label style="font-weight: bold; display: block; margin-bottom: 2px;">Arıza / Bakım Tipi</label>
+                    <select id="bakim_tipi">
+                        <option value="Mekanik">Mekanik Arıza</option>
+                        <option value="Elektrik">Elektrik / Elektronik</option>
+                        <option value="Periyodik">Periyodik Bakım</option>
+                        <option value="Yazılım">Yazılım / Otomasyon</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-weight: bold; display: block; margin-bottom: 2px;">Müdahale Eden Personel</label>
+                    <input id="bakim_personel" placeholder="Teknisyen / Operatör">
+                </div>
+                <div>
+                    <label style="font-weight: bold; display: block; margin-bottom: 2px;">Durum</label>
+                    <select id="bakim_durumu">
+                        <option value="Tamamlandı">Tamamlandı</option>
+                        <option value="Devam Ediyor">Devam Ediyor</option>
+                        <option value="Parça Bekliyor">Parça Bekliyor</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-weight: bold; display: block; margin-bottom: 2px;">Değişen Parça / Malzeme</label>
+                    <input id="bakim_parca" placeholder="Varsa değişen parçayı yazın">
+                </div>
             </div>
+
             <br>
-            <textarea id="bakim_aciklama" placeholder="Yapılan işlem detayı, değişen parçalar, notlar..."></textarea>
+            <textarea id="bakim_aciklama" placeholder="Yapılan işlem ve arıza detay açıklaması..."></textarea>
             <br>
-            <button class="btn-success" type="button" onclick="bakimKaydet()">Bakım Kaydını Kaydet</button>
+
+            <button class="btn-success" type="button" onclick="bakimKaydet()">Bakım Kaydını İşle</button>
+            <button class="btn-secondary" type="button" onclick="bakimFormTemizle()">Temizle</button>
         </div>
 
-        <!-- BAKIM GEÇMİŞİ LİSTESİ -->
         <div class="panel">
-            <h2>Bakım & Onarım Geçmişi</h2>
+            <h2>Bakım ve Arıza Geçmişi</h2>
+            <input id="bakimArama" placeholder="Bakım kayıtlarında ara..." oninput="bakimAra()">
+            <br><br>
+
             <div class="table-wrap">
-                <table class="excel-table">
+                <table>
                     <thead>
-                        <tr style="background: #ffe600;">
-                            <th style="padding: 6px; border: 1px solid #000; text-align: center;">Tarih</th>
-                            <th style="padding: 6px; border: 1px solid #000; text-align: center;">Makine</th>
-                            <th style="padding: 6px; border: 1px solid #000; text-align: center;">İşlem Tipi</th>
-                            <th style="padding: 6px; border: 1px solid #000; text-align: center;">Yapan</th>
-                            <th style="padding: 6px; border: 1px solid #000; text-align: center;">Açıklama / Detay</th>
+                        <tr>
+                            <th>Tarih</th>
+                            <th>Makine</th>
+                            <th>Tip</th>
+                            <th>Personel</th>
+                            <th>Durum</th>
+                            <th>Açıklama</th>
+                            <th>İşlem</th>
                         </tr>
                     </thead>
-                    <tbody id="bakimListesi">
-                        <!-- Kayıtlar Supabase/JS ile yüklenecektir -->
+                    <tbody id="bakimListe">
+                        <tr>
+                            <td colspan="7" style="text-align: center;">Henüz kayıtlı bakım verisi yok.</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -549,7 +573,7 @@
                     <tr><td colspan="4" class="section-header">SU JETİ AYARLARI</td></tr>
                     <tr>
                         <td class="label"></td>
-                        <td class="label">BAR</td>
+                        <td class="label">HZ</td>
                         <td class="label">BESLEME 1</td>
                         <td><span id="detay_ayar_besleme1"></span></td>
                     </tr>
@@ -560,34 +584,24 @@
                         <td><span id="detay_ayar_tambur1"></span></td>
                     </tr>
                     <tr>
-                        <td class="label">POMPA 2</td>
-                        <td><span id="detay_ayar_pompa2"></span></td>
-                        <td class="label">TAMBUR 2</td>
-                        <td><span id="detay_ayar_tambur2"></span></td>
+                        <td class="label">POMPA 2</td><td><span id="detay_ayar_pompa2"></span></td>
+                        <td class="label">TAMBUR 2</td><td><span id="detay_ayar_tambur2"></span></td>
                     </tr>
                     <tr>
-                        <td class="label">POMPA 3</td>
-                        <td><span id="detay_ayar_pompa3"></span></td>
-                        <td class="label">TAMBUR 3</td>
-                        <td><span id="detay_ayar_tambur3"></span></td>
+                        <td class="label">POMPA 3</td><td><span id="detay_ayar_pompa3"></span></td>
+                        <td class="label">TAMBUR 3</td><td><span id="detay_ayar_tambur3"></span></td>
                     </tr>
                     <tr>
-                        <td class="label">POMPA 4</td>
-                        <td><span id="detay_ayar_pompa4"></span></td>
-                        <td class="label">BESLEME 2</td>
-                        <td><span id="detay_ayar_besleme2"></span></td>
+                        <td class="label">POMPA 4</td><td><span id="detay_ayar_pompa4"></span></td>
+                        <td class="label">BESLEME 2</td><td><span id="detay_ayar_besleme2"></span></td>
                     </tr>
                     <tr>
-                        <td class="label">POMPA 5</td>
-                        <td><span id="detay_ayar_pompa5"></span></td>
-                        <td class="label">SIKMA FULAR</td>
-                        <td><span id="detay_ayar_sikma_fular"></span></td>
+                        <td class="label">POMPA 5</td><td><span id="detay_ayar_pompa5"></span></td>
+                        <td class="label">SIKMA FULAR</td><td><span id="detay_ayar_sikma_fular"></span></td>
                     </tr>
                     <tr>
-                        <td class="label">POMPA 6</td>
-                        <td><span id="detay_ayar_pompa6"></span></td>
-                        <td class="label">FIRIN</td>
-                        <td><span id="detay_ayar_firin"></span></td>
+                        <td class="label">POMPA 6</td><td><span id="detay_ayar_pompa6"></span></td>
+                        <td class="label">FIRIN</td><td><span id="detay_ayar_firin"></span></td>
                     </tr>
 
                     <tr><td colspan="4" class="section-header">HAMMADDE AYARLARI</td></tr>
@@ -621,218 +635,40 @@
         </div>
 
         <br>
-        <button class="btn-secondary" onclick="modalKapat()">Kapat</button>
+        <button class="btn" type="button" onclick="detaydanDuzenle()">Düzenle</button>
+        <button class="btn-success" type="button" onclick="detayKopyala()">Kopyala</button>
+        <button class="btn" type="button" onclick="detayYazdir()">Yazdır</button>
+        <button class="btn-danger" type="button" onclick="pdfIndir()">PDF İndir</button>
+        <button class="btn-warning" type="button" onclick="paylas()">Paylaş</button>
+        <button class="btn-secondary" type="button" onclick="detayKapat()">Kapat</button>
     </div>
 </div>
 
+<!-- ADMIN GİRİŞ MODAL -->
+<div id="loginModal" class="modal" style="display: flex;">
+    <div class="modal-content" style="max-width: 350px; text-align: center;">
+        <h2>Admin Girişi</h2>
+        <p style="color: #000000; font-size: 13px;">Lütfen devam etmek için giriş yapın.</p>
+        <br>
+        <input id="login_user" type="text" placeholder="Kullanıcı Adı" style="margin-bottom: 10px;">
+        <input id="login_pass" type="password" placeholder="Şifre" style="margin-bottom: 15px;">
+        <button class="btn-success" type="button" style="width: 100%; padding: 10px;" onclick="adminGiris()">Giriş Yap</button>
+        <p id="loginError" style="color: red; margin-top: 10px; display: none; font-size: 13px; font-weight: bold;">Kullanıcı adı veya şifre hatalı!</p>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase.js"></script>
+<script src="js/Script.js"></script>
+
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        if (typeof _supabase !== 'undefined') {
-            receteleriGetir();
-        }
-    });
-
-    // Sekme Değiştirme
-    function sekmeDegistir(tabId) {
-        document.getElementById('receteTab').style.display = 'none';
-        document.getElementById('bakimTab').style.display = 'none';
-        document.getElementById(tabId).style.display = 'block';
-
-        if (tabId === 'bakimTab') {
-            bakimListesiniGetir();
-        } else if (tabId === 'receteTab') {
-            receteleriGetir();
-        }
-    }
-
-    // REÇETE FONKSİYONLARI
-    async function receteleriGetir() {
-        if (typeof _supabase === 'undefined') return;
-        const { data, error } = await _supabase
-            .from('receteler')
-            .select('*')
-            .order('created_at', { ascending: false });
-
-        if (error) {
-            console.error("Reçeteler yüklenemedi:", error.message);
-            return;
-        }
-
-        const liste = document.getElementById('liste');
-        liste.innerHTML = '';
-        document.getElementById('toplamRecete').innerText = data.length;
-
-        data.forEach(item => {
-            liste.innerHTML += `
-                <tr>
-                    <td>${item.recete_no || ''}</td>
-                    <td>${item.urun_adi || ''}</td>
-                    <td>${item.makine_adi || ''}</td>
-                    <td>${item.hiz || ''}</td>
-                    <td>${item.sicaklik || ''}</td>
-                    <td>${item.basinc || ''}</td>
-                    <td>
-                        <button class="btn" onclick='detayGoster(${JSON.stringify(item)})'>Detay</button>
-                        <button class="btn-danger" onclick="receteSil(${item.id})">Sil</button>
-                    </td>
-                </tr>
-            `;
-        });
-    }
-
-    function detayGoster(data) {
-        // Genel Bilgiler
-        document.getElementById('detay_recete_no').innerText = data.recete_no || '';
-        document.getElementById('detay_urun_adi').innerText = data.urun_adi || '';
-        document.getElementById('detay_makine_adi').innerText = data.makine_adi || '';
-        document.getElementById('detay_hiz').innerText = data.hiz || '';
-        document.getElementById('detay_sicaklik').innerText = data.sicaklik || '';
-        document.getElementById('detay_basinc').innerText = data.basinc || '';
-        document.getElementById('detay_notlar').innerText = data.notlar || '';
-
-        // Detaylı Ayarlar
-        document.getElementById('detay_ayar_gram').innerText = data.ayar_gram || '';
-        document.getElementById('detay_ayar_renk').innerText = data.ayar_renk || '';
-        document.getElementById('detay_ayar_tarih').innerText = data.ayar_tarih || '';
-        document.getElementById('detay_ayar_servolap').innerText = data.ayar_servolap || '';
-        document.getElementById('detay_ayar_tarak_hizi').innerText = data.ayar_tarak_hizi || '';
-        document.getElementById('detay_ayar_firma_adi').innerText = data.ayar_firma_adi || '';
-
-        // Tarak Ayarları
-        document.getElementById('detay_ayar_ana_tambur').innerText = data.ayar_ana_tambur || '';
-        document.getElementById('detay_ayar_alt_ara_dofer').innerText = data.ayar_alt_ara_dofer || '';
-        document.getElementById('detay_ayar_siyirici').innerText = data.ayar_siyirici || '';
-        document.getElementById('detay_ayar_ust_ara_dofer').innerText = data.ayar_ust_ara_dofer || '';
-        document.getElementById('detay_ayar_isci').innerText = data.ayar_isci || '';
-        document.getElementById('detay_ayar_ust_sevk_doferi').innerText = data.ayar_ust_sevk_doferi || '';
-        document.getElementById('detay_ayar_alt_sevk_doferi').innerText = data.ayar_alt_sevk_doferi || '';
-        document.getElementById('detay_ayar_ust_dofer_alici').innerText = data.ayar_ust_dofer_alici || '';
-        document.getElementById('detay_ayar_alt_dofer_alici').innerText = data.ayar_alt_dofer_alici || '';
-        document.getElementById('detay_ayar_ust_sevk_bandi').innerText = data.ayar_ust_sevk_bandi || '';
-        document.getElementById('detay_ayar_alt_sevk_bandi').innerText = data.ayar_alt_sevk_bandi || '';
-
-        // Serici Ayarları
-        document.getElementById('detay_ayar_tulbent_kati').innerText = data.ayar_tulbent_kati || '';
-        document.getElementById('detay_ayar_besleme_cekim').innerText = data.ayar_besleme_cekim || '';
-        document.getElementById('detay_ayar_serme_eni_on').innerText = data.ayar_serme_eni_on || '';
-        document.getElementById('detay_ayar_bant_cekim').innerText = data.ayar_bant_cekim || '';
-        document.getElementById('detay_ayar_serme_eni_arka').innerText = data.ayar_serme_eni_arka || '';
-        document.getElementById('detay_ayar_araba_cekim').innerText = data.ayar_araba_cekim || '';
-        document.getElementById('detay_ayar_cikis_yuksekligi_sag').innerText = data.ayar_cikis_yuksekligi_sag || '';
-        document.getElementById('detay_ayar_cikis_hafiza').innerText = data.ayar_cikis_hafiza || '';
-        document.getElementById('detay_ayar_cikis_yuksekligi_sol').innerText = data.ayar_cikis_yuksekligi_sol || '';
-        document.getElementById('detay_ayar_on_cikis_hafiza').innerText = data.ayar_on_cikis_hafiza || '';
-        document.getElementById('detay_ayar_arka_cikis_hafiza').innerText = data.ayar_arka_cikis_hafiza || '';
-
-        // Çektirme Ayarları
-        document.getElementById('detay_ayar_trio1').innerText = data.ayar_trio1 || '';
-        document.getElementById('detay_ayar_trio2').innerText = data.ayar_trio2 || '';
-        document.getElementById('detay_ayar_trio3').innerText = data.ayar_trio3 || '';
-        document.getElementById('detay_ayar_trio4').innerText = data.ayar_trio4 || '';
-        document.getElementById('detay_ayar_trio5').innerText = data.ayar_trio5 || '';
-        document.getElementById('detay_ayar_trio6').innerText = data.ayar_trio6 || '';
-
-        // Su Jeti Ayarları
-        document.getElementById('detay_ayar_besleme1').innerText = data.ayar_besleme1 || '';
-        document.getElementById('detay_ayar_pompa1').innerText = data.ayar_pompa1 || '';
-        document.getElementById('detay_ayar_tambur1').innerText = data.ayar_tambur1 || '';
-        document.getElementById('detay_ayar_pompa2').innerText = data.ayar_pompa2 || '';
-        document.getElementById('detay_ayar_tambur2').innerText = data.ayar_tambur2 || '';
-        document.getElementById('detay_ayar_pompa3').innerText = data.ayar_pompa3 || '';
-        document.getElementById('detay_ayar_tambur3').innerText = data.ayar_tambur3 || '';
-        document.getElementById('detay_ayar_pompa4').innerText = data.ayar_pompa4 || '';
-        document.getElementById('detay_ayar_besleme2').innerText = data.ayar_besleme2 || '';
-        document.getElementById('detay_ayar_pompa5').innerText = data.ayar_pompa5 || '';
-        document.getElementById('detay_ayar_sikma_fular').innerText = data.ayar_sikma_fular || '';
-        document.getElementById('detay_ayar_pompa6').innerText = data.ayar_pompa6 || '';
-        document.getElementById('detay_ayar_firin').innerText = data.ayar_firin || '';
-
-        // Hammadde Ayarları
-        document.getElementById('detay_ayar_balkan1').innerText = data.ayar_balkan1 || '';
-        document.getElementById('detay_ayar_balkan2').innerText = data.ayar_balkan2 || '';
-        document.getElementById('detay_ayar_balkan3').innerText = data.ayar_balkan3 || '';
-        document.getElementById('detay_ayar_hammadde').innerText = data.ayar_hammadde || '';
-
-        // Kesim Ebatları
-        document.getElementById('detay_ayar_kesim_eni').innerText = data.ayar_kesim_eni || '';
-        document.getElementById('detay_ayar_cap').innerText = data.ayar_cap || '';
-        document.getElementById('detay_ayar_sarim_metresi').innerText = data.ayar_sarim_metresi || '';
-        document.getElementById('detay_ayar_saatlik_kg').innerText = data.ayar_saatlik_kg || '';
-        document.getElementById('detay_ayar_firin_isisi').innerText = data.ayar_firin_isisi || '';
-        document.getElementById('detay_ayar_hat_hizi').innerText = data.ayar_hat_hizi || '';
-
-        document.getElementById('detayModal').style.display = 'flex';
-    }
-
-    function modalKapat() {
-        document.getElementById('detayModal').style.display = 'none';
-    }
-
-    async function receteSil(id) {
-        if (!confirm("Bu reçeteyi silmek istediğinize emin misiniz?")) return;
-        const { error } = await _supabase.from('receteler').delete().eq('id', id);
-
-        if (error) {
-            alert("Silme işlemi başarısız: " + error.message);
-        } else {
-            receteleriGetir();
-        }
-    }
-
-    // BAKIM VE ONARIM İŞLEMLERİ
-    async function bakimListesiniGetir() {
-        if (typeof _supabase === 'undefined') return;
-        const { data, error } = await _supabase
-            .from('bakim_kayitlari')
-            .select('*')
-            .order('created_at', { ascending: false });
-
-        if (error) {
-            console.error("Bakım kayıtları çekilemedi:", error.message);
-            return;
-        }
-
-        const tablo = document.getElementById('bakimListesi');
-        tablo.innerHTML = '';
-
-        data.forEach(item => {
-            tablo.innerHTML += `
-                <tr>
-                    <td style="border:1px solid #000; padding:4px; text-align:center;">${item.tarih || ''}</td>
-                    <td style="border:1px solid #000; padding:4px; text-align:center;">${item.makine || ''}</td>
-                    <td style="border:1px solid #000; padding:4px; text-align:center;">${item.islem_tipi || ''}</td>
-                    <td style="border:1px solid #000; padding:4px; text-align:center;">${item.yapan || ''}</td>
-                    <td style="border:1px solid #000; padding:4px;">${item.aciklama || ''}</td>
-                </tr>
-            `;
-        });
-    }
-
-    async function bakimKaydet() {
-        const tarih = document.getElementById('bakim_tarih').value;
-        const makine = document.getElementById('bakim_makine').value;
-        const islem_tipi = document.getElementById('bakim_tipi').value;
-        const yapan = document.getElementById('bakim_yapan').value;
-        const aciklama = document.getElementById('bakim_aciklama').value;
-
-        if(!tarih || !makine || !aciklama) {
-            alert("Lütfen tarih, makine ve açıklama alanlarını doldurun.");
-            return;
-        }
-
-        const { error } = await _supabase
-            .from('bakim_kayitlari')
-            .insert([{ tarih, makine, islem_tipi, yapan, aciklama }]);
-
-        if (error) {
-            alert("Kayıt hatası: " + error.message);
-        } else {
-            alert("Bakım kaydı başarıyla eklendi!");
-            document.getElementById('bakim_makine').value = '';
-            document.getElementById('bakim_yapan').value = '';
-            document.getElementById('bakim_aciklama').value = '';
-            bakimListesiniGetir();
-        }
+    // Sekmeler Arası Geçiş
+    function sekmeDegistir(tabId, element) {
+        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        
+        document.getElementById(tabId).classList.add('active');
+        element.classList.add('active');
     }
 </script>
 
