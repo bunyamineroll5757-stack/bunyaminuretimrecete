@@ -1,674 +1,830 @@
-<!DOCTYPE html>
-<html lang="tr">
+// ======================================================
+// ÜRETİM REÇETE & BAKIM YÖNETİM SİSTEMİ
+// Script.js - EKSİKSİZ TAM SÜRÜM
+// ======================================================
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Üretim Reçete & Bakım Yönetim Sistemi</title>
+// ======================================================
+// DEĞİŞKENLER
+// ======================================================
+let secilenId = null;
+let detaydakiId = null;
 
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚙️</text></svg>">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <link rel="stylesheet" href="css/style.css?v=6">
+// ======================================================
+// SUPABASE KONTROLÜ
+// ======================================================
+function getSupabase() {
+    if (window.sbClient) return window.sbClient;
+    if (window.supabaseClient) return window.supabaseClient;
+    if (window.supabase && typeof window.supabase.from === 'function') return window.supabase;
+    console.error("Supabase bağlantısı bulunamadı.");
+    return null;
+}
 
-    <style>
-        body { font-family: Arial, sans-serif; margin: 0; background: #f4f6f8; color: #000000; }
-        .container { max-width: 100%; margin: auto; padding: 8px; box-sizing: border-box; }
-        h1 { text-align: center; font-size: 18px; margin: 10px 0; color: #000000; }
-        h2 { color: #000000; font-weight: bold; }
-        .panel { background: white; padding: 10px; margin-bottom: 12px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .ayar-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
-        input, textarea, select, button { box-sizing: border-box; font-size: 12px; color: #000000; }
-        input, textarea, select { width: 100%; padding: 6px; border: 1px solid #000000; border-radius: 4px; color: #000000; font-weight: normal; }
-        textarea { min-height: 50px; }
-        button { padding: 8px 10px; border: 0; border-radius: 5px; cursor: pointer; margin: 2px; font-weight: bold; }
-        .btn { background: #1976d2; color: white; }
-        .btn-danger { background: #d32f2f; color: white; }
-        .btn-success { background: #2e7d32; color: white; }
-        .btn-secondary { background: #666; color: white; }
-        .btn-warning { background: #f57c00; color: white; }
-        
-        /* SEKMELER (TABS) */
-        .tab-menu { display: flex; gap: 5px; margin-bottom: 10px; }
-        .tab-btn { flex: 1; padding: 10px; background: #e0e0e0; color: #000000; border: 1px solid #000000; border-radius: 5px; font-weight: bold; cursor: pointer; text-align: center; }
-        .tab-btn.active { background: #1976d2; color: #ffffff; border-color: #1976d2; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
+// ======================================================
+// ÜRETİM AYARLARINI TOPLA
+// ======================================================
+function uretimAyarlariTopla() {
+    const ayarlar = {};
+    const alanlar = [
+        "ayar_gram", "ayar_renk", "ayar_tarih", "ayar_servolap", "ayar_tarak_hizi", "ayar_firma_adi",
+        "ayar_ana_tambur", "ayar_alt_ara_dofer", "ayar_siyirici", "ayar_ust_ara_dofer", "ayar_isci",
+        "ayar_ust_sevk_doferi", "ayar_alt_sevk_doferi", "ayar_ust_dofer_alici", "ayar_alt_dofer_alici",
+        "ayar_ust_sevk_bandi", "ayar_alt_sevk_bandi",
+        "ayar_tulbent_kati", "ayar_besleme_cekim", "ayar_serme_eni_on", "ayar_bant_cekim",
+        "ayar_serme_eni_arka", "ayar_araba_cekim", "ayar_cikis_yuksekligi_sag", "ayar_cikis_hafiza",
+        "ayar_on_cikis_hafiza", "ayar_cikis_yuksekligi_sol", "ayar_arka_cikis_hafiza",
+        "ayar_trio1", "ayar_trio2", "ayar_trio3", "ayar_trio4", "ayar_trio5", "ayar_trio6",
+        "ayar_pompa1", "ayar_pompa2", "ayar_pompa3", "ayar_pompa4", "ayar_pompa5", "ayar_pompa6",
+        "ayar_besleme1", "ayar_tambur1", "ayar_tambur2", "ayar_tambur3", "ayar_besleme2", "ayar_sikma_fular", "ayar_firin",
+        "ayar_balkan1", "ayar_balkan2", "ayar_balkan3", "ayar_hammadde",
+        "ayar_kesim_eni", "ayar_cap", "ayar_sarim_metresi", "ayar_saatlik_kg", "ayar_firin_isisi", "ayar_hat_hizi"
+    ];
 
-        .table-wrap { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; background: white; color: #000000; }
-        th, td { border: 1px solid #000000; padding: 4px; text-align: left; color: #000000; }
-        th { background: #ffe600; color: #000000; font-weight: bold; }
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, .6); justify-content: center; align-items: center; padding: 10px; z-index: 9999; }
-        .modal-content { background: white; max-width: 700px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 15px; border-radius: 12px; color: #000000; }
-        .durum { padding: 10px; margin-bottom: 15px; border-radius: 8px; display: none; }
-
-        /* TABLO DIŞ KAPSAYICISI */
-        .excel-container {
-            background: white;
-            border-radius: 6px;
-            padding: 2px;
-            width: 100%;
-            box-sizing: border-box;
-            overflow-x: auto;
+    alanlar.forEach(function(id) {
+        const eleman = document.getElementById(id);
+        if (eleman) {
+            ayarlar[id] = eleman.value.trim();
         }
+    });
 
-        /* %25 - %25 - %25 - %25 EŞİT DÜZENLİ TABLO YAPISI */
-        .excel-table {
-            width: 100% !important;
-            table-layout: fixed !important;
-            border-collapse: collapse;
-            font-size: 11px;
-            color: #000000;
+    return ayarlar;
+}
+
+// ======================================================
+// ÜRETİM AYARLARINI FORMA YÜKLE
+// ======================================================
+function uretimAyarlariYukle(ayarlar) {
+    if (!ayarlar) return;
+    Object.keys(ayarlar).forEach(function(id) {
+        const eleman = document.getElementById(id);
+        if (eleman) {
+            eleman.value = (ayarlar[id] === null || ayarlar[id] === undefined) ? "" : ayarlar[id];
         }
-        .excel-table td {
-            border: 1px solid #000000 !important;
-            padding: 4px;
-            vertical-align: middle;
-            word-break: break-word;
-            color: #000000 !important;
-        }
-        .excel-table .section-header {
-            background-color: #FFFF00 !important;
-            font-weight: bold;
-            text-align: center;
-            font-size: 12px;
-            letter-spacing: 0.5px;
-            color: #000000 !important;
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
-        }
-        .excel-table .label, .excel-table td.label {
-            font-weight: 800 !important;
-            color: #000000 !important;
-            background-color: #f8f9fa;
-            font-size: 10px;
-            text-align: center;
-        }
-        
-        /* INPUT VE DEĞER ALANLARI */
-        .excel-table input {
-            border: none;
-            background: transparent;
-            color: #000000 !important;
-            font-weight: bold;
-            padding: 2px;
-            font-size: 11px;
-            text-align: center;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        .excel-table input:focus {
-            outline: 1px solid #1976d2;
-            background: #fff;
-        }
+    });
+}
 
-        .excel-table td span, 
-        .excel-table td:not(.label):not(.section-header) {
-            color: #000000 !important;
-            font-weight: 700 !important;
-            text-align: center;
-        }
+// ======================================================
+// TÜM FORMU TEMİZLE
+// ======================================================
+function temizleForm() {
+    const alanlar = [
+        "recete_no", "urun_adi", "makine_adi", "recete_tarih", "notlar",
+        "ayar_gram", "ayar_renk", "ayar_tarih", "ayar_servolap", "ayar_tarak_hizi", "ayar_firma_adi",
+        "ayar_ana_tambur", "ayar_alt_ara_dofer", "ayar_siyirici", "ayar_ust_ara_dofer", "ayar_isci",
+        "ayar_ust_sevk_doferi", "ayar_alt_sevk_doferi", "ayar_ust_dofer_alici", "ayar_alt_dofer_alici",
+        "ayar_ust_sevk_bandi", "ayar_alt_sevk_bandi",
+        "ayar_tulbent_kati", "ayar_besleme_cekim", "ayar_serme_eni_on", "ayar_bant_cekim",
+        "ayar_serme_eni_arka", "ayar_araba_cekim", "ayar_cikis_yuksekligi_sag", "ayar_cikis_hafiza",
+        "ayar_on_cikis_hafiza", "ayar_cikis_yuksekligi_sol", "ayar_arka_cikis_hafiza",
+        "ayar_trio1", "ayar_trio2", "ayar_trio3", "ayar_trio4", "ayar_trio5", "ayar_trio6",
+        "ayar_pompa1", "ayar_pompa2", "ayar_pompa3", "ayar_pompa4", "ayar_pompa5", "ayar_pompa6",
+        "ayar_besleme1", "ayar_tambur1", "ayar_tambur2", "ayar_tambur3", "ayar_besleme2", "ayar_sikma_fular", "ayar_firin",
+        "ayar_balkan1", "ayar_balkan2", "ayar_balkan3", "ayar_hammadde",
+        "ayar_kesim_eni", "ayar_cap", "ayar_sarim_metresi", "ayar_saatlik_kg", "ayar_firin_isisi", "ayar_hat_hizi"
+    ];
 
-        /* MOBİL UYUMLULUK */
-        @media (max-width: 600px) {
-            .excel-table { font-size: 9px; }
-            .excel-table td { padding: 2px; }
-            .excel-table .label, .excel-table td.label { font-size: 8.5px; }
-            .excel-table input { font-size: 9.5px; }
-        }
+    alanlar.forEach(function(id) {
+        const eleman = document.getElementById(id);
+        if (eleman) eleman.value = "";
+    });
 
-        /* YAZDIRMA VE PDF YAPISI */
-        @media print {
-            body { background: white; color: #000000; }
-            .modal, button, .btn, .tab-menu, #arama, #loginModal { display: none !important; }
-            .container { max-width: 100%; padding: 0; margin: 0; }
-            .panel { border: none; padding: 0; margin-bottom: 10px; }
-            .excel-table { width: 100% !important; border: 1px solid #000000 !important; table-layout: fixed !important; }
-            .excel-table td { border: 1px solid #000000 !important; color: #000000 !important; }
-            .excel-table .section-header {
-                background-color: #FFFF00 !important;
-                color: #000000 !important;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-        }
-    </style>
-</head>
+    secilenId = null;
+    const buton = document.getElementById("kaydetBtn");
+    if (buton) buton.innerText = "Kaydet";
+}
 
-<body>
+// ======================================================
+// OTOMATİK REÇETE NUMARASI
+// ======================================================
+async function otomatikReceteNo() {
+    const db = getSupabase();
+    if (!db) throw new Error("Supabase bağlantısı bulunamadı.");
 
-<div class="container">
+    const { data, error } = await db
+        .from("receteler")
+        .select("recete_no")
+        .order("id", { ascending: false })
+        .limit(1);
 
-    <h1>Üretim Reçete & Bakım Yönetim Sistemi</h1>
+    if (error) throw error;
 
-    <div id="durum" class="durum"></div>
-
-    <!-- SEKMELER (TABLAR) -->
-    <div class="tab-menu">
-        <button class="tab-btn active" onclick="sekmeDegistir('receteTab', this)">Reçete İşlemleri</button>
-        <button class="tab-btn" onclick="sekmeDegistir('bakimTab', this)">Bakım & Onarım</button>
-    </div>
-
-    <!-- REÇETE İŞLEMLERİ SEKMESİ -->
-    <div id="receteTab" class="tab-content active">
-        
-      <!-- REÇETE BİLGİLERİ FORMU -->
-<div class="card">
-    <h2>Reçete Bilgileri</h2>
-    <form id="receteForm" onsubmit="kaydet(event)">
-        <div class="form-grid">
-            <input type="text" id="recete_no" placeholder="Reçete No">
-            <input type="text" id="urun_adi" placeholder="Ürün Adı" required>
-            <input type="text" id="makine_adi" placeholder="Makine Adı">
-            <input type="date" id="recete_tarih" placeholder="Reçete Tarihi">
-        </div>
-        <textarea id="notlar" placeholder="Notlar"></textarea>
-        
-        <button type="submit" id="kaydetBtn" class="btn-primary">Kaydet</button>
-        <button type="button" class="btn-success" onclick="yeniRecete()">Yeni Reçete</button>
-        <button type="button" class="btn-danger" onclick="adminCikis()">Çıkış Yap</button>
-    </form>
-</div>
-
-        <!-- ÜRETİM AYARLARI -->
-        <div class="panel">
-            <h2>Üretim Ayarları</h2>
-
-            <div class="excel-container">
-                <table class="excel-table">
-                    <colgroup>
-                        <col style="width: 25%;">
-                        <col style="width: 25%;">
-                        <col style="width: 25%;">
-                        <col style="width: 25%;">
-                    </colgroup>
-
-                  <!-- GENEL BİLGİLER BÖLÜMÜ -->
-<tr><td colspan="4" class="section-header">GENEL BİLGİLER</td></tr>
-<tr>
-    <td class="label">REÇETE NO</td>
-    <td><input type="text" id="recete_no"></td>
-    <td class="label">ÜRÜN ADI</td>
-    <td><input type="text" id="urun_adi"></td>
-</tr>
-<tr>
-    <td class="label">MAKİNE</td>
-    <td><input type="text" id="makine_adi"></td>
-    <!-- YENİ EKLENEN TARİH ALANI (Bakım & Onarım'daki gibi) -->
-    <td class="label">TARİH</td>
-    <td><input type="datetime-local" id="recete_tarih"></td>
-</tr>
-<tr>
-    <td class="label">NOTLAR</td>
-    <td colspan="3"><input type="text" id="notlar"></td>
-</tr>
-
-                    <!-- ÜRETİM AYARLARI -->
-                    <tr><td colspan="4" class="section-header">ÜRETİM AYARLARI</td></tr>
-                    <tr>
-                        <td class="label">GRAM</td><td><input id="ayar_gram"></td>
-                        <td class="label">RENK</td><td><input id="ayar_renk"></td>
-                    </tr>
-                    <tr>
-                        <td class="label">TARİH</td><td><input id="ayar_tarih"></td>
-                        <td class="label">SERVOLAP</td><td><input id="ayar_servolap"></td>
-                    </tr>
-                    <tr>
-                        <td class="label">TARAK HIZI</td><td><input id="ayar_tarak_hizi"></td>
-                        <td class="label">FİRMA ADI</td><td><input id="ayar_firma_adi"></td>
-                    </tr>
-
-                    <!-- TARAK AYARLARI -->
-                    <tr><td colspan="4" class="section-header">TARAK AYARLARI</td></tr>
-                    <tr>
-                        <td class="label">ANA TAMBUR</td><td><input id="ayar_ana_tambur"></td>
-                        <td class="label">ALT ARA DOFER</td><td><input id="ayar_alt_ara_dofer"></td>
-                    </tr>
-                    <tr>
-                        <td class="label">SIYIRICI</td><td><input id="ayar_siyirici"></td>
-                        <td class="label">ÜST ARA DOFER</td><td><input id="ayar_ust_ara_dofer"></td>
-                    </tr>
-                    <tr>
-                        <td class="label">İŞÇİ</td><td><input id="ayar_isci"></td>
-                        <td colspan="2"></td>
-                    </tr>
-                    <tr>
-                        <td class="label">ÜST SEVK DOFERİ</td><td><input id="ayar_ust_sevk_doferi"></td>
-                        <td class="label">ALT SEVK DOFERİ</td><td><input id="ayar_alt_sevk_doferi"></td>
-                    </tr>
-                    <tr>
-                        <td class="label">ÜST DOFER ALICI</td><td><input id="ayar_ust_dofer_alici"></td>
-                        <td class="label">ALT DOFER ALICI</td><td><input id="ayar_alt_dofer_alici"></td>
-                    </tr>
-                    <tr>
-                        <td class="label">ÜST SEVK BANDI</td><td><input id="ayar_ust_sevk_bandi"></td>
-                        <td class="label">ALT SEVK BANDI</td><td><input id="ayar_alt_sevk_bandi"></td>
-                    </tr>
-
-                    <!-- SERİCİ AYARLARI -->
-                    <tr><td colspan="4" class="section-header">SERİCİ AYARLARI</td></tr>
-                    <tr>
-                        <td class="label">TÜLBENT KATI</td><td><input id="ayar_tulbent_kati"></td>
-                        <td class="label">BESLEME ÇEKİM</td><td><input id="ayar_besleme_cekim"></td>
-                    </tr>
-                    <tr>
-                        <td class="label">SERME ENİ ÖN</td><td><input id="ayar_serme_eni_on"></td>
-                        <td class="label">BANT ÇEKİM</td><td><input id="ayar_bant_cekim"></td>
-                    </tr>
-                    <tr>
-                        <td class="label">SERME ENİ ARKA</td><td><input id="ayar_serme_eni_arka"></td>
-                        <td class="label">ARABA ÇEKİM</td><td><input id="ayar_araba_cekim"></td>
-                    </tr>
-                    <tr>
-                        <td class="label">ÇKŞ YÜKSEKLİĞİ SAĞ</td><td><input id="ayar_cikis_yuksekligi_sag"></td>
-                        <td class="label">ÇKŞ HAFIZA FAKTÖRÜ</td><td><input id="ayar_cikis_hafiza"></td>
-                    </tr>
-                    <tr>
-                        <td class="label">ÇKŞ YÜKSEKLİĞİ SOL</td><td><input id="ayar_cikis_yuksekligi_sol"></td>
-                        <td class="label">ÖN ÇKŞ HAFIZA FAKTÖRÜ</td><td><input id="ayar_on_cikis_hafiza"></td>
-                    </tr>
-                    <tr>
-                        <td colspan="2"></td>
-                        <td class="label">ARKA ÇKŞ HFZA FAKTÖRÜ</td><td><input id="ayar_arka_cikis_hafiza"></td>
-                    </tr>
-
-                    <!-- ÇEKTİRME AYARLARI -->
-                    <tr><td colspan="4" class="section-header">ÇEKTİRME AYARLARI</td></tr>
-                    <tr>
-                        <td class="label">TRİO 1 ÇEKİM</td><td><input id="ayar_trio1"></td>
-                        <td class="label">TRİO 4 ÇEKİM</td><td><input id="ayar_trio4"></td>
-                    </tr>
-                    <tr>
-                        <td class="label">TRİO 2 ÇEKİM</td><td><input id="ayar_trio2"></td>
-                        <td class="label">TRİO 5 ÇEKİM</td><td><input id="ayar_trio5"></td>
-                    </tr>
-                    <tr>
-                        <td class="label">TRİO 3 ÇEKİM</td><td><input id="ayar_trio3"></td>
-                        <td class="label">TRİO 6 ÇEKİM</td><td><input id="ayar_trio6"></td>
-                    </tr>
-
-                   <!-- SU JETİ AYARLARI -->
-                    <tr><td colspan="4" class="section-header">SU JETİ AYARLARI</td></tr>
-                    <tr>
-                        <td class="label"></td>
-                        <td class="label">BAR</td>
-                        <td class="label">BESLEME 1</td>
-                        <td><input id="ayar_besleme1"></td>
-                    </tr>
-                    <tr>
-                        <td class="label">POMPA 1</td>
-                        <td><input id="ayar_pompa1"></td>
-                        <td class="label">TAMBUR 1</td>
-                        <td><input id="ayar_tambur1"></td>
-                    </tr>
-                    <tr>
-                        <td class="label">POMPA 2</td><td><input id="ayar_pompa2"></td>
-                        <td class="label">TAMBUR 2</td><td><input id="ayar_tambur2"></td>
-                    </tr>
-                    <tr>
-                        <td class="label">POMPA 3</td><td><input id="ayar_pompa3"></td>
-                        <td class="label">TAMBUR 3</td><td><input id="ayar_tambur3"></td>
-                    </tr>
-                    <tr>
-                        <td class="label">POMPA 4</td><td><input id="ayar_pompa4"></td>
-                        <td class="label">BESLEME 2</td><td><input id="ayar_besleme2"></td>
-                    </tr>
-                    <tr>
-                        <td class="label">POMPA 5</td><td><input id="ayar_pompa5"></td>
-                        <td class="label">SIKMA FULAR</td><td><input id="ayar_sikma_fular"></td>
-                    </tr>
-                    <tr>
-                        <td class="label">POMPA 6</td><td><input id="ayar_pompa6"></td>
-                        <td class="label">FIRIN</td><td><input id="ayar_firin"></td>
-                    </tr>
-
-                    <!-- HAMMADDE AYARLARI -->
-                    <tr><td colspan="4" class="section-header">HAMMADDE AYARLARI</td></tr>
-                    <tr>
-                        <td class="label">BALKAN 1</td><td><input id="ayar_balkan1"></td>
-                        <td class="label">BALKAN 2</td><td><input id="ayar_balkan2"></td>
-                    </tr>
-                    <tr>
-                        <td class="label">BALKAN 3</td><td><input id="ayar_balkan3"></td>
-                        <td colspan="2"></td>
-                    </tr>
-                    <tr>
-                        <td colspan="4"><input id="ayar_hammadde" style="text-align: left; padding-left: 5px;"></td>
-                    </tr>
-
-                    <!-- KESİM EBATLARI -->
-                    <tr><td colspan="4" class="section-header">KESİM EBATLARI</td></tr>
-                    <tr>
-                        <td class="label">KESİM ENİ</td><td><input id="ayar_kesim_eni"></td>
-                        <td class="label">ÇAP</td><td><input id="ayar_cap"></td>
-                    </tr>
-                    <tr>
-                        <td class="label">SARIM METRESİ</td><td><input id="ayar_sarim_metresi"></td>
-                        <td class="label">SAATLİK KG</td><td><input id="ayar_saatlik_kg"></td>
-                    </tr>
-                    <tr>
-                        <td class="label">FIRIN ISISI</td><td><input id="ayar_firin_isisi"></td>
-                        <td class="label">HAT HIZI</td><td><input id="ayar_hat_hizi"></td>
-                    </tr>
-                </table>
-            </div>
-        </div>
-
-        <!-- REÇETE LİSTESİ -->
-        <div class="panel">
-            <h2>Kayıtlı Reçeteler: <span id="toplamRecete">0</span></h2>
-
-            <input id="arama" placeholder="Reçete ara..." oninput="ara()">
-            <br><br>
-
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Reçete No</th>
-                            <th>Ürün</th>
-                            <th>Makine</th>
-                            <th>Hız</th>
-                            <th>Sıcaklık</th>
-                            <th>Basınç</th>
-                            <th>İşlem</th>
-                        </tr>
-                    </thead>
-                    <tbody id="liste"></tbody>
-                </table>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- BAKIM & ONARIM SEKMESİ -->
-    <div id="bakimTab" class="tab-content">
-        <div class="panel">
-            <h2>Bakım & Onarım Kaydı Ekle / Düzenle</h2>
-            <div class="ayar-grid">
-                <div>
-                    <label style="font-weight: bold; display: block; margin-bottom: 2px;">Tarih & Saat</label>
-                    <input id="bakim_tarih" type="datetime-local">
-                </div>
-                <div>
-                    <label style="font-weight: bold; display: block; margin-bottom: 2px;">Makine / Ekipman</label>
-                    <input id="bakim_makine" placeholder="Örn: Su Jeti Pompa 1">
-                </div>
-                <div>
-                    <label style="font-weight: bold; display: block; margin-bottom: 2px;">Arıza / Bakım Tipi</label>
-                    <select id="bakim_tipi">
-                        <option value="Mekanik">Mekanik Arıza</option>
-                        <option value="Elektrik">Elektrik / Elektronik</option>
-                        <option value="Periyodik">Periyodik Bakım</option>
-                        <option value="Yazılım">Yazılım / Otomasyon</option>
-                    </select>
-                </div>
-                <div>
-                    <label style="font-weight: bold; display: block; margin-bottom: 2px;">Müdahale Eden Personel</label>
-                    <input id="bakim_personel" placeholder="Teknisyen / Operatör">
-                </div>
-                <div>
-                    <label style="font-weight: bold; display: block; margin-bottom: 2px;">Durum</label>
-                    <select id="bakim_durumu">
-                        <option value="Tamamlandı">Tamamlandı</option>
-                        <option value="Devam Ediyor">Devam Ediyor</option>
-                        <option value="Parça Bekliyor">Parça Bekliyor</option>
-                    </select>
-                </div>
-                <div>
-                    <label style="font-weight: bold; display: block; margin-bottom: 2px;">Değişen Parça / Malzeme</label>
-                    <input id="bakim_parca" placeholder="Varsa değişen parçayı yazın">
-                </div>
-            </div>
-
-            <br>
-            <textarea id="bakim_aciklama" placeholder="Yapılan işlem ve arıza detay açıklaması..."></textarea>
-            <br>
-
-            <button class="btn-success" type="button" onclick="bakimKaydet()">Bakım Kaydını İşle</button>
-            <button class="btn-secondary" type="button" onclick="bakimFormTemizle()">Temizle</button>
-        </div>
-
-        <div class="panel">
-            <h2>Bakım ve Arıza Geçmişi</h2>
-            <input id="bakimArama" placeholder="Bakım kayıtlarında ara..." oninput="bakimAra()">
-            <br><br>
-
-            <div class="table-wrap">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Tarih</th>
-                            <th>Makine</th>
-                            <th>Tip</th>
-                            <th>Personel</th>
-                            <th>Durum</th>
-                            <th>Açıklama</th>
-                            <th>İşlem</th>
-                        </tr>
-                    </thead>
-                    <tbody id="bakimListe">
-                        <tr>
-                            <td colspan="7" style="text-align: center;">Henüz kayıtlı bakım verisi yok.</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-</div>
-
-<!-- DETAY PENCERESİ -->
-<div id="detayModal" class="modal">
-    <div class="modal-content">
-        <h2>Üretim Reçetesi Detayı</h2>
-        
-        <div id="detayIcerikAlani">
-            <div class="excel-container">
-                <table class="excel-table">
-                    <colgroup>
-                        <col style="width: 25%;">
-                        <col style="width: 25%;">
-                        <col style="width: 25%;">
-                        <col style="width: 25%;">
-                    </colgroup>
-                    
-                   <!-- DETAY PENCERESİ GENEL BİLGİLER -->
-<tr><td colspan="4" class="section-header">GENEL BİLGİLER</td></tr>
-<tr>
-    <td class="label">REÇETE NO</td><td><span id="detay_recete_no"></span></td>
-    <td class="label">ÜRÜN ADI</td><td><span id="detay_urun_adi"></span></td>
-</tr>
-<tr>
-    <td class="label">MAKİNE</td><td><span id="detay_makine_adi"></span></td>
-    <td class="label">TARİH</td><td><span id="detay_recete_tarih"></span></td>
-</tr>
-<tr>
-    <td class="label">NOTLAR</td><td colspan="3"><span id="detay_notlar"></span></td>
-</tr>
-
-                    <tr><td colspan="4" class="section-header">ÜRETİM AYARLARI</td></tr>
-                    <tr>
-                        <td class="label">GRAM</td><td><span id="detay_ayar_gram"></span></td>
-                        <td class="label">RENK</td><td><span id="detay_ayar_renk"></span></td>
-                    </tr>
-                    <tr>
-                        <td class="label">TARİH</td><td><span id="detay_ayar_tarih"></span></td>
-                        <td class="label">SERVOLAP</td><td><span id="detay_ayar_servolap"></span></td>
-                    </tr>
-                    <tr>
-                        <td class="label">TARAK HIZI</td><td><span id="detay_ayar_tarak_hizi"></span></td>
-                        <td class="label">FİRMA ADI</td><td><span id="detay_ayar_firma_adi"></span></td>
-                    </tr>
-
-                    <tr><td colspan="4" class="section-header">TARAK AYARLARI</td></tr>
-                    <tr>
-                        <td class="label">ANA TAMBUR</td><td><span id="detay_ayar_ana_tambur"></span></td>
-                        <td class="label">ALT ARA DOFER</td><td><span id="detay_ayar_alt_ara_dofer"></span></td>
-                    </tr>
-                    <tr>
-                        <td class="label">SIYIRICI</td><td><span id="detay_ayar_siyirici"></span></td>
-                        <td class="label">ÜST ARA DOFER</td><td><span id="detay_ayar_ust_ara_dofer"></span></td>
-                    </tr>
-                    <tr>
-                        <td class="label">İŞÇİ</td><td><span id="detay_ayar_isci"></span></td>
-                        <td colspan="2"></td>
-                    </tr>
-                    <tr>
-                        <td class="label">ÜST SEVK DOFERİ</td><td><span id="detay_ayar_ust_sevk_doferi"></span></td>
-                        <td class="label">ALT SEVK DOFERİ</td><td><span id="detay_ayar_alt_sevk_doferi"></span></td>
-                    </tr>
-                    <tr>
-                        <td class="label">ÜST DOFER ALICI</td><td><span id="detay_ayar_ust_dofer_alici"></span></td>
-                        <td class="label">ALT DOFER ALICI</td><td><span id="detay_ayar_alt_dofer_alici"></span></td>
-                    </tr>
-                    <tr>
-                        <td class="label">ÜST SEVK BANDI</td><td><span id="detay_ayar_ust_sevk_bandi"></span></td>
-                        <td class="label">ALT SEVK BANDI</td><td><span id="detay_ayar_alt_sevk_bandi"></span></td>
-                    </tr>
-
-                    <tr><td colspan="4" class="section-header">SERİCİ AYARLARI</td></tr>
-                    <tr>
-                        <td class="label">TÜLBENT KATI</td><td><span id="detay_ayar_tulbent_kati"></span></td>
-                        <td class="label">BESLEME ÇEKİM</td><td><span id="detay_ayar_besleme_cekim"></span></td>
-                    </tr>
-                    <tr>
-                        <td class="label">SERME ENİ ÖN</td><td><span id="detay_ayar_serme_eni_on"></span></td>
-                        <td class="label">BANT ÇEKİM</td><td><span id="detay_ayar_bant_cekim"></span></td>
-                    </tr>
-                    <tr>
-                        <td class="label">SERME ENİ ARKA</td><td><span id="detay_ayar_serme_eni_arka"></span></td>
-                        <td class="label">ARABA ÇEKİM</td><td><span id="detay_ayar_araba_cekim"></span></td>
-                    </tr>
-                    <tr>
-                        <td class="label">ÇKŞ YÜKSEKLİĞİ SAĞ</td><td><span id="detay_ayar_cikis_yuksekligi_sag"></span></td>
-                        <td class="label">ÇKŞ HAFIZA FAKTÖRÜ</td><td><span id="detay_ayar_cikis_hafiza"></span></td>
-                    </tr>
-                    <tr>
-                        <td class="label">ÇKŞ YÜKSEKLİĞİ SOL</td><td><span id="detay_ayar_cikis_yuksekligi_sol"></span></td>
-                        <td class="label">ÖN ÇKŞ HAFIZA FAKTÖRÜ</td><td><span id="detay_ayar_on_cikis_hafiza"></span></td>
-                    </tr>
-                    <tr>
-                        <td colspan="2"></td>
-                        <td class="label">ARKA ÇKŞ HFZA FAKTÖRÜ</td><td><span id="detay_ayar_arka_cikis_hafiza"></span></td>
-                    </tr>
-
-                    <tr><td colspan="4" class="section-header">ÇEKTİRME AYARLARI</td></tr>
-                    <tr>
-                        <td class="label">TRİO 1 ÇEKİM</td><td><span id="detay_ayar_trio1"></span></td>
-                        <td class="label">TRİO 4 ÇEKİM</td><td><span id="detay_ayar_trio4"></span></td>
-                    </tr>
-                    <tr>
-                        <td class="label">TRİO 2 ÇEKİM</td><td><span id="detay_ayar_trio2"></span></td>
-                        <td class="label">TRİO 5 ÇEKİM</td><td><span id="detay_ayar_trio5"></span></td>
-                    </tr>
-                    <tr>
-                        <td class="label">TRİO 3 ÇEKİM</td><td><span id="detay_ayar_trio3"></span></td>
-                        <td class="label">TRİO 6 ÇEKİM</td><td><span id="detay_ayar_trio6"></span></td>
-                    </tr>
-
-                    <tr><td colspan="4" class="section-header">SU JETİ AYARLARI</td></tr>
-                    <tr>
-                        <td class="label"></td>
-                        <td class="label">HZ</td>
-                        <td class="label">BESLEME 1</td>
-                        <td><span id="detay_ayar_besleme1"></span></td>
-                    </tr>
-                    <tr>
-                        <td class="label">POMPA 1</td>
-                        <td><span id="detay_ayar_pompa1"></span></td>
-                        <td class="label">TAMBUR 1</td>
-                        <td><span id="detay_ayar_tambur1"></span></td>
-                    </tr>
-                    <tr>
-                        <td class="label">POMPA 2</td><td><span id="detay_ayar_pompa2"></span></td>
-                        <td class="label">TAMBUR 2</td><td><span id="detay_ayar_tambur2"></span></td>
-                    </tr>
-                    <tr>
-                        <td class="label">POMPA 3</td><td><span id="detay_ayar_pompa3"></span></td>
-                        <td class="label">TAMBUR 3</td><td><span id="detay_ayar_tambur3"></span></td>
-                    </tr>
-                    <tr>
-                        <td class="label">POMPA 4</td><td><span id="detay_ayar_pompa4"></span></td>
-                        <td class="label">BESLEME 2</td><td><span id="detay_ayar_besleme2"></span></td>
-                    </tr>
-                    <tr>
-                        <td class="label">POMPA 5</td><td><span id="detay_ayar_pompa5"></span></td>
-                        <td class="label">SIKMA FULAR</td><td><span id="detay_ayar_sikma_fular"></span></td>
-                    </tr>
-                    <tr>
-                        <td class="label">POMPA 6</td><td><span id="detay_ayar_pompa6"></span></td>
-                        <td class="label">FIRIN</td><td><span id="detay_ayar_firin"></span></td>
-                    </tr>
-
-                    <tr><td colspan="4" class="section-header">HAMMADDE AYARLARI</td></tr>
-                    <tr>
-                        <td class="label">BALKAN 1</td><td><span id="detay_ayar_balkan1"></span></td>
-                        <td class="label">BALKAN 2</td><td><span id="detay_ayar_balkan2"></span></td>
-                    </tr>
-                    <tr>
-                        <td class="label">BALKAN 3</td><td><span id="detay_ayar_balkan3"></span></td>
-                        <td colspan="2"></td>
-                    </tr>
-                    <tr>
-                        <td colspan="4"><span id="detay_ayar_hammadde"></span></td>
-                    </tr>
-
-                    <tr><td colspan="4" class="section-header">KESİM EBATLARI</td></tr>
-                    <tr>
-                        <td class="label">KESİM ENİ</td><td><span id="detay_ayar_kesim_eni"></span></td>
-                        <td class="label">ÇAP</td><td><span id="detay_ayar_cap"></span></td>
-                    </tr>
-                    <tr>
-                        <td class="label">SARIM METRESİ</td><td><span id="detay_ayar_sarim_metresi"></span></td>
-                        <td class="label">SAATLİK KG</td><td><span id="detay_ayar_saatlik_kg"></span></td>
-                    </tr>
-                    <tr>
-                        <td class="label">FIRIN ISISI</td><td><span id="detay_ayar_firin_isisi"></span></td>
-                        <td class="label">HAT HIZI</td><td><span id="detay_ayar_hat_hizi"></span></td>
-                    </tr>
-                </table>
-            </div>
-        </div>
-
-        <br>
-        <button class="btn" type="button" onclick="detaydanDuzenle()">Düzenle</button>
-        <button class="btn-success" type="button" onclick="detayKopyala()">Kopyala</button>
-        <button class="btn" type="button" onclick="detayYazdir()">Yazdır</button>
-        <button class="btn-danger" type="button" onclick="pdfIndir()">PDF İndir</button>
-        <button class="btn-warning" type="button" onclick="paylas()">Paylaş</button>
-        <button class="btn-secondary" type="button" onclick="detayKapat()">Kapat</button>
-    </div>
-</div>
-
-<!-- ADMIN GİRİŞ MODAL -->
-<div id="loginModal" class="modal" style="display: flex;">
-    <div class="modal-content" style="max-width: 350px; text-align: center;">
-        <h2>Admin Girişi</h2>
-        <p style="color: #000000; font-size: 13px;">Lütfen devam etmek için giriş yapın.</p>
-        <br>
-        <input id="login_user" type="text" placeholder="Kullanıcı Adı" style="margin-bottom: 10px;">
-        <input id="login_pass" type="password" placeholder="Şifre" style="margin-bottom: 15px;">
-        <button class="btn-success" type="button" style="width: 100%; padding: 10px;" onclick="adminGiris()">Giriş Yap</button>
-        <p id="loginError" style="color: red; margin-top: 10px; display: none; font-size: 13px; font-weight: bold;">Kullanıcı adı veya şifre hatalı!</p>
-    </div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/supabase.js"></script>
-<script src="js/Script.js"></script>
-
-<script>
-    // Sekmeler Arası Geçiş
-    function sekmeDegistir(tabId, element) {
-        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-        
-        document.getElementById(tabId).classList.add('active');
-        element.classList.add('active');
+    let yeniNo = 1;
+    if (data && data.length > 0) {
+        const sonNo = String(data[0].recete_no || "");
+        const sonuc = sonNo.match(/REC-(\d+)/i);
+        if (sonuc) yeniNo = Number(sonuc[1]) + 1;
     }
-</script>
+    return "REC-" + String(yeniNo).padStart(3, "0");
+}
 
-</body>
-</html>
+// ======================================================
+// KAYDET
+// ======================================================
+async function kaydet(event) {
+    if (event) event.preventDefault();
+
+    try {
+        const db = getSupabase();
+        if (!db) { alert("Supabase bağlantısı bulunamadı."); return; }
+
+        if (secilenId !== null) {
+            await guncelle();
+            return;
+        }
+
+        const urunAdiElement = document.getElementById("urun_adi");
+        if (!urunAdiElement) { alert("Ürün Adı alanı bulunamadı."); return; }
+
+        const urunAdi = urunAdiElement.value.trim();
+        if (urunAdi === "") { alert("Ürün adı boş bırakılamaz."); urunAdiElement.focus(); return; }
+
+        const receteNoElement = document.getElementById("recete_no");
+        let receteNo = receteNoElement ? receteNoElement.value.trim() : "";
+        if (receteNo === "") receteNo = await otomatikReceteNo();
+
+        const makineAdi = document.getElementById("makine_adi")?.value.trim() || "";
+        const receteTarih = document.getElementById("recete_tarih")?.value.trim() || "";
+        const notlar = document.getElementById("notlar")?.value.trim() || "";
+
+        const ayarlarObj = uretimAyarlariTopla();
+        ayarlarObj.makine_adi = makineAdi;
+        ayarlarObj.recete_tarih = receteTarih;
+        ayarlarObj.notlar = notlar;
+
+        const veri = {
+            recete_no: receteNo,
+            urun_adi: urunAdi,
+            makine_adi: makineAdi,
+            tarih: receteTarih,
+            notlar: notlar,
+            uretim_ayarlari: ayarlarObj
+        };
+
+        const { data, error } = await db.from("receteler").insert([veri]).select();
+
+        if (error) {
+            console.error("Kayıt hatası:", error);
+            alert("Kayıt hatası:\n" + error.message);
+            return;
+        }
+
+        alert("Reçete kaydedildi.");
+        temizleForm();
+        await receteleriListele();
+
+    } catch (hata) {
+        console.error("KAYDET HATASI:", hata);
+        alert("Kayıt sırasında hata oluştu:\n" + hata.message);
+    }
+}
+
+// ======================================================
+// REÇETELERİ LİSTELE
+// ======================================================
+async function receteleriListele() {
+    try {
+        const db = getSupabase();
+        if (!db) return;
+
+        const liste = document.getElementById("liste");
+        if (!liste) return;
+
+        const { data, error } = await db.from("receteler").select("*").order("id", { ascending: false });
+
+        if (error) {
+            alert("Listeleme hatası:\n" + error.message);
+            return;
+        }
+
+        liste.innerHTML = "";
+
+        if (!data || data.length === 0) {
+            liste.innerHTML = `<tr><td colspan="5" style="text-align:center;">Henüz kayıtlı reçete yok.</td></tr>`;
+            const toplam = document.getElementById("toplamRecete");
+            if (toplam) toplam.innerText = "0";
+            return;
+        }
+
+        data.forEach(function(r) {
+            let ayarlarObj = r.uretim_ayarlari || r.ayarlar || {};
+            const receteNo = r.recete_no || "";
+            const urunAdi = r.urun_adi || "";
+            const makine = r.makine_adi || ayarlarObj.makine_adi || "";
+            const tarih = r.tarih || r.recete_tarih || ayarlarObj.recete_tarih || "";
+
+            liste.innerHTML += `
+                <tr onclick="detayGoster('${r.id}')" style="cursor: pointer;">
+                    <td>${guvenliMetin(receteNo)}</td>
+                    <td>${guvenliMetin(urunAdi)}</td>
+                    <td>${guvenliMetin(makine)}</td>
+                    <td>${guvenliMetin(tarih)}</td>
+                    <td>
+                        <button type="button" class="btn" onclick="event.stopPropagation(); detayGoster('${r.id}')">Detay</button>
+                        <button type="button" class="btn" onclick="event.stopPropagation(); duzenle('${r.id}')">Düzenle</button>
+                        <button type="button" class="btn-danger" onclick="event.stopPropagation(); sil('${r.id}')">Sil</button>
+                    </td>
+                </tr>
+            `;
+        });
+
+        const toplam = document.getElementById("toplamRecete");
+        if (toplam) toplam.innerText = data.length;
+
+    } catch (hata) {
+        console.error("Listeleme hatası:", hata);
+    }
+}
+
+async function listele() {
+    await receteleriListele();
+}
+
+// ======================================================
+// GÜVENLİ METİN & TEXT YARDIMCILARI
+// ======================================================
+function guvenliMetin(deger) {
+    if (deger === null || deger === undefined) return "";
+    return String(deger)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+function setText(id, deger) {
+    const eleman = document.getElementById(id);
+    if (eleman) {
+        eleman.innerText = (deger === null || deger === undefined || deger === "") ? "-" : deger;
+    }
+}
+
+function setValue(id, deger) {
+    const eleman = document.getElementById(id);
+    if (eleman) {
+        eleman.value = (deger === null || deger === undefined) ? "" : deger;
+    }
+}
+
+function getText(id) {
+    const eleman = document.getElementById(id);
+    return eleman ? (eleman.innerText || "") : "";
+}
+
+// ======================================================
+// DETAY GÖSTER
+// ======================================================
+async function detayGoster(id) {
+    try {
+        const db = getSupabase();
+        if (!db) { alert("Supabase bağlantısı bulunamadı."); return; }
+
+        const { data, error } = await db.from("receteler").select("*").eq("id", id).single();
+
+        if (error || !data) {
+            alert("Reçete verisi alınamadı.");
+            return;
+        }
+
+        detaydakiId = id;
+        const a = data.uretim_ayarlari || data.ayarlar || {};
+
+        setText("detay_recete_no", data.recete_no);
+        setText("detay_baslik_no", data.recete_no);
+        setText("detay_urun_adi", data.urun_adi);
+        setText("detay_makine_adi", data.makine_adi || a.makine_adi);
+        setText("detay_recete_tarih", data.tarih || data.recete_tarih || a.recete_tarih);
+        setText("detay_notlar", data.notlar || a.notlar || "Not yok");
+
+        setText("detay_ayar_gram", a.ayar_gram);
+        setText("detay_ayar_renk", a.ayar_renk);
+        setText("detay_ayar_tarih", a.ayar_tarih);
+        setText("detay_ayar_servolap", a.ayar_servolap);
+        setText("detay_ayar_tarak_hizi", a.ayar_tarak_hizi);
+        setText("detay_ayar_firma_adi", a.ayar_firma_adi);
+
+        setText("detay_ayar_ana_tambur", a.ayar_ana_tambur);
+        setText("detay_ayar_alt_ara_dofer", a.ayar_alt_ara_dofer);
+        setText("detay_ayar_siyirici", a.ayar_siyirici);
+        setText("detay_ayar_ust_ara_dofer", a.ayar_ust_ara_dofer);
+        setText("detay_ayar_isci", a.ayar_isci);
+        setText("detay_ayar_ust_sevk_doferi", a.ayar_ust_sevk_doferi);
+        setText("detay_ayar_alt_sevk_doferi", a.ayar_alt_sevk_doferi);
+        setText("detay_ayar_ust_dofer_alici", a.ayar_ust_dofer_alici);
+        setText("detay_ayar_alt_dofer_alici", a.ayar_alt_dofer_alici);
+        setText("detay_ayar_ust_sevk_bandi", a.ayar_ust_sevk_bandi);
+        setText("detay_ayar_alt_sevk_bandi", a.ayar_alt_sevk_bandi);
+
+        setText("detay_ayar_tulbent_kati", a.ayar_tulbent_kati);
+        setText("detay_ayar_besleme_cekim", a.ayar_besleme_cekim);
+        setText("detay_ayar_serme_eni_on", a.ayar_serme_eni_on);
+        setText("detay_ayar_bant_cekim", a.ayar_bant_cekim);
+        setText("detay_ayar_serme_eni_arka", a.ayar_serme_eni_arka);
+        setText("detay_ayar_araba_cekim", a.ayar_araba_cekim);
+        setText("detay_ayar_cikis_yuksekligi_sag", a.ayar_cikis_yuksekligi_sag);
+        setText("detay_ayar_cikis_hafiza", a.ayar_cikis_hafiza);
+        setText("detay_ayar_on_cikis_hafiza", a.ayar_on_cikis_hafiza);
+        setText("detay_ayar_cikis_yuksekligi_sol", a.ayar_cikis_yuksekligi_sol);
+        setText("detay_ayar_arka_cikis_hafiza", a.ayar_arka_cikis_hafiza);
+
+        setText("detay_ayar_trio1", a.ayar_trio1);
+        setText("detay_ayar_trio2", a.ayar_trio2);
+        setText("detay_ayar_trio3", a.ayar_trio3);
+        setText("detay_ayar_trio4", a.ayar_trio4);
+        setText("detay_ayar_trio5", a.ayar_trio5);
+        setText("detay_ayar_trio6", a.ayar_trio6);
+
+        setText("detay_ayar_pompa1", a.ayar_pompa1);
+        setText("detay_ayar_pompa2", a.ayar_pompa2);
+        setText("detay_ayar_pompa3", a.ayar_pompa3);
+        setText("detay_ayar_pompa4", a.ayar_pompa4);
+        setText("detay_ayar_pompa5", a.ayar_pompa5);
+        setText("detay_ayar_pompa6", a.ayar_pompa6);
+
+        setText("detay_ayar_besleme1", a.ayar_besleme1);
+        setText("detay_ayar_tambur1", a.ayar_tambur1);
+        setText("detay_ayar_tambur2", a.ayar_tambur2);
+        setText("detay_ayar_tambur3", a.ayar_tambur3);
+        setText("detay_ayar_besleme2", a.ayar_besleme2);
+        setText("detay_ayar_sikma_fular", a.ayar_sikma_fular);
+        setText("detay_ayar_firin", a.ayar_firin);
+
+        setText("detay_ayar_balkan1", a.ayar_balkan1);
+        setText("detay_ayar_balkan2", a.ayar_balkan2);
+        setText("detay_ayar_balkan3", a.ayar_balkan3);
+        setText("detay_ayar_hammadde", a.ayar_hammadde);
+
+        setText("detay_ayar_kesim_eni", a.ayar_kesim_eni);
+        setText("detay_ayar_cap", a.ayar_cap);
+        setText("detay_ayar_sarim_metresi", a.ayar_sarim_metresi);
+        setText("detay_ayar_saatlik_kg", a.ayar_saatlik_kg);
+        setText("detay_ayar_firin_isisi", a.ayar_firin_isisi);
+        setText("detay_ayar_hat_hizi", a.ayar_hat_hizi);
+
+        const modal = document.getElementById("detayModal");
+        if (modal) modal.style.display = "flex";
+
+    } catch (hata) {
+        console.error("DETAY GÖSTER HATA:", hata);
+    }
+}
+
+function detayKapat() {
+    const modal = document.getElementById("detayModal");
+    if (modal) modal.style.display = "none";
+}
+
+async function detaydanDuzenle() {
+    if (detaydakiId === null) return;
+    const id = detaydakiId;
+    detayKapat();
+    await duzenle(id);
+}
+
+// ======================================================
+// DÜZENLE & GÜNCELLE
+// ======================================================
+async function duzenle(id) {
+    try {
+        const db = getSupabase();
+        if (!db) return;
+
+        const { data, error } = await db.from("receteler").select("*").eq("id", id).single();
+        if (error || !data) return;
+
+        secilenId = id;
+        const ayarlarObj = data.uretim_ayarlari || data.ayarlar || {};
+
+        setValue("recete_no", data.recete_no || "");
+        setValue("urun_adi", data.urun_adi || "");
+        setValue("makine_adi", data.makine_adi || ayarlarObj.makine_adi || "");
+        setValue("recete_tarih", data.tarih || data.recete_tarih || ayarlarObj.recete_tarih || "");
+        setValue("notlar", data.notlar || ayarlarObj.notlar || "");
+
+        uretimAyarlariYukle(ayarlarObj);
+
+        const buton = document.getElementById("kaydetBtn");
+        if (buton) buton.innerText = "Güncelle";
+
+        const urun = document.getElementById("urun_adi");
+        if (urun) urun.focus();
+
+    } catch (hata) {
+        console.error("DÜZENLE HATASI:", hata);
+    }
+}
+
+async function guncelle() {
+    try {
+        if (secilenId === null) return;
+        const db = getSupabase();
+        if (!db) return;
+
+        const urunAdi = document.getElementById("urun_adi")?.value.trim() || "";
+        if (urunAdi === "") { alert("Ürün adı boş bırakılamaz."); return; }
+
+        const receteNo = document.getElementById("recete_no")?.value.trim() || "";
+        const makineAdi = document.getElementById("makine_adi")?.value.trim() || "";
+        const receteTarih = document.getElementById("recete_tarih")?.value.trim() || "";
+        const notlar = document.getElementById("notlar")?.value.trim() || "";
+
+        const ayarlarObj = uretimAyarlariTopla();
+        ayarlarObj.makine_adi = makineAdi;
+        ayarlarObj.recete_tarih = receteTarih;
+        ayarlarObj.notlar = notlar;
+
+        const veri = {
+            recete_no: receteNo,
+            urun_adi: urunAdi,
+            makine_adi: makineAdi,
+            tarih: receteTarih,
+            notlar: notlar,
+            uretim_ayarlari: ayarlarObj
+        };
+
+        const { error } = await db.from("receteler").update(veri).eq("id", secilenId);
+
+        if (error) {
+            alert("Güncelleme hatası:\n" + error.message);
+            return;
+        }
+
+        alert("Reçete güncellendi.");
+        temizleForm();
+        await receteleriListele();
+
+    } catch (hata) {
+        console.error("GÜNCELLEME HATASI:", hata);
+    }
+}
+
+async function sil(id) {
+    if (!confirm("Bu reçete silinsin mi?")) return;
+    try {
+        const db = getSupabase();
+        if (!db) return;
+
+        const { error } = await db.from("receteler").delete().eq("id", id);
+        if (error) { alert("Silme hatası:\n" + error.message); return; }
+
+        alert("Reçete silindi.");
+        await receteleriListele();
+    } catch (hata) {
+        console.error("SİLME HATASI:", hata);
+    }
+}
+
+function yeniRecete() {
+    temizleForm();
+    const urun = document.getElementById("urun_adi");
+    if (urun) urun.focus();
+}
+
+function temizle() { temizleForm(); }
+
+// ======================================================
+// KOPYALA, YAZDIR, PDF, PAYLAŞ
+// ======================================================
+async function detayKopyala() {
+    if (detaydakiId === null) return;
+    try {
+        const db = getSupabase();
+        if (!db) return;
+
+        const { data } = await db.from("receteler").select("*").eq("id", detaydakiId).single();
+        if (!data) return;
+
+        const ayarlarObj = data.uretim_ayarlari || data.ayarlar || {};
+
+        setValue("recete_no", "");
+        setValue("urun_adi", (data.urun_adi || "") + " (Kopya)");
+        setValue("makine_adi", data.makine_adi || ayarlarObj.makine_adi || "");
+        setValue("recete_tarih", data.tarih || data.recete_tarih || ayarlarObj.recete_tarih || "");
+        setValue("notlar", data.notlar || ayarlarObj.notlar || "");
+
+        uretimAyarlariYukle(ayarlarObj);
+        secilenId = null;
+
+        const buton = document.getElementById("kaydetBtn");
+        if (buton) buton.innerText = "Kaydet";
+
+        detayKapat();
+        alert("Reçete forma kopyalandı.");
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+function detayYazdir() {
+    const icerikEl = document.getElementById('detayIcerikAlani') || document.getElementById('detayIcerik');
+    if (!icerikEl) return;
+    const icerik = icerikEl.innerHTML;
+
+    const yazdirPenceresi = window.open('', '', 'height=600,width=800');
+    if (!yazdirPenceresi) return;
+
+    yazdirPenceresi.document.write('<html><head><title>Reçete Detayı</title>');
+    yazdirPenceresi.document.write('<style>');
+    yazdirPenceresi.document.write(`
+        body { font-family: Arial, sans-serif; padding: 10px; }
+        .excel-container { width: 100%; }
+        .excel-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+        .excel-table td { border: 1px solid #000; padding: 4px; }
+        .excel-table .section-header { background-color: #FFFF00 !important; font-weight: bold; text-align: center; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        .excel-table .label { font-weight: bold; background-color: #f8f9fa; }
+    `);
+    yazdirPenceresi.document.write('</style></head><body>');
+    yazdirPenceresi.document.write(icerik);
+    yazdirPenceresi.document.write('</body></html>');
+
+    yazdirPenceresi.document.close();
+    yazdirPenceresi.focus();
+    setTimeout(() => {
+        yazdirPenceresi.print();
+        yazdirPenceresi.close();
+    }, 500);
+}
+
+function pdfIndir() {
+    const eleman = document.getElementById('detayIcerikAlani') || document.getElementById('detayIcerik');
+    if (!eleman) return;
+    const receteNo = document.getElementById('detay_recete_no')?.innerText || 'Recete';
+
+    const ayarlar = {
+        margin:       5,
+        filename:     `Recete_${receteNo}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2, useCORS: true, scrollY: 0 },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    if (typeof html2pdf !== 'undefined') {
+        html2pdf().set(ayarlar).from(eleman).save();
+    } else {
+        alert('PDF kütüphanesi (html2pdf) bulunamadı.');
+    }
+}
+
+async function paylas() {
+    const eleman = document.getElementById('detayIcerikAlani') || document.getElementById('detayIcerik');
+    const receteNo = document.getElementById('detay_recete_no')?.innerText || 'Recete';
+
+    if (typeof html2pdf !== 'undefined' && eleman) {
+        const ayarlar = {
+            margin: 5,
+            filename: `Recete_${receteNo}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true, scrollY: 0 },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        try {
+            const pdfBlob = await html2pdf().set(ayarlar).from(eleman).output('blob');
+            const pdfDosyasi = new File([pdfBlob], `Recete_${receteNo}.pdf`, { type: 'application/pdf' });
+
+            if (navigator.canShare && navigator.canShare({ files: [pdfDosyasi] })) {
+                await navigator.share({
+                    files: [pdfDosyasi],
+                    title: `Üretim Reçetesi - ${receteNo}`,
+                    text: `Üretim Reçetesi PDF (${receteNo})`
+                });
+                return;
+            }
+        } catch (hata) {
+            console.error("PDF oluşturma hatası:", hata);
+        }
+    }
+
+    const urunAdi = getText('detay_urun_adi');
+    const metin = `📄 *Üretim Reçetesi Detayı*\n\n*Reçete No:* ${receteNo}\n*Ürün Adı:* ${urunAdi}`;
+
+    if (navigator.share) {
+        try {
+            await navigator.share({ title: `Reçete: ${receteNo}`, text: metin });
+        } catch (e) {}
+    } else {
+        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(metin)}`, '_blank');
+    }
+}
+
+// ======================================================
+// ARAMA VE OLAY DİNLEYİCİLERİ
+// ======================================================
+function ara() {
+    const arama = document.getElementById("arama");
+    if (!arama) return;
+    const kelime = arama.value.toLowerCase().trim();
+
+    document.querySelectorAll("#liste tr").forEach(function(satir) {
+        satir.style.display = satir.innerText.toLowerCase().includes(kelime) ? "" : "none";
+    });
+}
+
+document.addEventListener("keydown", function(event) {
+    if (event.key === "Escape") {
+        detayKapat();
+        bakimDetayKapat();
+    }
+});
+
+document.addEventListener("DOMContentLoaded", function() {
+    receteleriListele();
+    bakimListele();
+    const yeniBtn = document.getElementById("yeniReceteBtn");
+    if (yeniBtn) yeniBtn.addEventListener("click", yeniRecete);
+});
+
+// ==========================================
+// ADMIN GİRİŞ KONTROLÜ
+// ==========================================
+const ADMIN_USER = "bunyamin";
+const ADMIN_PASS = "Busra.5744"; 
+
+document.addEventListener("DOMContentLoaded", function () {
+    const oturumAcik = localStorage.getItem("adminOturum");
+    const loginModal = document.getElementById("loginModal");
+
+    if (oturumAcik === "true") {
+        if (loginModal) loginModal.style.display = "none";
+    } else {
+        if (loginModal) loginModal.style.display = "flex";
+    }
+});
+
+function adminGiris() {
+    const user = document.getElementById("login_user")?.value.trim();
+    const pass = document.getElementById("login_pass")?.value.trim();
+    const errorMsg = document.getElementById("loginError");
+    const loginModal = document.getElementById("loginModal");
+
+    if (user === ADMIN_USER && pass === ADMIN_PASS) {
+        localStorage.setItem("adminOturum", "true");
+        if (loginModal) loginModal.style.display = "none";
+        if (errorMsg) errorMsg.style.display = "none";
+    } else {
+        if (errorMsg) errorMsg.style.display = "block";
+    }
+}
+
+function adminCikis() {
+    localStorage.removeItem("adminOturum");
+    location.reload();
+}
+
+// ==========================================
+// BAKIM & ONARIM İŞLEMLERİ
+// ==========================================
+
+async function bakimKaydet() {
+    const tarih = document.getElementById('bakim_tarih')?.value || '';
+    const makine = document.getElementById('bakim_makine')?.value || '';
+    const tip = document.getElementById('bakim_tipi')?.value || '';
+    const personel = document.getElementById('bakim_personel')?.value || '';
+    const durum = document.getElementById('bakim_durumu')?.value || '';
+    const parca = document.getElementById('bakim_parca')?.value || '';
+    const aciklama = document.getElementById('bakim_aciklama')?.value || '';
+
+    if (!makine || !tarih) {
+        alert("Lütfen en azından Tarih ve Makine/Ekipman alanlarını doldurun!");
+        return;
+    }
+
+    const bakimData = {
+        tarih: tarih,
+        makine: makine,
+        tip: tip,
+        personel: personel,
+        durum: durum,
+        parca: parca,
+        aciklama: aciklama
+    };
+
+    const db = getSupabase();
+
+    if (db) {
+        const { data, error } = await db
+            .from('bakimlar')
+            .insert([bakimData]);
+
+        if (error) {
+            console.error("Bakım kaydı eklenirken hata oluştu:", error);
+            alert("Bakım kaydı kaydedilemedi! Hata: " + error.message);
+            return;
+        }
+    } else {
+        alert("Supabase bağlantısı kurulamadığı için kaydedilemedi.");
+        return;
+    }
+
+    alert("Bakım kaydı başarıyla işlendi!");
+    bakimFormTemizle();
+    await bakimListele();
+}
+
+function bakimFormTemizle() {
+    const alanlar = ['bakim_tarih', 'bakim_makine', 'bakim_tipi', 'bakim_personel', 'bakim_durumu', 'bakim_parca', 'bakim_aciklama'];
+    alanlar.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+    });
+}
+
+async function bakimListele() {
+    const tbody = document.getElementById('bakimListe');
+    if (!tbody) return;
+
+    const db = getSupabase();
+    if (!db) return;
+
+    const { data, error } = await db
+        .from('bakimlar')
+        .select('*')
+        .order('id', { ascending: false });
+
+    if (error) {
+        console.error("Bakımlar çekilemedi:", error);
+        return;
+    }
+
+    if (!data || data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align: center;">Henüz kayıtlı bakım verisi yok.</td></tr>';
+        return;
+    }
+
+    window.tumBakimlar = data;
+
+    tbody.innerHTML = '';
+    data.forEach(item => {
+        tbody.innerHTML += `
+            <tr>
+                <td>
+                    <a href="javascript:void(0)" onclick="bakimDetayGoster(${item.id})" style="color: #0056b3; font-weight: bold; text-decoration: underline;">
+                        ${guvenliMetin(item.tarih)}
+                    </a>
+                </td>
+                <td>${guvenliMetin(item.makine)}</td>
+                <td>${guvenliMetin(item.tip)}</td>
+                <td>${guvenliMetin(item.personel)}</td>
+                <td>${guvenliMetin(item.durum)}</td>
+                <td>${guvenliMetin(item.aciklama)}</td>
+                <td>
+                    <button type="button" class="btn-danger" style="padding: 2px 6px; font-size:10px;" onclick="bakimSil(${item.id})">Sil</button>
+                </td>
+            </tr>
+        `;
+    });
+}
+
+function bakimDetayGoster(id) {
+    if (!window.tumBakimlar) return;
+    
+    // Güvenli tip eşitlemesiyle kaydı bul
+    const kayit = window.tumBakimlar.find(b => String(b.id) === String(id));
+    if (!kayit) return;
+
+    setText('bdetay_tarih', kayit.tarih);
+    setText('bdetay_makine', kayit.makine);
+    setText('bdetay_tip', kayit.tip);
+    setText('bdetay_personel', kayit.personel);
+    setText('bdetay_durum', kayit.durum);
+    setText('bdetay_parca', kayit.parca);
+    setText('bdetay_aciklama', kayit.aciklama);
+
+    const modal = document.getElementById('bakimDetayModal');
+    if (modal) modal.style.display = 'flex';
+}
+
+function bakimDetayKapat() {
+    const modal = document.getElementById('bakimDetayModal');
+    if (modal) modal.style.display = 'none';
+}
+
+async function bakimSil(id) {
+    if (!confirm("Bu bakım kaydını silmek istediğinize emin misiniz?")) return;
+
+    const db = getSupabase();
+    if (!db) return;
+
+    const { error } = await db
+        .from('bakimlar')
+        .delete()
+        .eq('id', id);
+
+    if (error) {
+        alert("Silinirken hata oluştu: " + error.message);
+    } else {
+        await bakimListele();
+    }
+}
+
+function bakimAra() {
+    const aramaElemani = document.getElementById('bakimArama');
+    if (!aramaElemani) return;
+    const aramaMetni = aramaElemani.value.toLowerCase();
+    const satirListesi = document.querySelectorAll('#bakimListe tr');
+
+    satirListesi.forEach(satir => {
+        const icerik = satir.innerText.toLowerCase();
+        satir.style.display = icerik.includes(aramaMetni) ? '' : 'none';
+    });
+}
