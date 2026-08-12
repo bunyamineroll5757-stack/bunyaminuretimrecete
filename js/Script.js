@@ -728,6 +728,7 @@ async function bakimKaydet() {
         aciklama: aciklama
     };
 
+    // HATA DÜZELTİLDİ: Doğrudan 'supabase' yerine 'getSupabase()' çağrılıyor
     const db = getSupabase();
 
     if (db) {
@@ -808,17 +809,6 @@ async function bakimSil(id) {
     } else {
         await bakimListele();
     }
-}
-
-// Bakım Formunu Temizleme
-function bakimFormTemizle() {
-    if (document.getElementById('bakim_tarih')) document.getElementById('bakim_tarih').value = '';
-    if (document.getElementById('bakim_makine')) document.getElementById('bakim_makine').value = '';
-    if (document.getElementById('bakim_tipi')) document.getElementById('bakim_tipi').value = 'Mekanik';
-    if (document.getElementById('bakim_personel')) document.getElementById('bakim_personel').value = '';
-    if (document.getElementById('bakim_durumu')) document.getElementById('bakim_durumu').value = 'Tamamlandı';
-    if (document.getElementById('bakim_parca')) document.getElementById('bakim_parca').value = '';
-    if (document.getElementById('bakim_aciklama')) document.getElementById('bakim_aciklama').value = '';
 }
 
 // Bakım Kayıtlarını Arama
