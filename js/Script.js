@@ -272,7 +272,7 @@ function getText(id) {
 }
 
 // ======================================================
-// DETAY GÖSTER
+// DETAY GÖSTER (GÜNCELLENMİŞ HIZ, BASINÇ, SICAKLIK YERİNE TARİH)
 // ======================================================
 async function detayGoster(id) {
     try {
@@ -289,7 +289,7 @@ async function detayGoster(id) {
         detaydakiId = id;
         const a = data.uretim_ayarlari || data.ayarlar || {};
 
-        // 1. Genel Bilgiler
+        // 1. Genel / Reçete Bilgileri (Hız, Basınç, Sıcaklık yerine Tarih eklendi)
         setText("detay_recete_no", data.recete_no);
         setText("detay_baslik_no", data.recete_no);
         setText("detay_urun_adi", data.urun_adi);
@@ -376,7 +376,6 @@ async function detayGoster(id) {
         console.error("DETAY GÖSTER HATA:", hata);
     }
 }
-
 function detayKapat() {
     const modal = document.getElementById("detayModal");
     if (modal) modal.style.display = "none";
