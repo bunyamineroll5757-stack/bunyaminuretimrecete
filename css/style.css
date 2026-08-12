@@ -935,3 +935,17 @@ table.excel-table td.section-header,
 .excel-table td.section-header {
     /* Orijinal sarı/gri dolgusu ve kendi yazı stili aynen kalır */
 }
+/* ==========================================
+   ANA BÖLÜM BAŞLIKLARI TURUNCU TEMA
+   ========================================== */
+
+/* Hem ana tablodaki hem de detay pencerelerindeki bölüm başlıkları */
+table.excel-table td.section-header,
+.excel-table td.section-header,
+#detayModal table.excel-table td.section-header,
+#bakimDetayModal table.excel-table td.section-header {
+    background-color: #fd7e14 !important; /* Turuncu Arka Plan (Turuncu Buton Tonu) */
+    color: #ffffff !important;            /* Beyaz Yazı Rengi */
+    font-weight: bold !important;
+    text-align: center !important;
+}
