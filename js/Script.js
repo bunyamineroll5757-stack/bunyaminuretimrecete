@@ -272,7 +272,7 @@ function getText(id) {
 }
 
 // ======================================================
-// DETAY GÖSTER (GÜNCELLENMİŞ HIZ, BASINÇ, SICAKLIK YERİNE TARİH)
+// DETAY GÖSTER
 // ======================================================
 async function detayGoster(id) {
     try {
@@ -289,7 +289,7 @@ async function detayGoster(id) {
         detaydakiId = id;
         const a = data.uretim_ayarlari || data.ayarlar || {};
 
-        // 1. Genel / Reçete Bilgileri (Hız, Basınç, Sıcaklık yerine Tarih eklendi)
+        // 1. Genel Bilgiler (Hız, Basınç, Sıcaklık yerine Tarih)
         setText("detay_recete_no", data.recete_no);
         setText("detay_baslik_no", data.recete_no);
         setText("detay_urun_adi", data.urun_adi);
@@ -376,6 +376,7 @@ async function detayGoster(id) {
         console.error("DETAY GÖSTER HATA:", hata);
     }
 }
+
 function detayKapat() {
     const modal = document.getElementById("detayModal");
     if (modal) modal.style.display = "none";
@@ -680,10 +681,9 @@ function adminCikis() {
 }
 
 // ==========================================
-// BAKIM & ONARIM İŞLEMLERİ (DETAY MODAL EKLENDİ)
+// BAKIM & ONARIM İŞLEMLERİ
 // ==========================================
 
-// Bakım Kaydını Supabase'e İşleme
 async function bakimKaydet() {
     const tarih = document.getElementById('bakim_tarih')?.value || '';
     const makine = document.getElementById('bakim_makine')?.value || '';
@@ -738,7 +738,6 @@ function bakimFormTemizle() {
     });
 }
 
-// Bakım Kayıtlarını Çekip Listeleme (Tarihe Tıklayınca Detay Açılır)
 async function bakimListele() {
     const tbody = document.getElementById('bakimListe');
     if (!tbody) return;
@@ -761,7 +760,7 @@ async function bakimListele() {
         return;
     }
 
-    window.tumBakimlar = data; // Global saklama
+    window.tumBakimlar = data;
 
     tbody.innerHTML = '';
     data.forEach(item => {
@@ -785,7 +784,6 @@ async function bakimListele() {
     });
 }
 
-// Bakım Detay Modalını Gösterme
 function bakimDetayGoster(id) {
     if (!window.tumBakimlar) return;
     
@@ -809,7 +807,6 @@ function bakimDetayKapat() {
     if (modal) modal.style.display = 'none';
 }
 
-// Bakım Kaydı Silme
 async function bakimSil(id) {
     if (!confirm("Bu bakım kaydını silmek istediğinize emin misiniz?")) return;
 
@@ -828,7 +825,6 @@ async function bakimSil(id) {
     }
 }
 
-// Bakım Kayıtlarını Arama
 function bakimAra() {
     const aramaElemani = document.getElementById('bakimArama');
     if (!aramaElemani) return;
