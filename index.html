@@ -415,11 +415,10 @@
                     <thead>
                         <tr>
                             <th>Tarih</th>
-                            <th>Makine / Ekipman</th>
+                            <th>Makine</th>
                             <th>Tip</th>
                             <th>Personel</th>
                             <th>Durum</th>
-                            <th>Açıklama</th>
                             <th>İşlem</th>
                         </tr>
                     </thead>
@@ -431,255 +430,21 @@
 
 </div>
 
-<!-- REÇETE DETAY MODAL -->
-<div id="detayModal" class="modal">
-    <div class="modal-content">
-        <h2>Reçete Detayı - <span id="detay_baslik_no">-</span></h2>
-        
-        <div style="margin-bottom: 10px;">
-            <button type="button" class="btn" onclick="detayYazdir()">Yazdır</button>
-            <button type="button" class="btn-success" onclick="pdfIndir()">PDF İndir</button>
-            <button type="button" class="btn-warning" onclick="paylas()">Paylaş</button>
-            <button type="button" class="btn" onclick="detayKopyala()">Kopyala</button>
-            <button type="button" class="btn" onclick="detaydanDuzenle()">Düzenle</button>
-            <button type="button" class="btn-danger" onclick="detayKapat()">Kapat</button>
-        </div>
+<!-- 1. SUPABASE JS SDK KÜTÜPHANESİ -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-        <div id="detayIcerikAlani">
-            <div class="excel-container">
-                <table class="excel-table">
-                    <colgroup>
-                        <col style="width: 25%;">
-                        <col style="width: 25%;">
-                        <col style="width: 25%;">
-                        <col style="width: 25%;">
-                    </colgroup>
-                    
-                    <tr><td colspan="4" class="section-header">GENEL BİLGİLER</td></tr>
-                    <tr>
-                        <td class="label">REÇETE NO</td><td id="detay_recete_no">-</td>
-                        <td class="label">ÜRÜN ADI</td><td id="detay_urun_adi">-</td>
-                    </tr>
-                    <tr>
-                        <td class="label">MAKİNE</td><td id="detay_makine_adi">-</td>
-                        <td class="label">TARİH</td><td id="detay_recete_tarih">-</td>
-                    </tr>
-                    <tr>
-                        <td class="label">NOTLAR</td><td colspan="3" id="detay_notlar">-</td>
-                    </tr>
-
-                    <tr><td colspan="4" class="section-header">ÜRETİM AYARLARI</td></tr>
-                    <tr>
-                        <td class="label">GRAM</td><td id="detay_ayar_gram">-</td>
-                        <td class="label">RENK</td><td id="detay_ayar_renk">-</td>
-                    </tr>
-                    <tr>
-                        <td class="label">TARİH</td><td id="detay_ayar_tarih">-</td>
-                        <td class="label">SERVOLAP</td><td id="detay_ayar_servolap">-</td>
-                    </tr>
-                    <tr>
-                        <td class="label">TARAK HIZI</td><td id="detay_ayar_tarak_hizi">-</td>
-                        <td class="label">FİRMA ADI</td><td id="detay_ayar_firma_adi">-</td>
-                    </tr>
-
-                    <tr><td colspan="4" class="section-header">TARAK AYARLARI</td></tr>
-                    <tr>
-                        <td class="label">ANA TAMBUR</td><td id="detay_ayar_ana_tambur">-</td>
-                        <td class="label">ALT ARA DOFER</td><td id="detay_ayar_alt_ara_dofer">-</td>
-                    </tr>
-                    <tr>
-                        <td class="label">SIYIRICI</td><td id="detay_ayar_siyirici">-</td>
-                        <td class="label">ÜST ARA DOFER</td><td id="detay_ayar_ust_ara_dofer">-</td>
-                    </tr>
-                    <tr>
-                        <td class="label">İŞÇİ</td><td id="detay_ayar_isci">-</td>
-                        <td colspan="2"></td>
-                    </tr>
-                    <tr>
-                        <td class="label">ÜST SEVK DOFERİ</td><td id="detay_ayar_ust_sevk_doferi">-</td>
-                        <td class="label">ALT SEVK DOFERİ</td><td id="detay_ayar_alt_sevk_doferi">-</td>
-                    </tr>
-                    <tr>
-                        <td class="label">ÜST DOFER ALICI</td><td id="detay_ayar_ust_dofer_alici">-</td>
-                        <td class="label">ALT DOFER ALICI</td><td id="detay_ayar_alt_dofer_alici">-</td>
-                    </tr>
-                    <tr>
-                        <td class="label">ÜST SEVK BANDI</td><td id="detay_ayar_ust_sevk_bandi">-</td>
-                        <td class="label">ALT SEVK BANDI</td><td id="detay_ayar_alt_sevk_bandi">-</td>
-                    </tr>
-
-                    <tr><td colspan="4" class="section-header">SERİCİ AYARLARI</td></tr>
-                    <tr>
-                        <td class="label">TÜLBENT KATI</td><td id="detay_ayar_tulbent_kati">-</td>
-                        <td class="label">BESLEME ÇEKİM</td><td id="detay_ayar_besleme_cekim">-</td>
-                    </tr>
-                    <tr>
-                        <td class="label">SERME ENİ ÖN</td><td id="detay_ayar_serme_eni_on">-</td>
-                        <td class="label">BANT ÇEKİM</td><td id="detay_ayar_bant_cekim">-</td>
-                    </tr>
-                    <tr>
-                        <td class="label">SERME ENİ ARKA</td><td id="detay_ayar_serme_eni_arka">-</td>
-                        <td class="label">ARABA ÇEKİM</td><td id="detay_ayar_araba_cekim">-</td>
-                    </tr>
-                    <tr>
-                        <td class="label">ÇKŞ YÜKSEKLİĞİ SAĞ</td><td id="detay_ayar_cikis_yuksekligi_sag">-</td>
-                        <td class="label">ÇKŞ HAFIZA FAKTÖRÜ</td><td id="detay_ayar_cikis_hafiza">-</td>
-                    </tr>
-                    <tr>
-                        <td class="label">ÇKŞ YÜKSEKLİĞİ SOL</td><td id="detay_ayar_cikis_yuksekligi_sol">-</td>
-                        <td class="label">ÖN ÇKŞ HAFIZA FAKTÖRÜ</td><td id="detay_ayar_on_cikis_hafiza">-</td>
-                    </tr>
-                    <tr>
-                        <td colspan="2"></td>
-                        <td class="label">ARKA ÇKŞ HFZA FAKTÖRÜ</td><td id="detay_ayar_arka_cikis_hafiza">-</td>
-                    </tr>
-
-                    <tr><td colspan="4" class="section-header">ÇEKTİRME AYARLARI</td></tr>
-                    <tr>
-                        <td class="label">TRİO 1 ÇEKİM</td><td id="detay_ayar_trio1">-</td>
-                        <td class="label">TRİO 4 ÇEKİM</td><td id="detay_ayar_trio4">-</td>
-                    </tr>
-                    <tr>
-                        <td class="label">TRİO 2 ÇEKİM</td><td id="detay_ayar_trio2">-</td>
-                        <td class="label">TRİO 5 ÇEKİM</td><td id="detay_ayar_trio5">-</td>
-                    </tr>
-                    <tr>
-                        <td class="label">TRİO 3 ÇEKİM</td><td id="detay_ayar_trio3">-</td>
-                        <td class="label">TRİO 6 ÇEKİM</td><td id="detay_ayar_trio6">-</td>
-                    </tr>
-
-                    <tr><td colspan="4" class="section-header">SU JETİ AYARLARI</td></tr>
-                    <tr>
-                        <td class="label"></td><td class="label">BAR</td>
-                        <td class="label">BESLEME 1</td><td id="detay_ayar_besleme1">-</td>
-                    </tr>
-                    <tr>
-                        <td class="label">POMPA 1</td><td id="detay_ayar_pompa1">-</td>
-                        <td class="label">TAMBUR 1</td><td id="detay_ayar_tambur1">-</td>
-                    </tr>
-                    <tr>
-                        <td class="label">POMPA 2</td><td id="detay_ayar_pompa2">-</td>
-                        <td class="label">TAMBUR 2</td><td id="detay_ayar_tambur2">-</td>
-                    </tr>
-                    <tr>
-                        <td class="label">POMPA 3</td><td id="detay_ayar_pompa3">-</td>
-                        <td class="label">TAMBUR 3</td><td id="detay_ayar_tambur3">-</td>
-                    </tr>
-                    <tr>
-                        <td class="label">POMPA 4</td><td id="detay_ayar_pompa4">-</td>
-                        <td class="label">BESLEME 2</td><td id="detay_ayar_besleme2">-</td>
-                    </tr>
-                    <tr>
-                        <td class="label">POMPA 5</td><td id="detay_ayar_pompa5">-</td>
-                        <td class="label">SIKMA FULAR</td><td id="detay_ayar_sikma_fular">-</td>
-                    </tr>
-                    <tr>
-                        <td class="label">POMPA 6</td><td id="detay_ayar_pompa6">-</td>
-                        <td class="label">FIRIN</td><td id="detay_ayar_firin">-</td>
-                    </tr>
-
-                    <tr><td colspan="4" class="section-header">HAMMADDE AYARLARI</td></tr>
-                    <tr>
-                        <td class="label">BALKAN 1</td><td id="detay_ayar_balkan1">-</td>
-                        <td class="label">BALKAN 2</td><td id="detay_ayar_balkan2">-</td>
-                    </tr>
-                    <tr>
-                        <td class="label">BALKAN 3</td><td id="detay_ayar_balkan3">-</td>
-                        <td colspan="2"></td>
-                    </tr>
-                    <tr>
-                        <td colspan="4" id="detay_ayar_hammadde" style="text-align: left; padding-left: 5px;">-</td>
-                    </tr>
-
-                    <tr><td colspan="4" class="section-header">KESİM EBATLARI</td></tr>
-                    <tr>
-                        <td class="label">KESİM ENİ</td><td id="detay_ayar_kesim_eni">-</td>
-                        <td class="label">ÇAP</td><td id="detay_ayar_cap">-</td>
-                    </tr>
-                    <tr>
-                        <td class="label">SARIM METRESİ</td><td id="detay_ayar_sarim_metresi">-</td>
-                        <td class="label">SAATLİK KG</td><td id="detay_ayar_saatlik_kg">-</td>
-                    </tr>
-                    <tr>
-                        <td class="label">FIRIN ISISI</td><td id="detay_ayar_firin_isisi">-</td>
-                        <td class="label">HAT HIZI</td><td id="detay_ayar_hat_hizi">-</td>
-                    </tr>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- EKLENEN BAKIM DETAY MODAL -->
-<div id="bakimDetayModal" class="modal">
-    <div class="modal-content">
-        <h2>Bakım Kaydı Detayı</h2>
-        <div class="excel-container">
-            <table class="excel-table">
-                <colgroup>
-                    <col style="width: 30%;">
-                    <col style="width: 70%;">
-                </colgroup>
-                <tr><td colspan="2" class="section-header">BAKIM & ONARIM DETAYLARI</td></tr>
-                <tr>
-                    <td class="label">TARIH & SAAT</td>
-                    <td id="bdetay_tarih">-</td>
-                </tr>
-                <tr>
-                    <td class="label">MAKINE / EKIPMAN</td>
-                    <td id="bdetay_makine">-</td>
-                </tr>
-                <tr>
-                    <td class="label">BAKIM TIPI</td>
-                    <td id="bdetay_tip">-</td>
-                </tr>
-                <tr>
-                    <td class="label">PERSONEL</td>
-                    <td id="bdetay_personel">-</td>
-                </tr>
-                <tr>
-                    <td class="label">DURUM</td>
-                    <td id="bdetay_durum">-</td>
-                </tr>
-                <tr>
-                    <td class="label">DEĞIŞEN PARÇA</td>
-                    <td id="bdetay_parca">-</td>
-                </tr>
-                <tr>
-                    <td class="label">AÇIKLAMA</td>
-                    <td id="bdetay_aciklama">-</td>
-                </tr>
-            </table>
-        </div>
-        <div style="margin-top: 15px; text-align: right;">
-            <button type="button" class="btn-danger" onclick="bakimDetayKapat()">Kapat</button>
-        </div>
-    </div>
-</div>
-
-<!-- LOGİN MODAL -->
-<div id="loginModal" class="modal">
-    <div class="modal-content" style="max-width: 350px;">
-        <h2 style="text-align: center;">Sistem Girişi</h2>
-        <input type="text" id="login_user" placeholder="Kullanıcı Adı"><br><br>
-        <input type="password" id="login_pass" placeholder="Şifre"><br><br>
-        <div id="loginError" style="color: red; display: none; margin-bottom: 10px; font-size: 11px;">Hatalı Kullanıcı Adı veya Şifre!</div>
-        <button type="button" class="btn" style="width: 100%;" onclick="adminGiris()">Giriş Yap</button>
-    </div>
-</div>
-
+<!-- 2. SUPABASE BAĞLANTI KURULUMU -->
 <script>
-    function sekmeDegistir(tabId, btn) {
-        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-        document.getElementById(tabId).classList.add('active');
-        btn.classList.add('active');
+    const SUPABASE_URL = "https://ihsetoxxggiaeulpqhzg.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_HoqAcz7S0ANBNyQTj6fjew_YCa_71nb"
+
+    // JS tarafındaki getSupabase() fonksiyonunun yakalaması için window nesnesine atıyoruz
+    if (typeof supabase !== 'undefined') {
+        window.sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     }
 </script>
 
-<!-- SUPABASE SDK & SCRIPT.JS -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<!-- GitHub'daki klasör/dosya adına uygun yol: js/Script.js -->
+<!-- 3. ANA JAVASCRIPT DOSYASI (Büyük 'S' harfiyle) -->
 <script src="js/Script.js"></script>
 
 </body>
