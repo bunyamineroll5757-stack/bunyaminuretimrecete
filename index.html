@@ -29,8 +29,10 @@
         table { width: 100%; border-collapse: collapse; background: white; }
         th, td { border: 1px solid #888; padding: 4px; text-align: left; }
         th { background: #ffe600; }
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, .6); justify-content: center; align-items: center; padding: 10px; z-index: 9999; }
-        .modal-content { background: white; max-width: 700px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 15px; border-radius: 12px; }
+        
+        /* MODAL STİLLERİ */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, .7); justify-content: center; align-items: center; padding: 10px; z-index: 99999; }
+        .modal-content { background: white; max-width: 750px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 15px; border-radius: 12px; }
         .durum { padding: 10px; margin-bottom: 15px; border-radius: 8px; display: none; }
 
         /* TABLO DIŞ KAPSAYICISI */
@@ -43,7 +45,7 @@
             overflow-x: auto;
         }
 
-        /* %25 - %25 - %25 - %25 EŞİT DÜZENLİ TABLO YAPISI */
+        /* TABLO YAPISI */
         .excel-table {
             width: 100% !important;
             table-layout: fixed !important;
@@ -74,7 +76,6 @@
             text-align: center;
         }
         
-        /* INPUT VE DEĞER ALANLARI */
         .excel-table input {
             border: none;
             background: transparent;
@@ -98,7 +99,6 @@
             text-align: center;
         }
 
-        /* MOBİL UYUMLULUK */
         @media (max-width: 600px) {
             .excel-table { font-size: 9px; }
             .excel-table td { padding: 2px; }
@@ -106,27 +106,20 @@
             .excel-table input { font-size: 9.5px; }
         }
 
-        /* YAZDIRMA VE PDF YAPISI */
         @media print {
-            body { background: white; }
-            .modal, button, .btn, #arama, #loginModal { display: none !important; }
-            .container { max-width: 100%; padding: 0; margin: 0; }
-            .panel { border: none; padding: 0; margin-bottom: 10px; }
-            .excel-table { width: 100% !important; border: 1px solid #000 !important; table-layout: fixed !important; }
-            .excel-table td { border: 1px solid #000 !important; }
-            .excel-table .section-header {
-                background-color: #FFFF00 !important;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
+            body * { visibility: hidden; }
+            #detayModal, #detayModal * { visibility: visible; }
+            #detayModal { position: absolute; left: 0; top: 0; width: 100%; height: auto; background: white; }
+            .modal-content { max-height: none; overflow: visible; padding: 0; }
+            button, .btn { display: none !important; }
         }
     </style>
 </head>
 
 <body>
 
-<!-- ADMIN GİRİŞ MODAL (Giriş Yapılana Kadar Ekranda Durur) -->
-<div id="loginModal" class="modal" style="display: flex;">
+<!-- ADMIN GİRİŞ MODAL -->
+<div id="loginModal" class="modal">
     <div class="modal-content" style="max-width: 350px; text-align: center;">
         <h2>Admin Girişi</h2>
         <p style="color: #666; font-size: 13px;">Lütfen devam etmek için giriş yapın.</p>
@@ -164,7 +157,7 @@
         <button class="btn-danger" type="button" onclick="adminCikis()">Çıkış Yap</button>
     </div>
 
-    <!-- ÜRETİM AYARLARI -->
+    <!-- ÜRETİM AYARLARI TABLOSU -->
     <div class="panel">
         <h2>Üretim Ayarları</h2>
 
@@ -360,10 +353,10 @@
 
 </div>
 
-<!-- DETAY PENCERESİ MODALI -->
+<!-- REÇETE DETAY MODALI (DETAY PENCERESİ) -->
 <div id="detayModal" class="modal">
     <div class="modal-content">
-        <h2>Üretim Reçetesi Detayı</h2>
+        <h2 style="text-align: center; margin-top: 0;">Üretim Reçetesi Detayı</h2>
         
         <div id="detayIcerikAlani">
             <div class="excel-container">
@@ -529,17 +522,18 @@
         </div>
 
         <br>
-        <button class="btn" type="button" onclick="detaydanDuzenle()">Düzenle</button>
-        <button class="btn-success" type="button" onclick="detayKopyala()">Kopyala</button>
-        <button class="btn" type="button" onclick="detayYazdir()">Yazdır</button>
-        <button class="btn-danger" type="button" onclick="pdfIndir()">PDF İndir</button>
-        <button class="btn-warning" type="button" onclick="paylas()">Paylaş</button>
-        <button class="btn-secondary" type="button" onclick="detayKapat()">Kapat</button>
+        <div style="text-align: center;">
+            <button class="btn" type="button" onclick="detaydanDuzenle()">Düzenle</button>
+            <button class="btn-success" type="button" onclick="detayKopyala()">Kopyala</button>
+            <button class="btn" type="button" onclick="detayYazdir()">Yazdır</button>
+            <button class="btn-danger" type="button" onclick="pdfIndir()">PDF İndir</button>
+            <button class="btn-warning" type="button" onclick="paylas()">Paylaş</button>
+            <button class="btn-secondary" type="button" onclick="detayKapat()">Kapat</button>
+        </div>
     </div>
 </div>
 
 <script>
-    // TÜM ALAN ID'LERİ
     const alanlar = [
         'recete_no', 'urun_adi', 'makine_adi', 'tarih', 'notlar',
         'ayar_gram', 'ayar_renk', 'ayar_servolap', 'ayar_tarak_hizi', 'ayar_firma_adi',
@@ -555,7 +549,6 @@
         'ayar_sarim_metresi', 'ayar_saatlik_kg', 'ayar_firin_isisi', 'ayar_hat_hizi'
     ];
 
-    // ÜST FORM İLE TABLO DAHİLİNDEKİ ALANLARIN SENKRONİZASYONU
     const senkronHaritasi = {
         'recete_no': 'genel_recete_no',
         'urun_adi': 'genel_urun_adi',
@@ -576,6 +569,11 @@
     let seciliReceteId = null;
 
     window.onload = function() {
+        if (sessionStorage.getItem('isLoggedIn') === 'true') {
+            document.getElementById('loginModal').style.display = 'none';
+        } else {
+            document.getElementById('loginModal').style.display = 'flex';
+        }
         listeyiGuncelle();
     };
 
@@ -583,13 +581,16 @@
         const user = document.getElementById('login_user').value;
         const pass = document.getElementById('login_pass').value;
         if (user === "admin" && pass === "1234") {
+            sessionStorage.setItem('isLoggedIn', 'true');
             document.getElementById('loginModal').style.display = 'none';
+            document.getElementById('loginError').style.display = 'none';
         } else {
             document.getElementById('loginError').style.display = 'block';
         }
     }
 
     function adminCikis() {
+        sessionStorage.removeItem('isLoggedIn');
         document.getElementById('loginModal').style.display = 'flex';
         document.getElementById('login_user').value = '';
         document.getElementById('login_pass').value = '';
