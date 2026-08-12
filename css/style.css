@@ -915,3 +915,23 @@ td button:last-child:hover {
     background-color: #ffffff !important;
     color: #000000 !important;
 }
+/* ==========================================
+   EKTET HÜCRELERİ İÇİN YEŞİL DOLGU RENGİ
+   ========================================== */
+
+/* 1. Hem ana tablodaki hem de detay pencerelerindeki tüm etiket hücreleri */
+table.excel-table td.label,
+.excel-table td.label,
+#detayModal table.excel-table td.label,
+#bakimDetayModal table.excel-table td.label {
+    background: #28a745 !important;      /* Yeşil Dolgu */
+    background-color: #28a745 !important;/* Garantilemek için arka plan */
+    color: #ffffff !important;            /* Beyaz Yazı Rengi */
+    font-weight: bold !important;
+}
+
+/* 2. Bölüm Başlıklarının (GENEL BİLGİLER, TARAK AYARLARI vb.) Dokunulmadan Kalması */
+table.excel-table td.section-header,
+.excel-table td.section-header {
+    /* Orijinal sarı/gri dolgusu ve kendi yazı stili aynen kalır */
+}
