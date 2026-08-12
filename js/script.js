@@ -16,6 +16,7 @@ function getSupabase() {
     if (window.sbClient) return window.sbClient;
     if (window.supabaseClient) return window.supabaseClient;
     if (window.supabase && typeof window.supabase.from === 'function') return window.supabase;
+    
     console.error("Supabase bağlantısı bulunamadı.");
     return null;
 }
