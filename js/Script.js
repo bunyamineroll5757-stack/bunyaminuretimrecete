@@ -738,3 +738,73 @@ async function paylas() {
         alert("PDF paylaşım hatası: " + hata.message);
     }
 }
+// --- BAKIM & ONARIM İŞLEMLERİ ---
+
+// Bakım Kaydını Supabase / Veritabanına İşleme
+async function bakimKaydet() {
+    const tarih = document.getElementById('bakim_tarih').value;
+    const makine = document.getElementById('bakim_makine').value;
+    const tip = document.getElementById('bakim_tipi').value;
+    const personel = document.getElementById('bakim_personel').value;
+    const durum = document.getElementById('bakim_durumu').value;
+    const parca = document.getElementById('bakim_parca').value;
+    const aciklama = document.getElementById('bakim_aciklama').value;
+
+    if (!makine || !tarih) {
+        alert("Lütfen en azından Tarih ve Makine/Ekipman alanlarını doldurun!");
+        return;
+    }
+
+    const bakimData = {
+        tarih: tarih,
+        makine: makine,
+        tip: tip,
+        personel: personel,
+        durum: durum,
+        parca: parca,
+        aciklama: aciklama
+    };
+
+    // Supabase bağlantısı varsa veritabanına ekle
+    if (typeof supabase !== 'undefined') {
+        const { data, error } = await supabase
+            .from('bakimlar') // Supabase tablonuzun adı
+            .insert([bakimData]);
+
+        if (error) {
+            console.error("Bakım kaydı eklenirken hata oluştu:", error);
+            alert("Bakım kaydı kaydedilemedi! (Veritabanı hatası)");
+            return;
+        }
+    }
+
+    alert("Bakım kaydı başarıyla işlendi!");
+    bakimFormTemizle();
+    bakimListele(); // Listeyi yenile
+}
+
+// Bakım Formunu Temizleme
+function bakimFormTemizle() {
+    document.getElementById('bakim_tarih').value = '';
+    document.getElementById('bakim_makine').value = '';
+    document.getElementById('bakim_tipi').value = 'Mekanik';
+    document.getElementById('bakim_personel').value = '';
+    document.getElementById('bakim_durumu').value = 'Tamamlandı';
+    document.getElementById('bakim_parca').value = '';
+    document.getElementById('bakim_aciklama').value = '';
+}
+
+// Bakım Kayıtlarını Arama
+function bakimAra() {
+    const aramaMetni = document.getElementById('bakimArama').value.toLowerCase();
+    const satirListesi = document.querySelectorAll('#bakimListe tr');
+
+    satirListesi.forEach(satir => {
+        const icerik = satir.innerText.toLowerCase();
+        if (icerik.includes(aramaMetni)) {
+            satir.style.display = '';
+        } else {
+            satir.style.display = 'none';
+        }
+    });
+}
