@@ -25,17 +25,14 @@
         .btn-secondary { background: #666; color: white; }
         .btn-warning { background: #f57c00; color: white; }
         
-        /* KAYITLI REÇETELER TABLOSU CSS */
         .table-wrap { width: 100%; overflow-x: auto; background: white; border-radius: 6px; border: 1px solid #ccc; margin-top: 10px; }
         .recete-liste-table { width: 100%; min-width: 600px; border-collapse: collapse; background: white; }
         .recete-liste-table th, .recete-liste-table td { border: 1px solid #bbb; padding: 8px; text-align: center; font-size: 12px; }
         .recete-liste-table th { background: #ffe600; font-weight: bold; color: #000; }
 
-        /* MODAL STİLLERİ */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, .7); justify-content: center; align-items: center; padding: 10px; z-index: 99999; }
         .modal-content { background: white; max-width: 750px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 15px; border-radius: 12px; }
 
-        /* EXCEL TİPİ FORM TABLOSU */
         .excel-container { background: white; border-radius: 6px; padding: 2px; width: 100%; box-sizing: border-box; overflow-x: auto; }
         .excel-table { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 11px; color: #000; }
         .excel-table td { border: 1px solid #000 !important; padding: 4px; vertical-align: middle; text-align: center; }
@@ -55,7 +52,6 @@
 
 <body>
 
-<!-- ADMIN GİRİŞ MODAL -->
 <div id="loginModal" class="modal">
     <div class="modal-content" style="max-width: 350px; text-align: center;">
         <h2>Admin Girişi</h2>
@@ -72,7 +68,6 @@
 
     <h1>Üretim Reçete Yönetim Sistemi</h1>
 
-    <!-- REÇETE BİLGİLERİ -->
     <div class="panel">
         <h2>Reçete Bilgileri</h2>
 
@@ -92,7 +87,6 @@
         <button class="btn-danger" type="button" onclick="adminCikis()">Çıkış Yap</button>
     </div>
 
-    <!-- ÜRETİM AYARLARI TABLOSU (HIZ, BAR, BASINÇ, TARİH DAHİL) -->
     <div class="panel">
         <h2>Üretim Ayarları</h2>
 
@@ -116,23 +110,19 @@
                     <td class="label">TARİH</td><td><input id="genel_tarih" type="date"></td>
                 </tr>
 
-                <!-- ÜRETİM VE HAT AYARLARI (HIZ, BAR, BASINÇ) -->
+                <!-- ÜRETİM VE HAT AYARLARI -->
                 <tr><td colspan="4" class="section-header">ÜRETİM VE HAT AYARLARI</td></tr>
                 <tr>
                     <td class="label">GRAM</td><td><input id="ayar_gram"></td>
                     <td class="label">RENK</td><td><input id="ayar_renk"></td>
                 </tr>
                 <tr>
-                    <td class="label">HAT HIZI</td><td><input id="ayar_hiz"></td>
-                    <td class="label">SİSTEM BAR</td><td><input id="ayar_bar"></td>
-                </tr>
-                <tr>
-                    <td class="label">HAT BASINCI</td><td><input id="ayar_basinc"></td>
                     <td class="label">TARAK HIZI</td><td><input id="ayar_tarak_hizi"></td>
+                    <td class="label">SERVOLAP</td><td><input id="ayar_servolap"></td>
                 </tr>
                 <tr>
-                    <td class="label">SERVOLAP</td><td><input id="ayar_servolap"></td>
                     <td class="label">FİRMA ADI</td><td><input id="ayar_firma_adi"></td>
+                    <td class="label">İŞLEM TARİHİ</td><td><input id="ayar_islem_tarihi" type="date"></td>
                 </tr>
 
                 <!-- TARAK AYARLARI -->
@@ -260,8 +250,7 @@
                     <td class="label">SAATLİK KG</td><td><input id="ayar_saatlik_kg"></td>
                 </tr>
                 <tr>
-                    <td class="label">FIRIN ISISI</td><td><input id="ayar_firin_isisi"></td>
-                    <td class="label">HAT HIZI</td><td><input id="ayar_hat_hizi"></td>
+                    <td class="label">FIRIN ISISI</td><td colspan="3"><input id="ayar_firin_isisi"></td>
                 </tr>
             </table>
         </div>
@@ -325,16 +314,12 @@
                         <td class="label">RENK</td><td><span id="detay_ayar_renk"></span></td>
                     </tr>
                     <tr>
-                        <td class="label">HAT HIZI</td><td><span id="detay_ayar_hiz"></span></td>
-                        <td class="label">SİSTEM BAR</td><td><span id="detay_ayar_bar"></span></td>
-                    </tr>
-                    <tr>
-                        <td class="label">HAT BASINCI</td><td><span id="detay_ayar_basinc"></span></td>
                         <td class="label">TARAK HIZI</td><td><span id="detay_ayar_tarak_hizi"></span></td>
+                        <td class="label">SERVOLAP</td><td><span id="detay_ayar_servolap"></span></td>
                     </tr>
                     <tr>
-                        <td class="label">SERVOLAP</td><td><span id="detay_ayar_servolap"></span></td>
                         <td class="label">FİRMA ADI</td><td><span id="detay_ayar_firma_adi"></span></td>
+                        <td class="label">İŞLEM TARİHİ</td><td><span id="detay_ayar_islem_tarihi"></span></td>
                     </tr>
 
                     <tr><td colspan="4" class="section-header">TARAK AYARLARI</td></tr>
@@ -456,8 +441,7 @@
                         <td class="label">SAATLİK KG</td><td><span id="detay_ayar_saatlik_kg"></span></td>
                     </tr>
                     <tr>
-                        <td class="label">FIRIN ISISI</td><td><span id="detay_ayar_firin_isisi"></span></td>
-                        <td class="label">HAT HIZI</td><td><span id="detay_ayar_hat_hizi"></span></td>
+                        <td class="label">FIRIN ISISI</td><td colspan="3"><span id="detay_ayar_firin_isisi"></span></td>
                     </tr>
                 </table>
             </div>
@@ -476,10 +460,9 @@
 </div>
 
 <script>
-    // TÜM ALANLAR JS TARAFINDA DİZİYE EKLENDİ (HATASIZ ÇALIŞMA GARANTİSİ)
     const alanlar = [
         'recete_no', 'urun_adi', 'makine_adi', 'tarih', 'notlar',
-        'ayar_gram', 'ayar_renk', 'ayar_hiz', 'ayar_bar', 'ayar_basinc', 'ayar_servolap', 'ayar_tarak_hizi', 'ayar_firma_adi',
+        'ayar_gram', 'ayar_renk', 'ayar_servolap', 'ayar_tarak_hizi', 'ayar_firma_adi', 'ayar_islem_tarihi',
         'ayar_ana_tambur', 'ayar_alt_ara_dofer', 'ayar_siyirici', 'ayar_ust_ara_dofer', 'ayar_isci',
         'ayar_ust_sevk_doferi', 'ayar_alt_sevk_doferi', 'ayar_ust_dofer_alici', 'ayar_alt_dofer_alici',
         'ayar_ust_sevk_bandi', 'ayar_alt_sevk_bandi', 'ayar_tulbent_kati', 'ayar_besleme_cekim',
@@ -489,7 +472,7 @@
         'ayar_besleme1', 'ayar_pompa1', 'ayar_tambur1', 'ayar_pompa2', 'ayar_tambur2', 'ayar_pompa3', 'ayar_tambur3',
         'ayar_pompa4', 'ayar_besleme2', 'ayar_pompa5', 'ayar_sikma_fular', 'ayar_pompa6', 'ayar_firin',
         'ayar_balkan1', 'ayar_balkan2', 'ayar_balkan3', 'ayar_hammadde', 'ayar_kesim_eni', 'ayar_cap',
-        'ayar_sarim_metresi', 'ayar_saatlik_kg', 'ayar_firin_isisi', 'ayar_hat_hizi'
+        'ayar_sarim_metresi', 'ayar_saatlik_kg', 'ayar_firin_isisi'
     ];
 
     const senkronHaritasi = {
