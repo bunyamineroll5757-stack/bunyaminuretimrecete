@@ -187,20 +187,25 @@
                         <col style="width: 25%;">
                     </colgroup>
 
-                    <!-- GENEL BİLGİLER -->
-                    <tr><td colspan="4" class="section-header">GENEL BİLGİLER</td></tr>
-                    <tr>
-                        <td class="label">REÇETE NO</td><td><input id="genel_recete_no"></td>
-                        <td class="label">ÜRÜN ADI</td><td><input id="genel_urun_adi"></td>
-                    </tr>
-                    <tr>
-                        <td class="label">MAKİNE</td><td><input id="genel_makine"></td>
-                        <td class="label">HIZ</td><td><input id="genel_hiz"></td>
-                    </tr>
-                    <tr>
-                        <td class="label">SICAKLIK</td><td><input id="genel_sicaklik"></td>
-                        <td class="label">BASINÇ</td><td><input id="genel_basinc"></td>
-                    </tr>
+                  <!-- GENEL BİLGİLER BÖLÜMÜ -->
+<tr><td colspan="4" class="section-header">GENEL BİLGİLER</td></tr>
+<tr>
+    <td class="label">REÇETE NO</td>
+    <td><input type="text" id="recete_no"></td>
+    <td class="label">ÜRÜN ADI</td>
+    <td><input type="text" id="urun_adi"></td>
+</tr>
+<tr>
+    <td class="label">MAKİNE</td>
+    <td><input type="text" id="makine_adi"></td>
+    <!-- YENİ EKLENEN TARİH ALANI (Bakım & Onarım'daki gibi) -->
+    <td class="label">TARİH</td>
+    <td><input type="datetime-local" id="recete_tarih"></td>
+</tr>
+<tr>
+    <td class="label">NOTLAR</td>
+    <td colspan="3"><input type="text" id="notlar"></td>
+</tr>
 
                     <!-- ÜRETİM AYARLARI -->
                     <tr><td colspan="4" class="section-header">ÜRETİM AYARLARI</td></tr>
