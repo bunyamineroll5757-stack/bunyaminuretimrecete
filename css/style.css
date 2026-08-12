@@ -889,3 +889,17 @@ td button:last-child:hover {
         color: #000000 !important;
     }
 }
+/* Üretim Reçetesi Tablosu - Koyu Kırmızı Kalıcı Yazılar */
+
+/* Tablonun üst başlıkları ve sarı bantlı bölüm başlıkları */
+.excel-table .section-header, 
+.excel-table th {
+    color: #8B0000 !important; /* Koyu Kırmızı (DarkRed) */
+    font-weight: bold;
+}
+
+/* Tablonun sol tarafındaki sabit etiket/tanım yazıları */
+.excel-table td.label {
+    color: #8B0000 !important; /* Koyu Kırmızı */
+    font-weight: bold;
+}
