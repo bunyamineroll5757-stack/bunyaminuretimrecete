@@ -557,7 +557,22 @@
         <p id="loginError" style="color: red; margin-top: 10px; display: none; font-size: 13px;">Kullanıcı adı veya şifre hatalı!</p>
     </div>
 </div>
+<!-- BAKIM DETAY MODAL (AÇILIR PENCERE) -->
+<div id="bakimDetayModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <h2 style="margin-top: 0; text-align: center; border-bottom: 2px solid #1976d2; padding-bottom: 8px;">Bakım & Onarım Detayı</h2>
+        
+        <div id="bakimDetayIcerik">
+            <!-- JavaScript burayı dinamik dolduracak -->
+        </div>
 
+        <br>
+        <div style="text-align: right;">
+            <button class="btn" onclick="bakimYazdirModal()">Yazdır / PDF</button>
+            <button class="btn-secondary" onclick="bakimModalKapat()">Kapat</button>
+        </div>
+    </div>
+</div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase.js"></script>
 <script src="js/Script.js"></script>
