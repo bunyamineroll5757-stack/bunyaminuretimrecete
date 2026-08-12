@@ -835,7 +835,7 @@ function bakimAra() {
         const icerik = satir.innerText.toLowerCase();
         satir.style.display = icerik.includes(aramaMetni) ? '' : 'none';
     });
-}s
+}
 // ==========================================
 // BAKIM & ONARIM YÖNETİMİ
 // ==========================================
