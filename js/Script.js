@@ -836,22 +836,3 @@ function bakimAra() {
         satir.style.display = icerik.includes(aramaMetni) ? '' : 'none';
     });
 }
-async function bakimKaydet() {
-    const tarih = document.getElementById('bakim_tarih').value;
-    const makine = document.getElementById('bakim_makine').value;
-    const tip = document.getElementById('bakim_tipi').value;
-    const personel = document.getElementById('bakim_personel').value;
-    const durum = document.getElementById('bakim_durumu').value;
-    const parca = document.getElementById('bakim_parca').value;
-    const aciklama = document.getElementById('bakim_aciklama').value;
-
-    if (!makine || !tarih) {
-        alert("Lütfen makine ve tarih alanlarını doldurun!");
-        return;
-    }
-
-    // Supabase veya veri tabanı kayıt kodlarınız...
-    console.log("Bakım kaydı tetiklendi:", { tarih, makine, tip, personel, durum, parca, aciklama });
-    
-    alert("Bakım kaydı başarıyla eklendi.");
-}
