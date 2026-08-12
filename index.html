@@ -46,7 +46,7 @@
         /* %25 - %25 - %25 - %25 EŞİT DÜZENLİ TABLO YAPISI */
         .excel-table {
             width: 100% !important;
-            table-layout: fixed !important; /* Sütun genişliklerini sabit tutar */
+            table-layout: fixed !important;
             border-collapse: collapse;
             font-size: 11px;
             color: #000;
@@ -139,9 +139,7 @@
             <input id="recete_no" placeholder="Reçete No">
             <input id="urun_adi" placeholder="Ürün Adı">
             <input id="makine_adi" placeholder="Makine Adı">
-            <input id="hiz" placeholder="Hız">
-            <input id="sicaklik" placeholder="Sıcaklık">
-            <input id="basinc" placeholder="Basınç">
+            <input id="tarih" type="date" placeholder="Tarih">
         </div>
 
         <br>
@@ -149,7 +147,7 @@
         <br>
 
         <button id="kaydetBtn" class="btn-success" type="button" onclick="kaydet()">Kaydet</button>
-        <button id="yeniReceteBtn" class="btn-secondary" type="button">Yeni Reçete</button>
+        <button id="yeniReceteBtn" class="btn-secondary" type="button" onclick="formTemizle()">Yeni Reçete</button>
         <button class="btn-danger" type="button" onclick="adminCikis()">Çıkış Yap</button>
     </div>
 
@@ -174,11 +172,7 @@
                 </tr>
                 <tr>
                     <td class="label">MAKİNE</td><td><input id="genel_makine"></td>
-                    <td class="label">HIZ</td><td><input id="genel_hiz"></td>
-                </tr>
-                <tr>
-                    <td class="label">SICAKLIK</td><td><input id="genel_sicaklik"></td>
-                    <td class="label">BASINÇ</td><td><input id="genel_basinc"></td>
+                    <td class="label">TARİH</td><td><input id="genel_tarih" type="date"></td>
                 </tr>
 
                 <!-- ÜRETİM AYARLARI -->
@@ -188,12 +182,12 @@
                     <td class="label">RENK</td><td><input id="ayar_renk"></td>
                 </tr>
                 <tr>
-                    <td class="label">TARİH</td><td><input id="ayar_tarih"></td>
                     <td class="label">SERVOLAP</td><td><input id="ayar_servolap"></td>
+                    <td class="label">TARAK HIZI</td><td><input id="ayar_tarak_hizi"></td>
                 </tr>
                 <tr>
-                    <td class="label">TARAK HIZI</td><td><input id="ayar_tarak_hizi"></td>
                     <td class="label">FİRMA ADI</td><td><input id="ayar_firma_adi"></td>
+                    <td colspan="2"></td>
                 </tr>
 
                 <!-- TARAK AYARLARI -->
@@ -266,13 +260,13 @@
                 </tr>
 
                <!-- SU JETİ AYARLARI -->
-<tr><td colspan="4" class="section-header">SU JETİ AYARLARI</td></tr>
-<tr>
-    <td class="label"></td>
-    <td class="label">BAR</td>
-    <td class="label">BESLEME 1</td>
-    <td><input id="ayar_besleme1"></td>
-</tr>
+                <tr><td colspan="4" class="section-header">SU JETİ AYARLARI</td></tr>
+                <tr>
+                    <td class="label"></td>
+                    <td class="label">BAR</td>
+                    <td class="label">BESLEME 1</td>
+                    <td><input id="ayar_besleme1"></td>
+                </tr>
                 <tr>
                     <td class="label">POMPA 1</td>
                     <td><input id="ayar_pompa1"></td>
@@ -346,9 +340,7 @@
                         <th>Reçete No</th>
                         <th>Ürün</th>
                         <th>Makine</th>
-                        <th>Hız</th>
-                        <th>Sıcaklık</th>
-                        <th>Basınç</th>
+                        <th>Tarih</th>
                         <th>İşlem</th>
                     </tr>
                 </thead>
@@ -381,11 +373,7 @@
                     </tr>
                     <tr>
                         <td class="label">MAKİNE</td><td><span id="detay_makine_adi"></span></td>
-                        <td class="label">HIZ</td><td><span id="detay_hiz"></span></td>
-                    </tr>
-                    <tr>
-                        <td class="label">SICAKLIK</td><td><span id="detay_sicaklik"></span></td>
-                        <td class="label">BASINÇ</td><td><span id="detay_basinc"></span></td>
+                        <td class="label">TARİH</td><td><span id="detay_tarih"></span></td>
                     </tr>
                     <tr>
                         <td class="label">NOTLAR</td><td colspan="3"><span id="detay_notlar"></span></td>
@@ -397,12 +385,12 @@
                         <td class="label">RENK</td><td><span id="detay_ayar_renk"></span></td>
                     </tr>
                     <tr>
-                        <td class="label">TARİH</td><td><span id="detay_ayar_tarih"></span></td>
                         <td class="label">SERVOLAP</td><td><span id="detay_ayar_servolap"></span></td>
+                        <td class="label">TARAK HIZI</td><td><span id="detay_ayar_tarak_hizi"></span></td>
                     </tr>
                     <tr>
-                        <td class="label">TARAK HIZI</td><td><span id="detay_ayar_tarak_hizi"></span></td>
                         <td class="label">FİRMA ADI</td><td><span id="detay_ayar_firma_adi"></span></td>
+                        <td colspan="2"></td>
                     </tr>
 
                     <tr><td colspan="4" class="section-header">TARAK AYARLARI</td></tr>
@@ -558,9 +546,204 @@
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/supabase.js"></script>
-<script src="js/Script.js"></script>
+<script>
+    // TÜM ALAN ID'LERİ
+    const alanlar = [
+        'recete_no', 'urun_adi', 'makine_adi', 'tarih', 'notlar',
+        'ayar_gram', 'ayar_renk', 'ayar_servolap', 'ayar_tarak_hizi', 'ayar_firma_adi',
+        'ayar_ana_tambur', 'ayar_alt_ara_dofer', 'ayar_siyirici', 'ayar_ust_ara_dofer', 'ayar_isci',
+        'ayar_ust_sevk_doferi', 'ayar_alt_sevk_doferi', 'ayar_ust_dofer_alici', 'ayar_alt_dofer_alici',
+        'ayar_ust_sevk_bandi', 'ayar_alt_sevk_bandi', 'ayar_tulbent_kati', 'ayar_besleme_cekim',
+        'ayar_serme_eni_on', 'ayar_bant_cekim', 'ayar_serme_eni_arka', 'ayar_araba_cekim',
+        'ayar_cikis_yuksekligi_sag', 'ayar_cikis_hafiza', 'ayar_cikis_yuksekligi_sol', 'ayar_on_cikis_hafiza',
+        'ayar_arka_cikis_hafiza', 'ayar_trio1', 'ayar_trio4', 'ayar_trio2', 'ayar_trio5', 'ayar_trio3', 'ayar_trio6',
+        'ayar_besleme1', 'ayar_pompa1', 'ayar_tambur1', 'ayar_pompa2', 'ayar_tambur2', 'ayar_pompa3', 'ayar_tambur3',
+        'ayar_pompa4', 'ayar_besleme2', 'ayar_pompa5', 'ayar_sikma_fular', 'ayar_pompa6', 'ayar_firin',
+        'ayar_balkan1', 'ayar_balkan2', 'ayar_balkan3', 'ayar_hammadde', 'ayar_kesim_eni', 'ayar_cap',
+        'ayar_sarim_metresi', 'ayar_saatlik_kg', 'ayar_firin_isisi', 'ayar_hat_hizi'
+    ];
+
+    // ÜST FORM İLE TABLO DAHİLİNDEKİ ALANLARIN SENKRONİZASYONU
+    const senkronHaritasi = {
+        'recete_no': 'genel_recete_no',
+        'urun_adi': 'genel_urun_adi',
+        'makine_adi': 'genel_makine',
+        'tarih': 'genel_tarih'
+    };
+
+    Object.entries(senkronHaritasi).forEach(([ustId, altId]) => {
+        const ustEl = document.getElementById(ustId);
+        const altEl = document.getElementById(altId);
+        if (ustEl && altEl) {
+            ustEl.addEventListener('input', (e) => { altEl.value = e.target.value; });
+            altEl.addEventListener('input', (e) => { ustEl.value = e.target.value; });
+        }
+    });
+
+    let receteler = JSON.parse(localStorage.getItem('receteler')) || [];
+    let seciliReceteId = null;
+
+    window.onload = function() {
+        listeyiGuncelle();
+    };
+
+    function adminGiris() {
+        const user = document.getElementById('login_user').value;
+        const pass = document.getElementById('login_pass').value;
+        if (user === "admin" && pass === "1234") {
+            document.getElementById('loginModal').style.display = 'none';
+        } else {
+            document.getElementById('loginError').style.display = 'block';
+        }
+    }
+
+    function adminCikis() {
+        document.getElementById('loginModal').style.display = 'flex';
+        document.getElementById('login_user').value = '';
+        document.getElementById('login_pass').value = '';
+    }
+
+    function kaydet() {
+        const rNo = document.getElementById('recete_no').value.trim();
+        if (!rNo) {
+            alert("Lütfen en az Reçete No alanını giriniz!");
+            return;
+        }
+
+        let receteData = {};
+        alanlar.forEach(id => {
+            const el = document.getElementById(id);
+            receteData[id] = el ? el.value : '';
+        });
+
+        const varIndex = receteler.findIndex(r => r.recete_no === rNo);
+        if (varIndex > -1) {
+            receteler[varIndex] = receteData;
+        } else {
+            receteler.push(receteData);
+        }
+
+        localStorage.setItem('receteler', JSON.stringify(receteler));
+        listeyiGuncelle();
+        alert("Reçete başarıyla kaydedildi.");
+    }
+
+    function listeyiGuncelle() {
+        const tbody = document.getElementById('liste');
+        tbody.innerHTML = '';
+        document.getElementById('toplamRecete').innerText = receteler.length;
+
+        receteler.forEach(r => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${r.recete_no || '-'}</td>
+                <td>${r.urun_adi || '-'}</td>
+                <td>${r.makine_adi || '-'}</td>
+                <td>${r.tarih || '-'}</td>
+                <td>
+                    <button class="btn" onclick="detayAc('${r.recete_no}')">İncele</button>
+                    <button class="btn-danger" onclick="receteSil('${r.recete_no}')">Sil</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function detayAc(receteNo) {
+        const r = receteler.find(x => x.recete_no === receteNo);
+        if (!r) return;
+        seciliReceteId = receteNo;
+
+        alanlar.forEach(id => {
+            const span = document.getElementById(`detay_${id}`);
+            if (span) {
+                span.innerText = r[id] || '-';
+            }
+        });
+
+        document.getElementById('detayModal').style.display = 'flex';
+    }
+
+    function detayKapat() {
+        document.getElementById('detayModal').style.display = 'none';
+    }
+
+    function detaydanDuzenle() {
+        const r = receteler.find(x => x.recete_no === seciliReceteId);
+        if (!r) return;
+
+        alanlar.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.value = r[id] || '';
+                el.dispatchEvent(new Event('input'));
+            }
+        });
+
+        detayKapat();
+    }
+
+    function detayKopyala() {
+        detaydanDuzenle();
+        document.getElementById('recete_no').value = document.getElementById('recete_no').value + "-KOPYA";
+        document.getElementById('genel_recete_no').value = document.getElementById('recete_no').value;
+        alert("Veriler forma aktarıldı, Reçete No güncellendi.");
+    }
+
+    function formTemizle() {
+        alanlar.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.value = '';
+                el.dispatchEvent(new Event('input'));
+            }
+        });
+    }
+
+    function receteSil(receteNo) {
+        if (confirm(`${receteNo} kodlu reçeteyi silmek istediğinize emin misiniz?`)) {
+            receteler = receteler.filter(r => r.recete_no !== receteNo);
+            localStorage.setItem('receteler', JSON.stringify(receteler));
+            listeyiGuncelle();
+        }
+    }
+
+    function ara() {
+        const query = document.getElementById('arama').value.toLowerCase();
+        const rows = document.querySelectorAll('#liste tr');
+        rows.forEach(row => {
+            row.style.display = row.innerText.toLowerCase().includes(query) ? '' : 'none';
+        });
+    }
+
+    function detayYazdir() {
+        window.print();
+    }
+
+    function pdfIndir() {
+        const el = document.getElementById('detayIcerikAlani');
+        const opt = {
+            margin: 5,
+            filename: `${seciliReceteId || 'recete'}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2 },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+        html2pdf().set(opt).from(el).save();
+    }
+
+    function paylas() {
+        if (navigator.share) {
+            navigator.share({
+                title: 'Üretim Reçetesi',
+                text: `${seciliReceteId} kodlu reçete detayları.`,
+                url: window.location.href
+            }).catch(() => {});
+        } else {
+            alert("Paylaşım bu tarayıcıda desteklenmiyor.");
+        }
+    }
+</script>
 
 </body>
 </html>
