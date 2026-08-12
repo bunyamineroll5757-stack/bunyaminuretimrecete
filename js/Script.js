@@ -68,7 +68,7 @@ function uretimAyarlariYukle(ayarlar) {
 // ======================================================
 function temizleForm() {
     const alanlar = [
-        "recete_no", "urun_adi", "makine_adi", "hiz", "sicaklik", "basinc", "notlar",
+        "recete_no", "urun_adi", "makine_adi", "recete_tarih", "notlar",
         "ayar_gram", "ayar_renk", "ayar_tarih", "ayar_servolap", "ayar_tarak_hizi", "ayar_firma_adi",
         "ayar_ana_tambur", "ayar_alt_ara_dofer", "ayar_siyirici", "ayar_ust_ara_dofer", "ayar_isci",
         "ayar_ust_sevk_doferi", "ayar_alt_sevk_doferi", "ayar_ust_dofer_alici", "ayar_alt_dofer_alici",
@@ -143,25 +143,19 @@ async function kaydet(event) {
         if (receteNo === "") receteNo = await otomatikReceteNo();
 
         const makineAdi = document.getElementById("makine_adi")?.value.trim() || "";
-        const hiz = document.getElementById("hiz")?.value.trim() || "";
-        const sicaklik = document.getElementById("sicaklik")?.value.trim() || "";
-        const basinc = document.getElementById("basinc")?.value.trim() || "";
+        const receteTarih = document.getElementById("recete_tarih")?.value.trim() || "";
         const notlar = document.getElementById("notlar")?.value.trim() || "";
 
         const ayarlarObj = uretimAyarlariTopla();
         ayarlarObj.makine_adi = makineAdi;
-        ayarlarObj.hiz = hiz;
-        ayarlarObj.sicaklik = sicaklik;
-        ayarlarObj.basinc = basinc;
+        ayarlarObj.recete_tarih = receteTarih;
         ayarlarObj.notlar = notlar;
 
         const veri = {
             recete_no: receteNo,
             urun_adi: urunAdi,
             makine_adi: makineAdi,
-            hiz: hiz,
-            sicaklik: sicaklik,
-            basinc: basinc,
+            tarih: receteTarih,
             notlar: notlar,
             uretim_ayarlari: ayarlarObj
         };
@@ -205,7 +199,7 @@ async function receteleriListele() {
         liste.innerHTML = "";
 
         if (!data || data.length === 0) {
-            liste.innerHTML = `<tr><td colspan="7" style="text-align:center;">Henüz kayıtlı reçete yok.</td></tr>`;
+            liste.innerHTML = `<tr><td colspan="5" style="text-align:center;">Henüz kayıtlı reçete yok.</td></tr>`;
             const toplam = document.getElementById("toplamRecete");
             if (toplam) toplam.innerText = "0";
             return;
@@ -216,18 +210,14 @@ async function receteleriListele() {
             const receteNo = r.recete_no || "";
             const urunAdi = r.urun_adi || "";
             const makine = r.makine_adi || ayarlarObj.makine_adi || "";
-            const hiz = r.hiz || ayarlarObj.hiz || "";
-            const sicaklik = r.sicaklik || ayarlarObj.sicaklik || "";
-            const basinc = r.basinc || ayarlarObj.basinc || "";
+            const tarih = r.tarih || r.recete_tarih || ayarlarObj.recete_tarih || "";
 
             liste.innerHTML += `
                 <tr onclick="detayGoster('${r.id}')" style="cursor: pointer;">
                     <td>${guvenliMetin(receteNo)}</td>
                     <td>${guvenliMetin(urunAdi)}</td>
                     <td>${guvenliMetin(makine)}</td>
-                    <td>${guvenliMetin(hiz)}</td>
-                    <td>${guvenliMetin(sicaklik)}</td>
-                    <td>${guvenliMetin(basinc)}</td>
+                    <td>${guvenliMetin(tarih)}</td>
                     <td>
                         <button type="button" class="btn" onclick="event.stopPropagation(); detayGoster('${r.id}')">Detay</button>
                         <button type="button" class="btn" onclick="event.stopPropagation(); duzenle('${r.id}')">Düzenle</button>
@@ -282,7 +272,7 @@ function getText(id) {
 }
 
 // ======================================================
-// DETAY GÖSTER (HTML TAM UYUMLU DÜZELTME)
+// DETAY GÖSTER
 // ======================================================
 async function detayGoster(id) {
     try {
@@ -304,9 +294,7 @@ async function detayGoster(id) {
         setText("detay_baslik_no", data.recete_no);
         setText("detay_urun_adi", data.urun_adi);
         setText("detay_makine_adi", data.makine_adi || a.makine_adi);
-        setText("detay_hiz", data.hiz || a.hiz);
-        setText("detay_sicaklik", data.sicaklik || a.sicaklik);
-        setText("detay_basinc", data.basinc || a.basinc);
+        setText("detay_recete_tarih", data.tarih || data.recete_tarih || a.recete_tarih);
         setText("detay_notlar", data.notlar || a.notlar || "Not yok");
 
         // 2. Genel Ayarlar
@@ -418,9 +406,7 @@ async function duzenle(id) {
         setValue("recete_no", data.recete_no || "");
         setValue("urun_adi", data.urun_adi || "");
         setValue("makine_adi", data.makine_adi || ayarlarObj.makine_adi || "");
-        setValue("hiz", data.hiz || ayarlarObj.hiz || "");
-        setValue("sicaklik", data.sicaklik || ayarlarObj.sicaklik || "");
-        setValue("basinc", data.basinc || ayarlarObj.basinc || "");
+        setValue("recete_tarih", data.tarih || data.recete_tarih || ayarlarObj.recete_tarih || "");
         setValue("notlar", data.notlar || ayarlarObj.notlar || "");
 
         uretimAyarlariYukle(ayarlarObj);
@@ -447,25 +433,19 @@ async function guncelle() {
 
         const receteNo = document.getElementById("recete_no")?.value.trim() || "";
         const makineAdi = document.getElementById("makine_adi")?.value.trim() || "";
-        const hiz = document.getElementById("hiz")?.value.trim() || "";
-        const sicaklik = document.getElementById("sicaklik")?.value.trim() || "";
-        const basinc = document.getElementById("basinc")?.value.trim() || "";
+        const receteTarih = document.getElementById("recete_tarih")?.value.trim() || "";
         const notlar = document.getElementById("notlar")?.value.trim() || "";
 
         const ayarlarObj = uretimAyarlariTopla();
         ayarlarObj.makine_adi = makineAdi;
-        ayarlarObj.hiz = hiz;
-        ayarlarObj.sicaklik = sicaklik;
-        ayarlarObj.basinc = basinc;
+        ayarlarObj.recete_tarih = receteTarih;
         ayarlarObj.notlar = notlar;
 
         const veri = {
             recete_no: receteNo,
             urun_adi: urunAdi,
             makine_adi: makineAdi,
-            hiz: hiz,
-            sicaklik: sicaklik,
-            basinc: basinc,
+            tarih: receteTarih,
             notlar: notlar,
             uretim_ayarlari: ayarlarObj
         };
@@ -527,9 +507,7 @@ async function detayKopyala() {
         setValue("recete_no", "");
         setValue("urun_adi", (data.urun_adi || "") + " (Kopya)");
         setValue("makine_adi", data.makine_adi || ayarlarObj.makine_adi || "");
-        setValue("hiz", data.hiz || ayarlarObj.hiz || "");
-        setValue("sicaklik", data.sicaklik || ayarlarObj.sicaklik || "");
-        setValue("basinc", data.basinc || ayarlarObj.basinc || "");
+        setValue("recete_tarih", data.tarih || data.recete_tarih || ayarlarObj.recete_tarih || "");
         setValue("notlar", data.notlar || ayarlarObj.notlar || "");
 
         uretimAyarlariYukle(ayarlarObj);
@@ -652,12 +630,15 @@ function ara() {
 }
 
 document.addEventListener("keydown", function(event) {
-    if (event.key === "Escape") detayKapat();
+    if (event.key === "Escape") {
+        detayKapat();
+        bakimDetayKapat();
+    }
 });
 
 document.addEventListener("DOMContentLoaded", function() {
     receteleriListele();
-    bakimListele(); // Bakım listesini de sayfa açılışında çek
+    bakimListele();
     const yeniBtn = document.getElementById("yeniReceteBtn");
     if (yeniBtn) yeniBtn.addEventListener("click", yeniRecete);
 });
@@ -700,7 +681,7 @@ function adminCikis() {
 }
 
 // ==========================================
-// BAKIM & ONARIM İŞLEMLERİ (DÜZELTİLDİ)
+// BAKIM & ONARIM İŞLEMLERİ (DETAY MODAL EKLENDİ)
 // ==========================================
 
 // Bakım Kaydını Supabase'e İşleme
@@ -728,7 +709,6 @@ async function bakimKaydet() {
         aciklama: aciklama
     };
 
-    // HATA DÜZELTİLDİ: Doğrudan 'supabase' yerine 'getSupabase()' çağrılıyor
     const db = getSupabase();
 
     if (db) {
@@ -748,10 +728,18 @@ async function bakimKaydet() {
 
     alert("Bakım kaydı başarıyla işlendi!");
     bakimFormTemizle();
-    await bakimListele(); // Listeyi yenile
+    await bakimListele();
 }
 
-// Bakım Kayıtlarını Çekip Listeleme
+function bakimFormTemizle() {
+    const alanlar = ['bakim_tarih', 'bakim_makine', 'bakim_tipi', 'bakim_personel', 'bakim_durumu', 'bakim_parca', 'bakim_aciklama'];
+    alanlar.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+    });
+}
+
+// Bakım Kayıtlarını Çekip Listeleme (Tarihe Tıklayınca Detay Açılır)
 async function bakimListele() {
     const tbody = document.getElementById('bakimListe');
     if (!tbody) return;
@@ -774,11 +762,17 @@ async function bakimListele() {
         return;
     }
 
+    window.tumBakimlar = data; // Global saklama
+
     tbody.innerHTML = '';
     data.forEach(item => {
         tbody.innerHTML += `
             <tr>
-                <td>${guvenliMetin(item.tarih)}</td>
+                <td>
+                    <a href="javascript:void(0)" onclick="bakimDetayGoster(${item.id})" style="color: #0056b3; font-weight: bold; text-decoration: underline;">
+                        ${guvenliMetin(item.tarih)}
+                    </a>
+                </td>
                 <td>${guvenliMetin(item.makine)}</td>
                 <td>${guvenliMetin(item.tip)}</td>
                 <td>${guvenliMetin(item.personel)}</td>
@@ -790,6 +784,30 @@ async function bakimListele() {
             </tr>
         `;
     });
+}
+
+// Bakım Detay Modalını Gösterme
+function bakimDetayGoster(id) {
+    if (!window.tumBakimlar) return;
+    
+    const kayit = window.tumBakimlar.find(b => b.id === id);
+    if (!kayit) return;
+
+    setText('bdetay_tarih', kayit.tarih);
+    setText('bdetay_makine', kayit.makine);
+    setText('bdetay_tip', kayit.tip);
+    setText('bdetay_personel', kayit.personel);
+    setText('bdetay_durum', kayit.durum);
+    setText('bdetay_parca', kayit.parca);
+    setText('bdetay_aciklama', kayit.aciklama);
+
+    const modal = document.getElementById('bakimDetayModal');
+    if (modal) modal.style.display = 'flex';
+}
+
+function bakimDetayKapat() {
+    const modal = document.getElementById('bakimDetayModal');
+    if (modal) modal.style.display = 'none';
 }
 
 // Bakım Kaydı Silme
