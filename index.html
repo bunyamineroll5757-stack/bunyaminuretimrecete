@@ -125,6 +125,19 @@
 
 <body>
 
+<!-- ADMIN GİRİŞ MODAL (Giriş Yapılana Kadar Ekranda Durur) -->
+<div id="loginModal" class="modal" style="display: flex;">
+    <div class="modal-content" style="max-width: 350px; text-align: center;">
+        <h2>Admin Girişi</h2>
+        <p style="color: #666; font-size: 13px;">Lütfen devam etmek için giriş yapın.</p>
+        <br>
+        <input id="login_user" type="text" placeholder="Kullanıcı Adı" style="margin-bottom: 10px;">
+        <input id="login_pass" type="password" placeholder="Şifre" style="margin-bottom: 15px;">
+        <button class="btn-success" type="button" style="width: 100%; padding: 10px;" onclick="adminGiris()">Giriş Yap</button>
+        <p id="loginError" style="color: red; margin-top: 10px; display: none; font-size: 13px;">Kullanıcı adı veya şifre hatalı!</p>
+    </div>
+</div>
+
 <div class="container">
 
     <h1>Üretim Reçete Yönetim Sistemi</h1>
@@ -259,38 +272,34 @@
                     <td class="label">TRİO 6 ÇEKİM</td><td><input id="ayar_trio6"></td>
                 </tr>
 
-               <!-- SU JETİ AYARLARI -->
+                <!-- SU JETİ AYARLARI -->
                 <tr><td colspan="4" class="section-header">SU JETİ AYARLARI</td></tr>
                 <tr>
-                    <td class="label"></td>
-                    <td class="label">BAR</td>
-                    <td class="label">BESLEME 1</td>
-                    <td><input id="ayar_besleme1"></td>
-                </tr>
-                <tr>
-                    <td class="label">POMPA 1</td>
-                    <td><input id="ayar_pompa1"></td>
-                    <td class="label">TAMBUR 1</td>
-                    <td><input id="ayar_tambur1"></td>
+                    <td class="label">POMPA 1</td><td><input id="ayar_pompa1"></td>
+                    <td class="label">BESLEME 1</td><td><input id="ayar_besleme1"></td>
                 </tr>
                 <tr>
                     <td class="label">POMPA 2</td><td><input id="ayar_pompa2"></td>
-                    <td class="label">TAMBUR 2</td><td><input id="ayar_tambur2"></td>
+                    <td class="label">TAMBUR 1</td><td><input id="ayar_tambur1"></td>
                 </tr>
                 <tr>
                     <td class="label">POMPA 3</td><td><input id="ayar_pompa3"></td>
-                    <td class="label">TAMBUR 3</td><td><input id="ayar_tambur3"></td>
+                    <td class="label">TAMBUR 2</td><td><input id="ayar_tambur2"></td>
                 </tr>
                 <tr>
                     <td class="label">POMPA 4</td><td><input id="ayar_pompa4"></td>
-                    <td class="label">BESLEME 2</td><td><input id="ayar_besleme2"></td>
+                    <td class="label">TAMBUR 3</td><td><input id="ayar_tambur3"></td>
                 </tr>
                 <tr>
                     <td class="label">POMPA 5</td><td><input id="ayar_pompa5"></td>
-                    <td class="label">SIKMA FULAR</td><td><input id="ayar_sikma_fular"></td>
+                    <td class="label">BESLEME 2</td><td><input id="ayar_besleme2"></td>
                 </tr>
                 <tr>
                     <td class="label">POMPA 6</td><td><input id="ayar_pompa6"></td>
+                    <td class="label">SIKMA FULAR</td><td><input id="ayar_sikma_fular"></td>
+                </tr>
+                <tr>
+                    <td colspan="2"></td>
                     <td class="label">FIRIN</td><td><input id="ayar_firin"></td>
                 </tr>
 
@@ -351,7 +360,7 @@
 
 </div>
 
-<!-- DETAY PENCERESİ -->
+<!-- DETAY PENCERESİ MODALI -->
 <div id="detayModal" class="modal">
     <div class="modal-content">
         <h2>Üretim Reçetesi Detayı</h2>
@@ -461,35 +470,31 @@
 
                     <tr><td colspan="4" class="section-header">SU JETİ AYARLARI</td></tr>
                     <tr>
-                        <td class="label"></td>
-                        <td class="label">HZ</td>
-                        <td class="label">BESLEME 1</td>
-                        <td><span id="detay_ayar_besleme1"></span></td>
-                    </tr>
-                    <tr>
-                        <td class="label">POMPA 1</td>
-                        <td><span id="detay_ayar_pompa1"></span></td>
-                        <td class="label">TAMBUR 1</td>
-                        <td><span id="detay_ayar_tambur1"></span></td>
+                        <td class="label">POMPA 1</td><td><span id="detay_ayar_pompa1"></span></td>
+                        <td class="label">BESLEME 1</td><td><span id="detay_ayar_besleme1"></span></td>
                     </tr>
                     <tr>
                         <td class="label">POMPA 2</td><td><span id="detay_ayar_pompa2"></span></td>
-                        <td class="label">TAMBUR 2</td><td><span id="detay_ayar_tambur2"></span></td>
+                        <td class="label">TAMBUR 1</td><td><span id="detay_ayar_tambur1"></span></td>
                     </tr>
                     <tr>
                         <td class="label">POMPA 3</td><td><span id="detay_ayar_pompa3"></span></td>
-                        <td class="label">TAMBUR 3</td><td><span id="detay_ayar_tambur3"></span></td>
+                        <td class="label">TAMBUR 2</td><td><span id="detay_ayar_tambur2"></span></td>
                     </tr>
                     <tr>
                         <td class="label">POMPA 4</td><td><span id="detay_ayar_pompa4"></span></td>
-                        <td class="label">BESLEME 2</td><td><span id="detay_ayar_besleme2"></span></td>
+                        <td class="label">TAMBUR 3</td><td><span id="detay_ayar_tambur3"></span></td>
                     </tr>
                     <tr>
                         <td class="label">POMPA 5</td><td><span id="detay_ayar_pompa5"></span></td>
-                        <td class="label">SIKMA FULAR</td><td><span id="detay_ayar_sikma_fular"></span></td>
+                        <td class="label">BESLEME 2</td><td><span id="detay_ayar_besleme2"></span></td>
                     </tr>
                     <tr>
                         <td class="label">POMPA 6</td><td><span id="detay_ayar_pompa6"></span></td>
+                        <td class="label">SIKMA FULAR</td><td><span id="detay_ayar_sikma_fular"></span></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2"></td>
                         <td class="label">FIRIN</td><td><span id="detay_ayar_firin"></span></td>
                     </tr>
 
@@ -530,19 +535,6 @@
         <button class="btn-danger" type="button" onclick="pdfIndir()">PDF İndir</button>
         <button class="btn-warning" type="button" onclick="paylas()">Paylaş</button>
         <button class="btn-secondary" type="button" onclick="detayKapat()">Kapat</button>
-    </div>
-</div>
-
-<!-- ADMIN GİRİŞ MODAL -->
-<div id="loginModal" class="modal" style="display: flex;">
-    <div class="modal-content" style="max-width: 350px; text-align: center;">
-        <h2>Admin Girişi</h2>
-        <p style="color: #666; font-size: 13px;">Lütfen devam etmek için giriş yapın.</p>
-        <br>
-        <input id="login_user" type="text" placeholder="Kullanıcı Adı" style="margin-bottom: 10px;">
-        <input id="login_pass" type="password" placeholder="Şifre" style="margin-bottom: 15px;">
-        <button class="btn-success" type="button" style="width: 100%; padding: 10px;" onclick="adminGiris()">Giriş Yap</button>
-        <p id="loginError" style="color: red; margin-top: 10px; display: none; font-size: 13px;">Kullanıcı adı veya şifre hatalı!</p>
     </div>
 </div>
 
