@@ -213,15 +213,15 @@ async function receteleriListele() {
             const tarih = r.tarih || r.recete_tarih || ayarlarObj.recete_tarih || "";
 
             liste.innerHTML += `
-                <tr onclick="detayGoster('${guvenliMetin(r.id)}')" style="cursor: pointer;">
+                <tr onclick="detayGoster('${r.id}')" style="cursor: pointer;">
                     <td>${guvenliMetin(receteNo)}</td>
                     <td>${guvenliMetin(urunAdi)}</td>
                     <td>${guvenliMetin(makine)}</td>
                     <td>${guvenliMetin(tarih)}</td>
                     <td>
-                        <button type="button" class="btn" onclick="event.stopPropagation(); detayGoster('${guvenliMetin(r.id)}')">Detay</button>
-                        <button type="button" class="btn" onclick="event.stopPropagation(); duzenle('${guvenliMetin(r.id)}')">Düzenle</button>
-                        <button type="button" class="btn-danger" onclick="event.stopPropagation(); sil('${guvenliMetin(r.id)}')">Sil</button>
+                        <button type="button" class="btn" onclick="event.stopPropagation(); detayGoster('${r.id}')">Detay</button>
+                        <button type="button" class="btn" onclick="event.stopPropagation(); duzenle('${r.id}')">Düzenle</button>
+                        <button type="button" class="btn-danger" onclick="event.stopPropagation(); sil('${r.id}')">Sil</button>
                     </td>
                 </tr>
             `;
@@ -289,7 +289,7 @@ async function detayGoster(id) {
         detaydakiId = id;
         const a = data.uretim_ayarlari || data.ayarlar || {};
 
-        // 1. Genel Bilgiler
+        // 1. Genel Bilgiler (Hız, Basınç, Sıcaklık yerine Tarih)
         setText("detay_recete_no", data.recete_no);
         setText("detay_baslik_no", data.recete_no);
         setText("detay_urun_adi", data.urun_adi);
