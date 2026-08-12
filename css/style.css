@@ -889,3 +889,29 @@ td button:last-child:hover {
         color: #000000 !important;
     }
 }
+/* ==========================================
+   REÇETE & BAKIM TABLOSU SABİT ETİKET DOLGU RENGİ
+   ========================================== */
+
+/* 1. Tüm sabit etiket hücrelerinin dolgu (arka plan) ve yazı rengi */
+.excel-table td.label,
+#detayModal .excel-table td.label,
+#bakimDetayModal .excel-table td.label {
+    background-color: #28a745 !important; /* Yeşil Dolgu Rengi */
+    color: #ffffff !important;            /* Beyaz Yazı Rengi */
+    font-weight: bold !important;
+}
+
+/* 2. Ana Başlıkların (GENEL BİLGİLER, TARAK AYARLARI vb.) Değişmeden Kalması İçin */
+.excel-table td.section-header,
+#detayModal .excel-table td.section-header,
+#bakimDetayModal .excel-table td.section-header {
+    /* Ana başlıklar kendi orijinal stilini korur */
+    color: inherit;
+}
+
+/* 3. Veri Hücrelerinin (Span) Arka Planının Şeffaf/Beyaz Kalması */
+.excel-table td:not(.label):not(.section-header) {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+}
