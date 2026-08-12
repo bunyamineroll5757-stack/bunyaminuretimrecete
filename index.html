@@ -8,37 +8,60 @@
 
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚙️</text></svg>">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <link rel="stylesheet" href="css/style.css?v=6">
+    <link rel="stylesheet" href="css/style.css?v=7">
 
     <style>
         body { font-family: Arial, sans-serif; margin: 0; background: #f4f6f8; }
         .container { max-width: 100%; margin: auto; padding: 8px; box-sizing: border-box; }
         h1 { text-align: center; font-size: 18px; margin: 10px 0; }
-        .panel { background: white; padding: 10px; margin-bottom: 12px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .panel { background: white; padding: 10px; margin-bottom: 12px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); width: 100%; box-sizing: border-box; }
         .ayar-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
         input, textarea, button { box-sizing: border-box; font-size: 12px; }
         input, textarea { width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 4px; }
         textarea { min-height: 50px; }
-        button { padding: 8px 10px; border: 0; border-radius: 5px; cursor: pointer; margin: 2px; }
+        button { padding: 6px 10px; border: 0; border-radius: 4px; cursor: pointer; margin: 2px; font-weight: bold; }
         .btn { background: #1976d2; color: white; }
         .btn-danger { background: #d32f2f; color: white; }
         .btn-success { background: #2e7d32; color: white; }
         .btn-secondary { background: #666; color: white; }
         .btn-warning { background: #f57c00; color: white; }
         
-        /* KAYITLI REÇETELER TABLOSU DÜZELTMELERİ */
-        .table-wrap { width: 100%; overflow-x: auto; background: white; border-radius: 6px; border: 1px solid #ccc; }
-        .recete-liste-table { width: 100%; border-collapse: collapse; background: white; min-width: 600px; }
-        .recete-liste-table th, .recete-liste-table td { border: 1px solid #888; padding: 6px; text-align: center; font-size: 12px; }
-        .recete-liste-table th { background: #ffe600; font-weight: bold; color: #000; }
-        .recete-liste-table td.islem-cell { width: 150px; white-space: nowrap; }
+        /* KAYITLI REÇETELER TABLOSU KESİN ÇÖZÜM CSS */
+        .table-wrap { 
+            width: 100%; 
+            overflow-x: auto !important; 
+            -webkit-overflow-scrolling: touch;
+            background: white; 
+            border-radius: 6px; 
+            border: 1px solid #ccc;
+            margin-top: 10px;
+        }
+        .recete-liste-table { 
+            width: 100%; 
+            min-width: 650px; /* Tablonun sıkışarak butonların kaybolmasını engeller */
+            border-collapse: collapse; 
+            background: white; 
+            table-layout: fixed;
+        }
+        .recete-liste-table th, .recete-liste-table td { 
+            border: 1px solid #bbb; 
+            padding: 8px 4px; 
+            text-align: center; 
+            font-size: 12px;
+            word-wrap: break-word;
+        }
+        .recete-liste-table th { 
+            background: #ffe600; 
+            font-weight: bold; 
+            color: #000; 
+        }
 
         /* MODAL STİLLERİ */
         .modal { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, .7); justify-content: center; align-items: center; padding: 10px; z-index: 99999; }
         .modal-content { background: white; max-width: 750px; width: 100%; max-height: 90vh; overflow-y: auto; padding: 15px; border-radius: 12px; }
         .durum { padding: 10px; margin-bottom: 15px; border-radius: 8px; display: none; }
 
-        /* TABLO DIŞ KAPSAYICISI */
+        /* EXCEL TİPİ FORM TABLOSU */
         .excel-container {
             background: white;
             border-radius: 6px;
@@ -47,8 +70,6 @@
             box-sizing: border-box;
             overflow-x: auto;
         }
-
-        /* EXCEL TİPİ FORM TABLOSU */
         .excel-table {
             width: 100% !important;
             table-layout: fixed !important;
@@ -100,13 +121,6 @@
             color: #000000 !important;
             font-weight: 700 !important;
             text-align: center;
-        }
-
-        @media (max-width: 600px) {
-            .excel-table { font-size: 9px; }
-            .excel-table td { padding: 2px; }
-            .excel-table .label, .excel-table td.label { font-size: 8.5px; }
-            .excel-table input { font-size: 9.5px; }
         }
 
         @media print {
@@ -331,22 +345,28 @@
         </div>
     </div>
 
-    <!-- REÇETE LİSTESİ (GÖRÜNÜM DÜZELTİLDİ) -->
+    <!-- KAYITLI REÇETELER LİSTESİ -->
     <div class="panel">
         <h2>Kayıtlı Reçeteler: <span id="toplamRecete">0</span></h2>
 
         <input id="arama" placeholder="Reçete ara..." oninput="ara()">
-        <br><br>
 
         <div class="table-wrap">
             <table class="recete-liste-table">
+                <colgroup>
+                    <col style="width: 18%;">
+                    <col style="width: 22%;">
+                    <col style="width: 18%;">
+                    <col style="width: 17%;">
+                    <col style="width: 25%;">
+                </colgroup>
                 <thead>
                     <tr>
-                        <th style="width: 20%;">Reçete No</th>
-                        <th style="width: 25%;">Ürün</th>
-                        <th style="width: 20%;">Makine</th>
-                        <th style="width: 15%;">Tarih</th>
-                        <th style="width: 20%;">İşlem</th>
+                        <th>Reçete No</th>
+                        <th>Ürün</th>
+                        <th>Makine</th>
+                        <th>Tarih</th>
+                        <th>İşlem</th>
                     </tr>
                 </thead>
                 <tbody id="liste"></tbody>
@@ -636,7 +656,7 @@
                 <td>${r.urun_adi || '-'}</td>
                 <td>${r.makine_adi || '-'}</td>
                 <td>${r.tarih || '-'}</td>
-                <td class="islem-cell">
+                <td>
                     <button class="btn" onclick="detayAc('${r.recete_no}')">İncele</button>
                     <button class="btn-danger" onclick="receteSil('${r.recete_no}')">Sil</button>
                 </td>
