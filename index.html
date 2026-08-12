@@ -289,6 +289,7 @@ async function detayGoster(id) {
         detaydakiId = id;
         const a = data.uretim_ayarlari || data.ayarlar || {};
 
+        // 1. Genel Bilgiler (Hız, Basınç, Sıcaklık yerine Tarih)
         setText("detay_recete_no", data.recete_no);
         setText("detay_baslik_no", data.recete_no);
         setText("detay_urun_adi", data.urun_adi);
@@ -296,6 +297,7 @@ async function detayGoster(id) {
         setText("detay_recete_tarih", data.tarih || data.recete_tarih || a.recete_tarih);
         setText("detay_notlar", data.notlar || a.notlar || "Not yok");
 
+        // 2. Genel Ayarlar
         setText("detay_ayar_gram", a.ayar_gram);
         setText("detay_ayar_renk", a.ayar_renk);
         setText("detay_ayar_tarih", a.ayar_tarih);
@@ -303,6 +305,7 @@ async function detayGoster(id) {
         setText("detay_ayar_tarak_hizi", a.ayar_tarak_hizi);
         setText("detay_ayar_firma_adi", a.ayar_firma_adi);
 
+        // 3. Tarak Ayarları
         setText("detay_ayar_ana_tambur", a.ayar_ana_tambur);
         setText("detay_ayar_alt_ara_dofer", a.ayar_alt_ara_dofer);
         setText("detay_ayar_siyirici", a.ayar_siyirici);
@@ -315,6 +318,7 @@ async function detayGoster(id) {
         setText("detay_ayar_ust_sevk_bandi", a.ayar_ust_sevk_bandi);
         setText("detay_ayar_alt_sevk_bandi", a.ayar_alt_sevk_bandi);
 
+        // 4. Serici Ayarları
         setText("detay_ayar_tulbent_kati", a.ayar_tulbent_kati);
         setText("detay_ayar_besleme_cekim", a.ayar_besleme_cekim);
         setText("detay_ayar_serme_eni_on", a.ayar_serme_eni_on);
@@ -327,6 +331,7 @@ async function detayGoster(id) {
         setText("detay_ayar_cikis_yuksekligi_sol", a.ayar_cikis_yuksekligi_sol);
         setText("detay_ayar_arka_cikis_hafiza", a.ayar_arka_cikis_hafiza);
 
+        // 5. Trio & Çektirme
         setText("detay_ayar_trio1", a.ayar_trio1);
         setText("detay_ayar_trio2", a.ayar_trio2);
         setText("detay_ayar_trio3", a.ayar_trio3);
@@ -334,6 +339,7 @@ async function detayGoster(id) {
         setText("detay_ayar_trio5", a.ayar_trio5);
         setText("detay_ayar_trio6", a.ayar_trio6);
 
+        // 6. Su Jeti & Pompa Ayarları
         setText("detay_ayar_pompa1", a.ayar_pompa1);
         setText("detay_ayar_pompa2", a.ayar_pompa2);
         setText("detay_ayar_pompa3", a.ayar_pompa3);
@@ -349,11 +355,13 @@ async function detayGoster(id) {
         setText("detay_ayar_sikma_fular", a.ayar_sikma_fular);
         setText("detay_ayar_firin", a.ayar_firin);
 
+        // 7. Balkan & Hammadde
         setText("detay_ayar_balkan1", a.ayar_balkan1);
         setText("detay_ayar_balkan2", a.ayar_balkan2);
         setText("detay_ayar_balkan3", a.ayar_balkan3);
         setText("detay_ayar_hammadde", a.ayar_hammadde);
 
+        // 8. Kesim & Ebatlar
         setText("detay_ayar_kesim_eni", a.ayar_kesim_eni);
         setText("detay_ayar_cap", a.ayar_cap);
         setText("detay_ayar_sarim_metresi", a.ayar_sarim_metresi);
@@ -595,6 +603,7 @@ async function paylas() {
         }
     }
 
+    // Fallback metin paylaşımı
     const urunAdi = getText('detay_urun_adi');
     const metin = `📄 *Üretim Reçetesi Detayı*\n\n*Reçete No:* ${receteNo}\n*Ürün Adı:* ${urunAdi}`;
 
@@ -778,8 +787,7 @@ async function bakimListele() {
 function bakimDetayGoster(id) {
     if (!window.tumBakimlar) return;
     
-    // Güvenli tip eşitlemesiyle kaydı bul
-    const kayit = window.tumBakimlar.find(b => String(b.id) === String(id));
+    const kayit = window.tumBakimlar.find(b => b.id === id);
     if (!kayit) return;
 
     setText('bdetay_tarih', kayit.tarih);
