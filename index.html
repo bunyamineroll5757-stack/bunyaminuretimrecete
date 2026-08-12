@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Üretim Reçete Yönetim Sistemi</title>
 
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚙️</text></svg>">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
@@ -25,7 +24,7 @@
         .btn-secondary { background: #666; color: white; }
         .btn-warning { background: #f57c00; color: white; }
         
-        /* Liste Tablosu Masaüstü ve Mobil Uyum */
+        /* Liste Tablo Tasarımı */
         .table-wrap { width: 100%; overflow-x: auto; background: white; border-radius: 6px; border: 1px solid #ccc; margin-top: 10px; }
         .recete-liste-table { width: 100%; border-collapse: collapse; background: white; }
         .recete-liste-table th, .recete-liste-table td { border: 1px solid #bbb; padding: 8px; text-align: center; font-size: 12px; }
@@ -54,44 +53,27 @@
 
 <body>
 
-<div id="loginModal" class="modal">
-    <div class="modal-content" style="max-width: 350px; text-align: center;">
-        <h2>Admin Girişi</h2>
-        <p style="color: #666; font-size: 13px;">Lütfen devam etmek için giriş yapın.</p>
-        <br>
-        <input id="login_user" type="text" placeholder="Kullanıcı Adı" style="margin-bottom: 10px;">
-        <input id="login_pass" type="password" placeholder="Şifre" style="margin-bottom: 15px;">
-        <button class="btn-success" type="button" style="width: 100%; padding: 10px;" onclick="adminGiris()">Giriş Yap</button>
-        <p id="loginError" style="color: red; margin-top: 10px; display: none; font-size: 13px;">Kullanıcı adı veya şifre hatalı!</p>
-    </div>
-</div>
-
 <div class="container">
 
     <h1>Üretim Reçete Yönetim Sistemi</h1>
 
     <div class="panel">
         <h2>Reçete Bilgileri</h2>
-
         <div class="ayar-grid">
             <input id="recete_no" placeholder="Reçete No">
             <input id="urun_adi" placeholder="Ürün Adı">
             <input id="makine_adi" placeholder="Makine Adı">
-            <input id="tarih" type="date" placeholder="Tarih">
+            <input id="tarih" type="date">
         </div>
-
         <br>
         <textarea id="notlar" placeholder="Notlar"></textarea>
-        <br>
-
+        <br><br>
         <button class="btn-success" type="button" onclick="kaydet()">Kaydet</button>
         <button class="btn-secondary" type="button" onclick="formTemizle()">Yeni Reçete</button>
-        <button class="btn-danger" type="button" onclick="adminCikis()">Çıkış Yap</button>
     </div>
 
     <div class="panel">
-        <h2>Üretim Ayarları</h2>
-
+        <h2>Üretim Ayarları Formu</h2>
         <div class="excel-container">
             <table class="excel-table">
                 <colgroup>
@@ -101,7 +83,6 @@
                     <col style="width: 25%;">
                 </colgroup>
 
-                <!-- GENEL BİLGİLER -->
                 <tr><td colspan="4" class="section-header">GENEL BİLGİLER</td></tr>
                 <tr>
                     <td class="label">REÇETE NO</td><td><input id="genel_recete_no"></td>
@@ -112,7 +93,6 @@
                     <td class="label">TARİH</td><td><input id="genel_tarih" type="date"></td>
                 </tr>
 
-                <!-- ÜRETİM AYARLARI -->
                 <tr><td colspan="4" class="section-header">ÜRETİM AYARLARI</td></tr>
                 <tr>
                     <td class="label">GRAM</td><td><input id="ayar_gram"></td>
@@ -127,7 +107,6 @@
                     <td class="label">FİRMA ADI</td><td><input id="ayar_firma_adi"></td>
                 </tr>
 
-                <!-- TARAK AYARLARI -->
                 <tr><td colspan="4" class="section-header">TARAK AYARLARI</td></tr>
                 <tr>
                     <td class="label">ANA TAMBUR</td><td><input id="ayar_ana_tambur"></td>
@@ -154,7 +133,6 @@
                     <td class="label">ALT SEVK BANDI</td><td><input id="ayar_alt_sevk_bandi"></td>
                 </tr>
 
-                <!-- SERİCİ AYARLARI -->
                 <tr><td colspan="4" class="section-header">SERİCİ AYARLARI</td></tr>
                 <tr>
                     <td class="label">TÜLBENT KATI</td><td><input id="ayar_tulbent_kati"></td>
@@ -181,7 +159,6 @@
                     <td class="label">ARKA ÇKŞ HFZA FAKTÖRÜ</td><td><input id="ayar_arka_cikis_hafiza"></td>
                 </tr>
 
-                <!-- ÇEKTİRME AYARLARI -->
                 <tr><td colspan="4" class="section-header">ÇEKTİRME AYARLARI</td></tr>
                 <tr>
                     <td class="label">TRİO 1 ÇEKİM</td><td><input id="ayar_trio1"></td>
@@ -196,7 +173,6 @@
                     <td class="label">TRİO 6 ÇEKİM</td><td><input id="ayar_trio6"></td>
                 </tr>
 
-                <!-- SU JETİ AYARLARI -->
                 <tr><td colspan="4" class="section-header">SU JETİ AYARLARI</td></tr>
                 <tr>
                     <td class="label">POMPA 1</td><td><input id="ayar_pompa1"></td>
@@ -227,7 +203,6 @@
                     <td class="label">FIRIN</td><td><input id="ayar_firin"></td>
                 </tr>
 
-                <!-- HAMMADDE AYARLARI -->
                 <tr><td colspan="4" class="section-header">HAMMADDE AYARLARI</td></tr>
                 <tr>
                     <td class="label">BALKAN 1</td><td><input id="ayar_balkan1"></td>
@@ -238,10 +213,9 @@
                     <td colspan="2"></td>
                 </tr>
                 <tr>
-                    <td colspan="4"><input id="ayar_hammadde" style="text-align: left; padding-left: 5px;"></td>
+                    <td colspan="4"><input id="ayar_hammadde" style="text-align: left; padding-left: 5px;" placeholder="Hammadde Açıklaması / Detayı"></td>
                 </tr>
 
-                <!-- KESİM EBATLARI -->
                 <tr><td colspan="4" class="section-header">KESİM EBATLARI</td></tr>
                 <tr>
                     <td class="label">KESİM ENİ</td><td><input id="ayar_kesim_eni"></td>
@@ -269,7 +243,7 @@
                 <thead>
                     <tr>
                         <th>Reçete No</th>
-                        <th>Ürün</th>
+                        <th>Ürün Adı</th>
                         <th>Makine</th>
                         <th>İşlemler</th>
                     </tr>
@@ -451,10 +425,6 @@
         <br>
         <div style="text-align: center;">
             <button class="btn" type="button" onclick="detaydanDuzenle()">Düzenle</button>
-            <button class="btn-success" type="button" onclick="detayKopyala()">Kopyala</button>
-            <button class="btn" type="button" onclick="detayYazdir()">Yazdır</button>
-            <button class="btn-danger" type="button" onclick="pdfIndir()">PDF İndir</button>
-            <button class="btn-warning" type="button" onclick="paylas()">Paylaş</button>
             <button class="btn-secondary" type="button" onclick="detayKapat()">Kapat</button>
         </div>
     </div>
@@ -480,50 +450,25 @@
     let seciliReceteId = null;
 
     document.addEventListener("DOMContentLoaded", function() {
-        // Güvenli Senkronizasyon Bağlantısı
-        const senkronHaritasi = {
+        // Otomatik Değer Eşleme (İki yönlü senkronizasyon)
+        const senkron = {
             'recete_no': 'genel_recete_no',
             'urun_adi': 'genel_urun_adi',
             'makine_adi': 'genel_makine',
             'tarih': 'genel_tarih'
         };
 
-        Object.entries(senkronHaritasi).forEach(([ustId, altId]) => {
-            const ustEl = document.getElementById(ustId);
-            const altEl = document.getElementById(altId);
-            if (ustEl && altEl) {
-                ustEl.addEventListener('input', (e) => { altEl.value = e.target.value; });
-                altEl.addEventListener('input', (e) => { ustEl.value = e.target.value; });
+        Object.entries(senkron).forEach(([uId, aId]) => {
+            const u = document.getElementById(uId);
+            const a = document.getElementById(aId);
+            if (u && a) {
+                u.addEventListener('input', (e) => { a.value = e.target.value; });
+                a.addEventListener('input', (e) => { u.value = e.target.value; });
             }
         });
 
-        if (sessionStorage.getItem('isLoggedIn') === 'true') {
-            document.getElementById('loginModal').style.display = 'none';
-        } else {
-            document.getElementById('loginModal').style.display = 'flex';
-        }
-
         listeyiGuncelle();
     });
-
-    function adminGiris() {
-        const user = document.getElementById('login_user').value;
-        const pass = document.getElementById('login_pass').value;
-        if (user === "admin" && pass === "1234") {
-            sessionStorage.setItem('isLoggedIn', 'true');
-            document.getElementById('loginModal').style.display = 'none';
-            document.getElementById('loginError').style.display = 'none';
-        } else {
-            document.getElementById('loginError').style.display = 'block';
-        }
-    }
-
-    function adminCikis() {
-        sessionStorage.removeItem('isLoggedIn');
-        document.getElementById('loginModal').style.display = 'flex';
-        document.getElementById('login_user').value = '';
-        document.getElementById('login_pass').value = '';
-    }
 
     function kaydet() {
         const rNo = document.getElementById('recete_no').value.trim();
@@ -538,9 +483,9 @@
             receteData[id] = el ? el.value : '';
         });
 
-        const varIndex = receteler.findIndex(r => r.recete_no === rNo);
-        if (varIndex > -1) {
-            receteler[varIndex] = receteData;
+        const index = receteler.findIndex(r => r.recete_no === rNo);
+        if (index > -1) {
+            receteler[index] = receteData;
         } else {
             receteler.push(receteData);
         }
@@ -558,7 +503,7 @@
         document.getElementById('toplamRecete').innerText = receteler.length;
 
         if (receteler.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="4" style="color: #666; padding: 15px; font-weight: bold;">Henüz kayıtlı reçete yok. Lütfen yukarıdan yeni bir reçete kaydedin.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="4" style="color: #666; padding: 15px;">Kayıtlı reçete yok. Lütfen yukarıdan yeni bir reçete kaydedin.</td></tr>';
             return;
         }
 
@@ -569,7 +514,7 @@
                 <td>${r.urun_adi || '-'}</td>
                 <td>${r.makine_adi || '-'}</td>
                 <td>
-                    <button class="btn" type="button" onclick="detayAc('${r.recete_no}')">Detay</button>
+                    <button class="btn" type="button" onclick="detayAc('${r.recete_no}')">Aç</button>
                     <button class="btn-warning" type="button" onclick="receteDuzenle('${r.recete_no}')">Düzenle</button>
                     <button class="btn-danger" type="button" onclick="receteSil('${r.recete_no}')">Sil</button>
                 </td>
@@ -617,14 +562,6 @@
         detayKapat();
     }
 
-    function detayKopyala() {
-        receteDuzenle(seciliReceteId);
-        document.getElementById('recete_no').value = document.getElementById('recete_no').value + "-KOPYA";
-        document.getElementById('genel_recete_no').value = document.getElementById('recete_no').value;
-        detayKapat();
-        alert("Veriler forma aktarıldı, Reçete No güncellendi.");
-    }
-
     function formTemizle() {
         alanlar.forEach(id => {
             const el = document.getElementById(id);
@@ -649,34 +586,6 @@
         rows.forEach(row => {
             row.style.display = row.innerText.toLowerCase().includes(query) ? '' : 'none';
         });
-    }
-
-    function detayYazdir() {
-        window.print();
-    }
-
-    function pdfIndir() {
-        const el = document.getElementById('detayIcerikAlani');
-        const opt = {
-            margin: 5,
-            filename: `${seciliReceteId || 'recete'}.pdf`,
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2 },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        };
-        html2pdf().set(opt).from(el).save();
-    }
-
-    function paylas() {
-        if (navigator.share) {
-            navigator.share({
-                title: 'Üretim Reçetesi',
-                text: `${seciliReceteId} kodlu reçete detayları.`,
-                url: window.location.href
-            }).catch(() => {});
-        } else {
-            alert("Paylaşım bu tarayıcıda desteklenmiyor.");
-        }
     }
 </script>
 
