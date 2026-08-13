@@ -840,3 +840,122 @@ function bakimAra() {
         satir.style.display = icerik.includes(aramaMetni) ? '' : 'none';
     });
 }
+// BAKIM KAYITLARI İŞLEMLERİ
+
+// 1. Yeni Bakım Kaydı Ekleme
+async function bakimKaydet() {
+    const tarih = document.getElementById('bakim_tarihi').value;
+    const tip = document.getElementById('bakim_tipi').value;
+    const yapan = document.getElementById('bakim_yapan').value;
+    const sonrakiTarih = document.getElementById('sonraki_bakim_tarihi').value;
+    const aciklama = document.getElementById('bakim_aciklama').value;
+
+    if (!tarih || !tip) {
+        alert('Lütfen en azından Bakım Tarihi ve Bakım Tipi alanlarını doldurun!');
+        return;
+    }
+
+    const yeniBakim = {
+        bakim_tarihi: tarih,
+        bakim_tipi: tip,
+        bakimi_yapan: yapan,
+        sonraki_bakim_tarihi: sonrakiTarih,
+        aciklama: aciklama
+    };
+
+    // Supabase entegrasyonu varsa:
+    if (typeof supabase !== 'undefined') {
+        const { data, error } = await supabase.from('bakimlar').insert([yeniBakim]);
+        if (error) {
+            alert('Bakım kaydedilirken hata oluştu: ' + error.message);
+            return;
+        }
+    } else {
+        // LocalStorage fallback (Supabase baglantisi yoksa geçici saklama)
+        let bakimlar = JSON.parse(localStorage.getItem('bakimKayıtlari') || '[]');
+        bakimlar.push(yeniBakim);
+        localStorage.setItem('bakimKayıtlari', JSON.stringify(bakimlar));
+    }
+
+    alert('Bakım kaydı başarıyla eklendi.');
+    bakimFormTemizle();
+    bakimListele();
+}
+
+// 2. Formu Temizleme
+function bakimFormTemizle() {
+    document.getElementById('bakim_tarihi').value = '';
+    document.getElementById('bakim_tipi').value = '';
+    document.getElementById('bakim_yapan').value = '';
+    document.getElementById('sonraki_bakim_tarihi').value = '';
+    document.getElementById('bakim_aciklama').value = '';
+}
+
+// 3. Kayıtlı Bakımları Listeleme
+async function bakimListele() {
+    let bakimlar = [];
+
+    if (typeof supabase !== 'undefined') {
+        const { data, error } = await supabase.from('bakimlar').select('*').order('bakim_tarihi', { ascending: false });
+        if (!error && data) bakimlar = data;
+    } else {
+        bakimlar = JSON.parse(localStorage.getItem('bakimKayıtlari') || '[]');
+    }
+
+    bakimTabloDoldur(bakimlar);
+}
+
+// 4. Tabloyu Ekrana Basma
+function bakimTabloDoldur(veri) {
+    const tbody = document.getElementById('bakimListe');
+    if (!tbody) return;
+
+    tbody.innerHTML = '';
+
+    if (veri.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Kayıtlı bakım bulunamadı.</td></tr>';
+        return;
+    }
+
+    veri.forEach((b, index) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${b.bakim_tarihi || '-'}</td>
+            <td>-</td>
+            <td>${b.bakim_tipi || '-'}</td>
+            <td>${b.bakimi_yapan || '-'}</td>
+            <td>${b.sonraki_bakim_tarihi || '-'}</td>
+            <td>${b.aciklama || '-'}</td>
+            <td>
+                <button class="btn-danger" type="button" onclick="bakimSil(${b.id || index})">Sil</button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+// 5. Bakım Arama
+function bakimAra() {
+    const aramaMetni = document.getElementById('bakimArama').value.toLowerCase();
+    const satirlar = document.querySelectorAll('#bakimListe tr');
+
+    satirlar.forEach(satir => {
+        const icerik = satir.innerText.toLowerCase();
+        satir.style.display = icerik.includes(aramaMetni) ? '' : 'none';
+    });
+}
+
+// 6. Bakım Kaydı Silme
+async function bakimSil(id) {
+    if (!confirm('Bu bakım kaydını silmek istediğinize emin misiniz?')) return;
+
+    if (typeof supabase !== 'undefined' && typeof id === 'number') {
+        await supabase.from('bakimlar').delete().eq('id', id);
+    } else {
+        let bakimlar = JSON.parse(localStorage.getItem('bakimKayıtlari') || '[]');
+        bakimlar.splice(id, 1);
+        localStorage.setItem('bakimKayıtlari', JSON.stringify(bakimlar));
+    }
+
+    bakimListele();
+}
