@@ -789,30 +789,56 @@ async function bakimListele() {
     });
 }
 
-function bakimDetayGoster(id) {
-    if (!window.tumBakimlar) return;
-    
-    const kayit = window.tumBakimlar.find(b => b.id === id);
-    if (!kayit) return;
+<!-- BAKIM DETAY PENCERESİ (MODAL) -->
+<div id="bakimDetayModal" class="modal">
+    <div class="modal-content">
+        <h2>Bakım & Onarım Detayı</h2>
+        
+        <div class="excel-container">
+            <table class="excel-table">
+                <colgroup>
+                    <col style="width: 35%;">
+                    <col style="width: 65%;">
+                </colgroup>
+                
+                <tr><td colspan="2" class="section-header" style="background-color: #ff8c00; color: #fff;">GENEL BİLGİLER</td></tr>
+                <tr>
+                    <td class="label" style="background-color: #2e7d32; color: #fff;">TARİH & SAAT</td>
+                    <td><span id="bdetay_tarih">-</span></td>
+                </tr>
+                <tr>
+                    <td class="label" style="background-color: #2e7d32; color: #fff;">MAKİNE / EKİPMAN</td>
+                    <td><span id="bdetay_makine">-</span></td>
+                </tr>
+                <tr>
+                    <td class="label" style="background-color: #2e7d32; color: #fff;">BAKIM / ARIZA TİPİ</td>
+                    <td><span id="bdetay_tip">-</span></td>
+                </tr>
+                <tr>
+                    <td class="label" style="background-color: #2e7d32; color: #fff;">MÜDAHALE EDEN</td>
+                    <td><span id="bdetay_personel">-</span></td>
+                </tr>
+                <tr>
+                    <td class="label" style="background-color: #2e7d32; color: #fff;">DURUM</td>
+                    <td><span id="bdetay_durum">-</span></td>
+                </tr>
 
-    if (typeof setText === 'function') {
-        setText('bdetay_tarih', kayit.bakim_tarihi || kayit.tarih);
-        setText('bdetay_makine', kayit.recete_no || kayit.makine);
-        setText('bdetay_tip', kayit.bakim_tipi || kayit.tip);
-        setText('bdetay_personel', kayit.bakim_yapan || kayit.personel);
-        setText('bdetay_durum', kayit.sonraki_bakim_tarihi);
-        setText('bdetay_aciklama', kayit.aciklama);
-    }
+                <tr><td colspan="2" class="section-header" style="background-color: #ff8c00; color: #fff;">DETAY BİLGİLERİ</td></tr>
+                <tr>
+                    <td class="label" style="background-color: #2e7d32; color: #fff;">DEĞİŞEN PARÇA</td>
+                    <td><span id="bdetay_parca">-</span></td>
+                </tr>
+                <tr>
+                    <td class="label" style="background-color: #2e7d32; color: #fff;">AÇIKLAMA / NOTLAR</td>
+                    <td><span id="bdetay_aciklama">-</span></td>
+                </tr>
+            </table>
+        </div>
 
-    const modal = document.getElementById('bakimDetayModal');
-    if (modal) modal.style.display = 'flex';
-}
-
-function bakimDetayKapat() {
-    const modal = document.getElementById('bakimDetayModal');
-    if (modal) modal.style.display = 'none';
-}
-
+        <br>
+        <button class="btn-secondary" type="button" onclick="bakimDetayKapat()">Kapat</button>
+    </div>
+</div>
 async function bakimSil(id) {
     if (!confirm("Bu bakım kaydını silmek istediğinize emin misiniz?")) return;
 
