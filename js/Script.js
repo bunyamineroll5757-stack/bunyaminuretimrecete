@@ -684,20 +684,17 @@ function adminCikis() {
     localStorage.removeItem("adminOturum");
     location.reload();
 }
-
 // ==========================================
 // BAKIM & ONARIM İŞLEMLERİ (GÜNCEL)
 // ==========================================
 
 async function bakimKaydet() {
-    // HTML'deki güncel Input ID'lerimiz
     const tarih = document.getElementById('bakim_tarihi')?.value || '';
     const tip = document.getElementById('bakim_tipi')?.value || '';
     const personel = document.getElementById('bakim_yapan')?.value || '';
     const sonrakiTarih = document.getElementById('sonraki_bakim_tarihi')?.value || '';
     const aciklama = document.getElementById('bakim_aciklama')?.value || '';
     
-    // Reçete No veya Makine bilgisini alıyoruz
     const receteNo = document.getElementById('recete_no')?.value || document.getElementById('genel_recete_no')?.value || '';
     const makine = document.getElementById('makine_adi')?.value || document.getElementById('genel_makine')?.value || '';
 
@@ -845,147 +842,17 @@ function bakimAra() {
         satir.style.display = icerik.includes(aramaMetni) ? '' : 'none';
     });
 }
-// ==========================================
-// SEKME DEĞİŞTİRME FONKSİYONU
-// ==========================================
+
 function sekmeDegistir(tabId, btnElement) {
-    // Tüm sekmeleri gizle
     document.querySelectorAll('.tab-content').forEach(tab => tab.style.display = 'none');
     
-    // Seçilen sekmeyi göster
     const secilenTab = document.getElementById(tabId);
     if (secilenTab) secilenTab.style.display = 'block';
 
-    // Buton renklerini sıfırla ve aktif olanı belirginleştir
     document.querySelectorAll('.btn-tab').forEach(btn => btn.style.background = '#666');
     if (btnElement) btnElement.style.background = '#1976d2';
 
-    // Bakım sekmesine geçildiyse listeyi otomatik yenile
     if (tabId === 'bakimTab' && typeof bakimListele === 'function') {
         bakimListele();
     }
-}
-
-// ==========================================
-// BAKIM KAYITLARI İŞLEMLERİ
-// ==========================================
-
-// 1. Yeni Bakım Kaydı Ekleme
-async function bakimKaydet() {
-    const tarih = document.getElementById('bakim_tarihi')?.value;
-    const tip = document.getElementById('bakim_tipi')?.value;
-    const yapan = document.getElementById('bakim_yapan')?.value;
-    const sonrakiTarih = document.getElementById('sonraki_bakim_tarihi')?.value;
-    const aciklama = document.getElementById('bakim_aciklama')?.value;
-
-    if (!tarih || !tip) {
-        alert('Lütfen en azından Bakım Tarihi ve Bakım Tipi alanlarını doldurun!');
-        return;
-    }
-
-    const yeniBakim = {
-        bakim_tarihi: tarih,
-        bakim_tipi: tip,
-        bakimi_yapan: yapan,
-        sonraki_bakim_tarihi: sonrakiTarih,
-        aciklama: aciklama
-    };
-
-    // Supabase nesnesi ve .from metodu eksiksiz tanımlıysa:
-    if (typeof supabase !== 'undefined' && supabase && typeof supabase.from === 'function') {
-        const { data, error } = await supabase.from('bakimlar').insert([yeniBakim]);
-        if (error) {
-            alert('Bakım kaydedilirken hata oluştu: ' + error.message);
-            return;
-        }
-    } else {
-        // LocalStorage Güvenli Yedekleme
-        let bakimlar = JSON.parse(localStorage.getItem('bakimKayıtlari') || '[]');
-        bakimlar.push(yeniBakim);
-        localStorage.setItem('bakimKayıtlari', JSON.stringify(bakimlar));
-    }
-
-    alert('Bakım kaydı başarıyla eklendi.');
-    bakimFormTemizle();
-    bakimListele();
-}
-
-// 2. Formu Temizleme
-function bakimFormTemizle() {
-    if (document.getElementById('bakim_tarihi')) document.getElementById('bakim_tarihi').value = '';
-    if (document.getElementById('bakim_tipi')) document.getElementById('bakim_tipi').value = '';
-    if (document.getElementById('bakim_yapan')) document.getElementById('bakim_yapan').value = '';
-    if (document.getElementById('sonraki_bakim_tarihi')) document.getElementById('sonraki_bakim_tarihi').value = '';
-    if (document.getElementById('bakim_aciklama')) document.getElementById('bakim_aciklama').value = '';
-}
-
-// 3. Kayıtlı Bakımları Listeleme
-async function bakimListele() {
-    let bakimlar = [];
-
-    // Güvenli Supabase Kontrolü
-    if (typeof supabase !== 'undefined' && supabase && typeof supabase.from === 'function') {
-        const { data, error } = await supabase.from('bakimlar').select('*').order('bakim_tarihi', { ascending: false });
-        if (!error && data) bakimlar = data;
-    } else {
-        // Supabase henüz hazır değilse LocalStorage'dan oku
-        bakimlar = JSON.parse(localStorage.getItem('bakimKayıtlari') || '[]');
-    }
-
-    bakimTabloDoldur(bakimlar);
-}
-
-// 4. Tabloyu Ekrana Basma
-function bakimTabloDoldur(veri) {
-    const tbody = document.getElementById('bakimListe');
-    if (!tbody) return;
-
-    tbody.innerHTML = '';
-
-    if (!veri || veri.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Kayıtlı bakım bulunamadı.</td></tr>';
-        return;
-    }
-
-    veri.forEach((b, index) => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>${b.bakim_tarihi || '-'}</td>
-            <td>-</td>
-            <td>${b.bakim_tipi || '-'}</td>
-            <td>${b.bakimi_yapan || '-'}</td>
-            <td>${b.sonraki_bakim_tarihi || '-'}</td>
-            <td>${b.aciklama || '-'}</td>
-            <td>
-                <button class="btn-danger" type="button" onclick="bakimSil(${b.id || index})">Sil</button>
-            </td>
-        `;
-        tbody.appendChild(tr);
-    });
-}
-
-// 5. Bakım Arama
-function bakimAra() {
-    const aramaMetni = document.getElementById('bakimArama')?.value.toLowerCase() || '';
-    const satirlar = document.querySelectorAll('#bakimListe tr');
-
-    satirlar.forEach(satir => {
-        const icerik = satir.innerText.toLowerCase();
-        satir.style.display = icerik.includes(aramaMetni) ? '' : 'none';
-    });
-}
-
-// 6. Bakım Kaydı Silme
-async function bakimSil(id) {
-    if (!confirm('Bu bakım kaydını silmek istediğinize emin misiniz?')) return;
-
-    if (typeof supabase !== 'undefined' && supabase && typeof supabase.from === 'function' && typeof id === 'number') {
-        await supabase.from('bakimlar').delete().eq('id', id);
-    } else {
-        let bakimlar = JSON.parse(localStorage.getItem('bakimKayıtlari') || '[]');
-        bakimlar.splice(id, 1);
-        localStorage.setItem('bakimKayıtlari', JSON.stringify(bakimlar));
-    }
-
-    bakimListele();
 }
