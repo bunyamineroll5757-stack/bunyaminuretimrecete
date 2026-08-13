@@ -212,6 +212,7 @@ async function receteleriListele() {
             const makine = r.makine_adi || ayarlarObj.makine_adi || "";
             const tarih = r.tarih || r.recete_tarih || ayarlarObj.recete_tarih || "";
 
+            // HTML'deki 5 başlıkla tam uyumlu 5 sütun (Reçete No, Ürün, Makine, Tarih, İşlem)
             liste.innerHTML += `
                 <tr onclick="detayGoster('${r.id}')" style="cursor: pointer;">
                     <td>${guvenliMetin(receteNo)}</td>
@@ -219,8 +220,8 @@ async function receteleriListele() {
                     <td>${guvenliMetin(makine)}</td>
                     <td>${guvenliMetin(tarih)}</td>
                     <td>
-                        <button type="button" class="btn" onclick="event.stopPropagation(); detayGoster('${r.id}')">Detay</button>
-                        <button type="button" class="btn" onclick="event.stopPropagation(); duzenle('${r.id}')">Düzenle</button>
+                        <button type="button" class="btn" style="background-color: #ff8c00; color: white;" onclick="event.stopPropagation(); detayGoster('${r.id}')">Detay</button>
+                        <button type="button" class="btn" style="background-color: #007bff; color: white;" onclick="event.stopPropagation(); duzenle('${r.id}')">Düzenle</button>
                         <button type="button" class="btn-danger" onclick="event.stopPropagation(); sil('${r.id}')">Sil</button>
                     </td>
                 </tr>
@@ -234,7 +235,6 @@ async function receteleriListele() {
         console.error("Listeleme hatası:", hata);
     }
 }
-
 async function listele() {
     await receteleriListele();
 }
