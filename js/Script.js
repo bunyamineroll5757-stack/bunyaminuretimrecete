@@ -681,34 +681,37 @@ function adminCikis() {
 }
 
 // ==========================================
-// BAKIM & ONARIM İŞLEMLERİ
+// BAKIM & ONARIM İŞLEMLERİ (GÜNCEL)
 // ==========================================
 
 async function bakimKaydet() {
-    const tarih = document.getElementById('bakim_tarih')?.value || '';
-    const makine = document.getElementById('bakim_makine')?.value || '';
+    // HTML'deki güncel Input ID'lerimiz
+    const tarih = document.getElementById('bakim_tarihi')?.value || '';
     const tip = document.getElementById('bakim_tipi')?.value || '';
-    const personel = document.getElementById('bakim_personel')?.value || '';
-    const durum = document.getElementById('bakim_durumu')?.value || '';
-    const parca = document.getElementById('bakim_parca')?.value || '';
+    const personel = document.getElementById('bakim_yapan')?.value || '';
+    const sonrakiTarih = document.getElementById('sonraki_bakim_tarihi')?.value || '';
     const aciklama = document.getElementById('bakim_aciklama')?.value || '';
+    
+    // Reçete No veya Makine bilgisini alıyoruz
+    const receteNo = document.getElementById('recete_no')?.value || document.getElementById('genel_recete_no')?.value || '';
+    const makine = document.getElementById('makine_adi')?.value || document.getElementById('genel_makine')?.value || '';
 
-    if (!makine || !tarih) {
-        alert("Lütfen en azından Tarih ve Makine/Ekipman alanlarını doldurun!");
+    if (!tarih && !receteNo) {
+        alert("Lütfen en azından Bakım Tarihi veya Reçete No alanını doldurun!");
         return;
     }
 
     const bakimData = {
-        tarih: tarih,
+        recete_no: receteNo,
         makine: makine,
-        tip: tip,
-        personel: personel,
-        durum: durum,
-        parca: parca,
+        bakim_tarihi: tarih || null,
+        bakim_tipi: tip,
+        bakim_yapan: personel,
+        sonraki_bakim_tarihi: sonrakiTarih || null,
         aciklama: aciklama
     };
 
-    const db = getSupabase();
+    const db = typeof getSupabase === 'function' ? getSupabase() : (window.db || window.supabase);
 
     if (db) {
         const { data, error } = await db
@@ -727,11 +730,11 @@ async function bakimKaydet() {
 
     alert("Bakım kaydı başarıyla işlendi!");
     bakimFormTemizle();
-    await bakimListele();
+    if (typeof bakimListele === 'function') await bakimListele();
 }
 
 function bakimFormTemizle() {
-    const alanlar = ['bakim_tarih', 'bakim_makine', 'bakim_tipi', 'bakim_personel', 'bakim_durumu', 'bakim_parca', 'bakim_aciklama'];
+    const alanlar = ['bakim_tarihi', 'bakim_tipi', 'bakim_yapan', 'sonraki_bakim_tarihi', 'bakim_aciklama'];
     alanlar.forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = '';
@@ -742,7 +745,7 @@ async function bakimListele() {
     const tbody = document.getElementById('bakimListe');
     if (!tbody) return;
 
-    const db = getSupabase();
+    const db = typeof getSupabase === 'function' ? getSupabase() : (window.db || window.supabase);
     if (!db) return;
 
     const { data, error } = await db
@@ -768,14 +771,14 @@ async function bakimListele() {
             <tr>
                 <td>
                     <a href="javascript:void(0)" onclick="bakimDetayGoster(${item.id})" style="color: #0056b3; font-weight: bold; text-decoration: underline;">
-                        ${guvenliMetin(item.tarih)}
+                        ${typeof guvenliMetin === 'function' ? guvenliMetin(item.bakim_tarihi || item.tarih) : (item.bakim_tarihi || item.tarih || '')}
                     </a>
                 </td>
-                <td>${guvenliMetin(item.makine)}</td>
-                <td>${guvenliMetin(item.tip)}</td>
-                <td>${guvenliMetin(item.personel)}</td>
-                <td>${guvenliMetin(item.durum)}</td>
-                <td>${guvenliMetin(item.aciklama)}</td>
+                <td>${typeof guvenliMetin === 'function' ? guvenliMetin(item.recete_no || item.makine) : (item.recete_no || item.makine || '')}</td>
+                <td>${typeof guvenliMetin === 'function' ? guvenliMetin(item.bakim_tipi || item.tip) : (item.bakim_tipi || item.tip || '')}</td>
+                <td>${typeof guvenliMetin === 'function' ? guvenliMetin(item.bakim_yapan || item.personel) : (item.bakim_yapan || item.personel || '')}</td>
+                <td>${typeof guvenliMetin === 'function' ? guvenliMetin(item.sonraki_bakim_tarihi) : (item.sonraki_bakim_tarihi || '')}</td>
+                <td>${typeof guvenliMetin === 'function' ? guvenliMetin(item.aciklama) : (item.aciklama || '')}</td>
                 <td>
                     <button type="button" class="btn-danger" style="padding: 2px 6px; font-size:10px;" onclick="bakimSil(${item.id})">Sil</button>
                 </td>
@@ -790,13 +793,14 @@ function bakimDetayGoster(id) {
     const kayit = window.tumBakimlar.find(b => b.id === id);
     if (!kayit) return;
 
-    setText('bdetay_tarih', kayit.tarih);
-    setText('bdetay_makine', kayit.makine);
-    setText('bdetay_tip', kayit.tip);
-    setText('bdetay_personel', kayit.personel);
-    setText('bdetay_durum', kayit.durum);
-    setText('bdetay_parca', kayit.parca);
-    setText('bdetay_aciklama', kayit.aciklama);
+    if (typeof setText === 'function') {
+        setText('bdetay_tarih', kayit.bakim_tarihi || kayit.tarih);
+        setText('bdetay_makine', kayit.recete_no || kayit.makine);
+        setText('bdetay_tip', kayit.bakim_tipi || kayit.tip);
+        setText('bdetay_personel', kayit.bakim_yapan || kayit.personel);
+        setText('bdetay_durum', kayit.sonraki_bakim_tarihi);
+        setText('bdetay_aciklama', kayit.aciklama);
+    }
 
     const modal = document.getElementById('bakimDetayModal');
     if (modal) modal.style.display = 'flex';
@@ -810,7 +814,7 @@ function bakimDetayKapat() {
 async function bakimSil(id) {
     if (!confirm("Bu bakım kaydını silmek istediğinize emin misiniz?")) return;
 
-    const db = getSupabase();
+    const db = typeof getSupabase === 'function' ? getSupabase() : (window.db || window.supabase);
     if (!db) return;
 
     const { error } = await db
@@ -835,4 +839,4 @@ function bakimAra() {
         const icerik = satir.innerText.toLowerCase();
         satir.style.display = icerik.includes(aramaMetni) ? '' : 'none';
     });
-}s
+}
