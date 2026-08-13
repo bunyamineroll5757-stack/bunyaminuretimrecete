@@ -794,7 +794,56 @@
         <button class="btn-secondary" type="button" onclick="detayKapat()">Kapat</button>
     </div>
 </div>
+<!-- BAKIM DETAY PENCERESİ (MODAL) -->
+<div id="bakimDetayModal" class="modal">
+    <div class="modal-content">
+        <h2>Bakım & Onarım Detayı</h2>
+        
+        <div class="excel-container">
+            <table class="excel-table">
+                <colgroup>
+                    <col style="width: 35%;">
+                    <col style="width: 65%;">
+                </colgroup>
+                
+                <tr><td colspan="2" class="section-header">GENEL BİLGİLER</td></tr>
+                <tr>
+                    <td class="label">TARİH & SAAT</td>
+                    <td><span id="b_detay_tarih"></span></td>
+                </tr>
+                <tr>
+                    <td class="label">MAKİNE / EKİPMAN</td>
+                    <td><span id="b_detay_makine"></span></td>
+                </tr>
+                <tr>
+                    <td class="label">BAKIM / ARIZA TİPİ</td>
+                    <td><span id="b_detay_tip"></span></td>
+                </tr>
+                <tr>
+                    <td class="label">MÜDAHALE EDEN</td>
+                    <td><span id="b_detay_yapan"></span></td>
+                </tr>
+                <tr>
+                    <td class="label">DURUM</td>
+                    <td><span id="b_detay_durum"></span></td>
+                </tr>
 
+                <tr><td colspan="2" class="section-header">DETAY BİLGİLERİ</td></tr>
+                <tr>
+                    <td class="label">DEĞİŞEN PARÇA</td>
+                    <td><span id="b_detay_parca"></span></td>
+                </tr>
+                <tr>
+                    <td class="label">AÇIKLAMA / NOTLAR</td>
+                    <td><span id="b_detay_aciklama"></span></td>
+                </tr>
+            </table>
+        </div>
+
+        <br>
+        <button class="btn-secondary" type="button" onclick="bakimDetayKapat()">Kapat</button>
+    </div>
+</div>
 <!-- ADMIN GİRİŞ MODAL -->
 <div id="loginModal" class="modal" style="display: flex;">
     <div class="modal-content" style="max-width: 350px; text-align: center;">
