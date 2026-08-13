@@ -433,7 +433,12 @@ async function guncelle() {
 
         const receteNo = document.getElementById("recete_no")?.value.trim() || "";
         const makineAdi = document.getElementById("makine_adi")?.value.trim() || "";
-        const receteTarih = document.getElementById("recete_tarih")?.value.trim() || "";
+        
+        // --- DÜZELTİLEN KISIM ---
+        // Tarih boşsa "" değil, Supabase'in kabul edeceği null değerini atıyoruz:
+        const rawTarih = document.getElementById("recete_tarih")?.value.trim();
+        const receteTarih = (rawTarih && rawTarih !== "") ? rawTarih : null;
+
         const notlar = document.getElementById("notlar")?.value.trim() || "";
 
         const ayarlarObj = uretimAyarlariTopla();
@@ -445,7 +450,7 @@ async function guncelle() {
             recete_no: receteNo,
             urun_adi: urunAdi,
             makine_adi: makineAdi,
-            tarih: receteTarih,
+            tarih: receteTarih, // Boşsa null gidecek
             notlar: notlar,
             uretim_ayarlari: ayarlarObj
         };
