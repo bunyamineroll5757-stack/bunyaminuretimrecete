@@ -366,61 +366,90 @@
 <!-- 2. SEKME: BAKIM YÖNETİMİ VE TAKİBİ        -->
 <!-- ========================================== -->
 <div id="bakimTab" class="tab-content" style="display: none;">
+    
+    <!-- BAKIM KAYDI EKLE / DÜZENLE FORMU -->
     <div class="panel">
-        <h2>Bakım Kayıtları ve Takibi</h2>
+        <h2>Bakım & Onarım Kaydı Ekle / Düzenle</h2>
 
-        <div class="excel-container">
-            <table class="excel-table">
-                <colgroup>
-                    <col style="width: 25%;">
-                    <col style="width: 25%;">
-                    <col style="width: 25%;">
-                    <col style="width: 25%;">
-                </colgroup>
-
-                <tr><td colspan="4" class="section-header">BAKIM BİLGİLERİ</td></tr>
-                <tr>
-                    <td class="label">BAKIM TARİHİ</td><td><input id="bakim_tarihi" type="date"></td>
-                    <td class="label">BAKIM TİPİ</td><td><input id="bakim_tipi" placeholder="Periyodik / Arıza / Onarım"></td>
-                </tr>
-                <tr>
-                    <td class="label">BAKIMI YAPAN</td><td><input id="bakim_yapan" placeholder="Personel / Firma"></td>
-                    <td class="label">SONRAKİ BAKIM</td><td><input id="sonraki_bakim_tarihi" type="date"></td>
-                </tr>
-                <tr>
-                    <td class="label">AÇIKLAMA / NOTLAR</td>
-                    <td colspan="3"><input id="bakim_aciklama" style="text-align: left; padding-left: 5px;" placeholder="Yapılan işlem detayları..."></td>
-                </tr>
-            </table>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="bakim_tarihi">Tarih & Saat</label>
+                <input type="datetime-local" id="bakim_tarihi">
+            </div>
+            <div class="form-group">
+                <label for="makine_adi">Makine / Ekipman</label>
+                <input type="text" id="makine_adi" placeholder="Örn: Su Jeti Pompa 1">
+            </div>
         </div>
 
-        <br>
-        <button class="btn-success" type="button" onclick="bakimKaydet()">Bakım Kaydet</button>
-        <button class="btn-secondary" type="button" onclick="bakimFormTemizle()">Temizle</button>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="bakim_tipi">Arıza / Bakım Tipi</label>
+                <select id="bakim_tipi">
+                    <option value="Mekanik Arıza">Mekanik Arıza</option>
+                    <option value="Elektrik / Elektronik">Elektrik / Elektronik</option>
+                    <option value="Periyodik Bakım">Periyodik Bakım</option>
+                    <option value="Yazılım / Otomasyon">Yazılım / Otomasyon</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="bakim_yapan">Müdahale Eden Personel</label>
+                <input type="text" id="bakim_yapan" placeholder="Teknisyen / Operatör">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="bakim_durum">Durum</label>
+                <select id="bakim_durum">
+                    <option value="Tamamlandı">Tamamlandı</option>
+                    <option value="Devam Ediyor">Devam Ediyor</option>
+                    <option value="Parça Bekliyor">Parça Bekliyor</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="degisen_parca">Değişen Parça / Malzeme</label>
+                <input type="text" id="degisen_parca" placeholder="Varsa değişen parçayı yazın">
+            </div>
+        </div>
+
+        <div class="form-group full-width">
+            <textarea id="bakim_aciklama" rows="3" placeholder="Yapılan işlem ve arıza detay açıklaması..."></textarea>
+        </div>
+
+        <div class="button-group">
+            <button class="btn-success" type="button" onclick="bakimKaydet()">Bakım Kaydını İşle</button>
+            <button class="btn-secondary" type="button" onclick="bakimFormTemizle()">Temizle</button>
+        </div>
     </div>
 
-    <!-- BAKIM LİSTESİ -->
+    <!-- BAKIM VE ARIZA GEÇMİŞİ TABLOSU -->
     <div class="panel">
-        <h2>Kayıtlı Bakım İşlemleri</h2>
-        <input id="bakimArama" placeholder="Bakım kaydı ara..." oninput="bakimAra()">
-        <br><br>
-        <div class="table-wrap">
-            <table>
+        <h2>Bakım ve Arıza Geçmişi</h2>
+
+        <div class="form-group">
+            <input type="text" id="bakimArama" placeholder="Bakım kayıtlarında ara..." onkeyup="bakimAra()">
+        </div>
+
+        <div class="table-container">
+            <table class="excel-table">
                 <thead>
-                    <tr>
+                    <tr style="background-color: #ffd700; color: #000;">
                         <th>Tarih</th>
-                        <th>Reçete / Makine</th>
-                        <th>Bakım Tipi</th>
-                        <th>Bakımı Yapan</th>
-                        <th>Sonraki Bakım</th>
-                        <th>Açıklama</th>
+                        <th>Makine</th>
+                        <th>Tip</th>
+                        <th>Personel</th>
+                        <th>Durum</th>
                         <th>İşlem</th>
                     </tr>
                 </thead>
-                <tbody id="bakimListe"></tbody>
+                <tbody id="bakimListe">
+                    <!-- Kayıtlar JavaScript ile yüklenecek -->
+                </tbody>
             </table>
         </div>
     </div>
+
 </div> <!-- BAKIM SEKMESİ (bakimTab) BURADA KAPANIR -->
 
 
