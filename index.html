@@ -640,106 +640,73 @@
         <button class="btn-secondary" type="button" onclick="detayKapat()">Kapat</button>
     </div>
 </div>
- <!-- MAKİNA PARÇA LİSTESİ FORMU -->
-<div class="panel" style="margin-top: 15px;">
-    <h2>⚙️ Makina Parça Listesi Formu</h2>
-    
-    <div style="margin-bottom: 15px;">
-        <label for="parca_liste_baslik" style="font-weight: bold; display: block; margin-bottom: 5px;">Liste Genel Başlığı:</label>
-        <input type="text" id="parca_liste_baslik" placeholder="Örn: Tarak Rulman Listesi / Bıçak Ölçüleri" style="width: 100%; padding: 8px; box-sizing: border-box; border-radius: 4px; border: 1px solid #ccc;">
-    </div>
-
-    <h3 style="text-align: center; color: #2e7d32; margin-bottom: 10px;">MAKİNA PARÇA LİSTESİ</h3>
-
-    <!-- MOBİL UYUMLU VE DAHA FAZLA VERİ GİRİŞLİ TABLO -->
-    <div style="overflow-x: auto; margin-bottom: 15px;">
-        <table border="1" style="width: 100%; border-collapse: collapse; text-align: center; font-size: 13px;">
-            <thead>
-                <tr style="background: #f0f0f0;">
-                    <th style="padding: 6px; width: 30%;">NEREYE AİT</th>
-                    <th style="padding: 6px; width: 20%;">ÖLÇÜLER</th>
-                    <th style="padding: 6px; width: 30%;">NEREYE AİT</th>
-                    <th style="padding: 6px; width: 20%;">ÖLÇÜLER</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- 16 SATIR x 2 SÜTUN GRUBU (TOPLAM 32 PARÇA GİRİŞİ) -->
-                <!-- Script döngüsüyle çakışmaması için ID'ler 1'den 32'ye sıralıdır -->
-                <script style="display:none;">
-                    // HTML içinde statik yazmak yerine temiz görünüm için 16 satır yapısı:
-                </script>
-                <tr><td><input type="text" id="p_ait_1" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_1" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_ait_2" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_2" style="width:100%; box-sizing:border-box;"></td></tr>
-                <tr><td><input type="text" id="p_ait_3" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_3" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_ait_4" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_4" style="width:100%; box-sizing:border-box;"></td></tr>
-                <tr><td><input type="text" id="p_ait_5" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_5" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_ait_6" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_6" style="width:100%; box-sizing:border-box;"></td></tr>
-                <tr><td><input type="text" id="p_ait_7" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_7" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_ait_8" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_8" style="width:100%; box-sizing:border-box;"></td></tr>
-                <tr><td><input type="text" id="p_ait_9" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_9" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_ait_10" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_10" style="width:100%; box-sizing:border-box;"></td></tr>
-                <tr><td><input type="text" id="p_ait_11" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_11" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_ait_12" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_12" style="width:100%; box-sizing:border-box;"></td></tr>
-                <tr><td><input type="text" id="p_ait_13" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_13" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_ait_14" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_14" style="width:100%; box-sizing:border-box;"></td></tr>
-                <tr><td><input type="text" id="p_ait_15" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_15" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_ait_16" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_16" style="width:100%; box-sizing:border-box;"></td></tr>
-                <tr><td><input type="text" id="p_ait_17" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_17" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_ait_18" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_18" style="width:100%; box-sizing:border-box;"></td></tr>
-                <tr><td><input type="text" id="p_ait_19" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_19" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_ait_20" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_20" style="width:100%; box-sizing:border-box;"></td></tr>
-                <tr><td><input type="text" id="p_ait_21" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_21" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_ait_22" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_22" style="width:100%; box-sizing:border-box;"></td></tr>
-                <tr><td><input type="text" id="p_ait_23" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_23" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_ait_24" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_24" style="width:100%; box-sizing:border-box;"></td></tr>
-                <tr><td><input type="text" id="p_ait_25" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_25" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_ait_26" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_26" style="width:100%; box-sizing:border-box;"></td></tr>
-                <tr><td><input type="text" id="p_ait_27" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_27" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_ait_28" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_28" style="width:100%; box-sizing:border-box;"></td></tr>
-                <tr><td><input type="text" id="p_ait_29" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_29" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_ait_30" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_30" style="width:100%; box-sizing:border-box;"></td></tr>
-                <tr><td><input type="text" id="p_ait_31" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_31" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_ait_32" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_32" style="width:100%; box-sizing:border-box;"></td></tr>
-            </tbody>
-        </table>
-    </div>
-
-    <!-- SEÇİM VE İŞLEM ALANI -->
-    <div style="background: #f4f6f8; padding: 12px; border-radius: 8px; border: 1px solid #ddd; margin-top: 10px;">
-        <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-            <label for="kayitliParcaListesiSelect" style="font-weight: bold; color: #2e7d32; font-size: 14px;">📋 Kayıtlı Parça Listeleri:</label>
-            <select id="kayitliParcaListesiSelect" onchange="parcaSecildigindeDoldur(this.value)" style="flex: 1; min-width: 180px; padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
-                <option value="">-- Bir Kayıt Seçin veya Yeni Oluşturun --</option>
-            </select>
-            <button type="button" class="btn" onclick="parcaListeleriniGetir()" style="background: #2e7d32; color: #fff; padding: 8px 12px;">🔄 Yenile</button>
+<!-- ============================================================== -->
+<!-- MAKİNA PARÇA LİSTESİ SEKMESİ (TEMİZLENDİ) -->
+<!-- ============================================================== -->
+<div id="parcaListesiSekmesi" class="tab-content" style="display: none;">
+    <div class="panel" style="margin-top: 15px;">
+        <h2>⚙️ Makina Parça Listesi Formu</h2>
+        
+        <div style="margin-bottom: 15px;">
+            <label for="parca_liste_baslik" style="font-weight: bold; display: block; margin-bottom: 5px;">Liste Genel Başlığı:</label>
+            <input type="text" id="parca_liste_baslik" placeholder="Örn: Tarak Rulman Listesi / Bıçak Ölçüleri" style="width: 100%; padding: 8px; box-sizing: border-box; border-radius: 4px; border: 1px solid #ccc;">
         </div>
 
-        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-            <button type="button" class="btn btn-success" onclick="parcaKaydet()">💾 Kaydet</button>
-            <button type="button" class="btn btn-warning" onclick="parcaGuncelle()">✏️ Güncelle</button>
-            <button type="button" class="btn btn-danger" onclick="parcaSil()">🗑️ Sil</button>
-            <button type="button" class="btn" onclick="parcaYazdir()">🖨️ Yazdır</button>
-            <button type="button" class="btn btn-danger" onclick="parcaPdfIndir()">📄 PDF İndir</button>
-            <button type="button" class="btn btn-warning" onclick="parcaPaylas()">📲 Paylaş</button>
-            <button type="button" class="btn" onclick="parcaFormTemizle()" style="background: #757575; color: #fff;">🧹 Temizle</button>
+        <h3 style="text-align: center; color: #2e7d32; margin-bottom: 10px;">MAKİNA PARÇA LİSTESİ</h3>
+
+        <!-- MOBİL UYUMLU 16 SATIR x 2 SÜTUN (32 VERİ GİRİŞLİ TABLO) -->
+        <div style="overflow-x: auto; margin-bottom: 15px;">
+            <table border="1" style="width: 100%; border-collapse: collapse; text-align: center; font-size: 13px;">
+                <thead>
+                    <tr style="background: #f0f0f0;">
+                        <th style="padding: 6px; width: 30%;">NEREYE AİT</th>
+                        <th style="padding: 6px; width: 20%;">ÖLÇÜLER</th>
+                        <th style="padding: 6px; width: 30%;">NEREYE AİT</th>
+                        <th style="padding: 6px; width: 20%;">ÖLÇÜLER</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td><input type="text" id="p_ait_1" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_1" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_ait_2" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_2" style="width:100%; box-sizing:border-box;"></td></tr>
+                    <tr><td><input type="text" id="p_ait_3" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_3" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_ait_4" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_4" style="width:100%; box-sizing:border-box;"></td></tr>
+                    <tr><td><input type="text" id="p_ait_5" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_5" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_ait_6" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_6" style="width:100%; box-sizing:border-box;"></td></tr>
+                    <tr><td><input type="text" id="p_ait_7" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_7" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_ait_8" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_8" style="width:100%; box-sizing:border-box;"></td></tr>
+                    <tr><td><input type="text" id="p_ait_9" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_9" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_ait_10" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_10" style="width:100%; box-sizing:border-box;"></td></tr>
+                    <tr><td><input type="text" id="p_ait_11" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_11" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_ait_12" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_12" style="width:100%; box-sizing:border-box;"></td></tr>
+                    <tr><td><input type="text" id="p_ait_13" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_13" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_ait_14" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_14" style="width:100%; box-sizing:border-box;"></td></tr>
+                    <tr><td><input type="text" id="p_ait_15" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_15" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_ait_16" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_16" style="width:100%; box-sizing:border-box;"></td></tr>
+                    <tr><td><input type="text" id="p_ait_17" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_17" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_ait_18" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_18" style="width:100%; box-sizing:border-box;"></td></tr>
+                    <tr><td><input type="text" id="p_ait_19" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_19" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_ait_20" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_20" style="width:100%; box-sizing:border-box;"></td></tr>
+                    <tr><td><input type="text" id="p_ait_21" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_21" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_ait_22" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_22" style="width:100%; box-sizing:border-box;"></td></tr>
+                    <tr><td><input type="text" id="p_ait_23" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_23" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_ait_24" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_24" style="width:100%; box-sizing:border-box;"></td></tr>
+                    <tr><td><input type="text" id="p_ait_25" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_25" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_ait_26" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_26" style="width:100%; box-sizing:border-box;"></td></tr>
+                    <tr><td><input type="text" id="p_ait_27" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_27" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_ait_28" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_28" style="width:100%; box-sizing:border-box;"></td></tr>
+                    <tr><td><input type="text" id="p_ait_29" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_29" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_ait_30" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_30" style="width:100%; box-sizing:border-box;"></td></tr>
+                    <tr><td><input type="text" id="p_ait_31" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_31" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_ait_32" style="width:100%; box-sizing:border-box;"></td><td><input type="text" id="p_olc_32" style="width:100%; box-sizing:border-box;"></td></tr>
+                </tbody>
+            </table>
         </div>
-    </div>
-</div>
-    <!-- REÇETE BİLGİLERİ TARZI SEÇİM VE İŞLEM ALANI -->
-<div style="background: #f4f6f8; padding: 15px; border-radius: 8px; border: 1px solid #ccc; margin-top: 15px;">
-    
-    <!-- KAYITLI PARÇA LİSTELERİ SEÇİMİ (AÇILIR KUTU) -->
-    <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-        <label for="kayitliParcaListesiSelect" style="font-weight: bold; color: #2e7d32;">📋 Kayıtlı Parça Listeleri:</label>
-        <select id="kayitliParcaListesiSelect" onchange="parcaSecildigindeDoldur(this.value)" style="flex: 1; min-width: 200px; padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
-            <option value="">-- Bir Kayıt Seçin veya Yeni Oluşturun --</option>
-        </select>
-        <button type="button" class="btn" onclick="parcaListeleriniGetir()" style="background: #2e7d32; color: #fff;">🔄 Yenile</button>
-    </div>
 
-    <!-- İŞLEM BUTONLARI -->
-    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-        <button type="button" class="btn btn-success" onclick="parcaKaydet()">💾 Kaydet</button>
-        <button type="button" class="btn btn-warning" onclick="parcaGuncelle()">✏️ Güncelle</button>
-        <button type="button" class="btn btn-danger" onclick="parcaSil()">🗑️ Sil</button>
-        <button type="button" class="btn" onclick="parcaYazdir()">🖨️ Yazdır</button>
-        <button type="button" class="btn btn-danger" onclick="parcaPdfIndir()">📄 PDF İndir</button>
-        <button type="button" class="btn btn-warning" onclick="parcaPaylas()">📲 Paylaş</button>
-        <button type="button" class="btn" onclick="parcaFormTemizle()" style="background: #757575; color: #fff;">🧹 Temizle</button>
-    </div>
+        <!-- TEK KALAN İŞLEM VE SEÇİM ALANI -->
+        <div style="background: #f4f6f8; padding: 12px; border-radius: 8px; border: 1px solid #ddd; margin-top: 10px;">
+            <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                <label for="kayitliParcaListesiSelect" style="font-weight: bold; color: #2e7d32; font-size: 14px;">📋 Kayıtlı Parça Listeleri:</label>
+                <select id="kayitliParcaListesiSelect" onchange="parcaSecildigindeDoldur(this.value)" style="flex: 1; min-width: 180px; padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+                    <option value="">-- Bir Kayıt Seçin veya Yeni Oluşturun --</option>
+                </select>
+                <button type="button" class="btn" onclick="parcaListeleriniGetir()" style="background: #2e7d32; color: #fff; padding: 8px 12px;">🔄 Yenile</button>
+            </div>
 
-</div>
-
-    <!-- KAYITLI PARÇA LİSTELERİ GRID -->
-    <div class="panel" style="margin-top: 20px;">
-        <h3>📋 Kayıtlı Parça Listeleri</h3>
-        <div id="parcaListesiGrid" class="belge-grid">
-            <p>Henüz kayıtlı liste bulunmuyor...</p>
+            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                <button type="button" class="btn btn-success" onclick="parcaKaydet()">💾 Kaydet</button>
+                <button type="button" class="btn btn-warning" onclick="parcaGuncelle()">✏️ Güncelle</button>
+                <button type="button" class="btn btn-danger" onclick="parcaSil()">🗑️ Sil</button>
+                <button type="button" class="btn" onclick="parcaYazdir()">🖨️ Yazdır</button>
+                <button type="button" class="btn btn-danger" onclick="parcaPdfIndir()">📄 PDF İndir</button>
+                <button type="button" class="btn btn-warning" onclick="parcaPaylas()">📲 Paylaş</button>
+                <button type="button" class="btn" onclick="parcaFormTemizle()" style="background: #757575; color: #fff;">🧹 Temizle</button>
+            </div>
         </div>
+
     </div>
 </div>
 <!-- BAKIM DETAY PENCERESİ (MODAL) -->
