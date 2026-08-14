@@ -646,6 +646,32 @@
 <div id="parcalistesiSekmesi" class="tab-content" style="display: none;">
     <div class="panel" style="margin-top: 15px;">
         <h2>⚙️ Makina Parça Listesi Formu</h2>
+        <!-- ÜST PANEL: BUTONLAR VE BAŞLIK ALANI -->
+<div style="background: #f4f6f8; padding: 12px; border-radius: 8px; border: 1px solid #ddd; margin-bottom: 15px;">
+    <!-- Kayıtlı Parça Listeleri Açılır Kutusu -->
+    <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+        <label for="kayitliParcaListesiSelect" style="font-weight: bold; color: #2e7d32; font-size: 14px;">📋 Kayıtlı Parça Listeleri:</label>
+        <select id="kayitliParcaListesiSelect" onchange="parcaSecildigindeDoldur(this.value)" style="flex: 1; min-width: 180px; padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+            <option value="">-- Bir Kayıt Seçin veya Yeni Oluşturun --</option>
+        </select>
+        <button type="button" class="btn" onclick="parcaListeleriniGetir()" style="background: #2e7d32; color: #fff; padding: 8px 12px;">🔄 Yenile</button>
+    </div>
+
+    <!-- Üst İşlem Butonları -->
+    <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 15px;">
+        <button type="button" class="btn btn-success" onclick="parcaKaydet()">💾 Kaydet</button>
+        <button type="button" class="btn btn-warning" onclick="parcaGuncelle()">✏️ Güncelle</button>
+        <button type="button" class="btn btn-danger" onclick="parcaSil()">🗑️ Sil</button>
+        <button type="button" class="btn btn-info" onclick="parcaYazdirModal()" style="background:#0288d1; color:#fff;">🖨️ Yazdır / İncele</button>
+        <button type="button" class="btn" onclick="parcaFormTemizle()" style="background: #757575; color: #fff;">🧹 Temizle</button>
+    </div>
+
+    <!-- Liste Genel Başlığı Input Alanı -->
+    <div>
+        <label for="parca_liste_baslik" style="font-weight: bold; display: block; margin-bottom: 5px;">Liste Genel Başlığı:</label>
+        <input type="text" id="parca_liste_baslik" placeholder="Örn: Balkan Kayış Listesi / Balkan Rulman Listesi" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-weight: bold; font-size: 16px; color: #2e7d32;">
+    </div>
+</div>
 
         <!-- 1. ÜST KISIM: KAYITLI LİSTELER VE BUTONLAR -->
         <div style="background: #f4f6f8; padding: 12px; border-radius: 8px; border: 1px solid #ddd; margin-bottom: 15px;">
