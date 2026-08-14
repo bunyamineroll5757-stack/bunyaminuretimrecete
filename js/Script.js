@@ -1103,7 +1103,16 @@ function parcaPaylas() {
 // MAKİNE FOTO GALERİ MANTIĞI & SUPABASE STORAGE INTEGRASYONU
 // ==============================================================
 
-let secilenFotograflar = []; // Base64 / Blob verilerini tutar
+let secilenFotograflar = [];
+
+// Supabase İstemcisini Bağlam Biçimi
+function getGaleriSupabase() {
+    if (typeof supabase !== 'undefined') return supabase;
+    if (typeof _supabase !== 'undefined') return _supabase;
+    if (typeof getParcaSupabase === 'function') return getParcaSupabase();
+    console.error("Supabase istemcisi bulunamadı!");
+    return null;
+}
 
 // 1. FOTOĞRAF SEÇME VE SIKIŞTIRMA (MAX 10 ADET)
 async function fotoSecildi(event) {
@@ -1126,7 +1135,6 @@ async function fotoSecildi(event) {
     fotoOnizlemeGuncelle();
 }
 
-// Görsel Sıkıştırma Motoru (Max 1200px, Quality 0.7)
 function fotoSikistir(file) {
     return new Promise((resolve) => {
         const reader = new FileReader();
@@ -1158,9 +1166,9 @@ function fotoSikistir(file) {
     });
 }
 
-// Önizleme Izgarasını Çizme
 function fotoOnizlemeGuncelle() {
     const container = document.getElementById('fotoOnizlemeContainer');
+    if (!container) return;
     container.innerHTML = '';
 
     secilenFotograflar.forEach((foto, index) => {
@@ -1168,7 +1176,7 @@ function fotoOnizlemeGuncelle() {
         div.style.cssText = 'position: relative; width: 100px; height: 100px; border-radius: 6px; overflow: hidden; border: 1px solid #ccc;';
         
         div.innerHTML = `
-            <img src="${foto.previewUrl}" style="width: 100%; height: 100%; object-fit: cover; cursor: pointer;" onclick="fotoTamEkranAc('${foto.previewUrl}')">
+            <img src="${foto.previewUrl}" style="width: 100%; height: 100%; object-fit: cover; cursor: pointer;" onclick="window.open('${foto.previewUrl}', '_blank')">
             <button type="button" onclick="fotoSil(${index})" style="position: absolute; top: 2px; right: 2px; background: rgba(255,0,0,0.8); color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 11px; cursor: pointer;">✕</button>
         `;
         container.appendChild(div);
@@ -1182,6 +1190,12 @@ function fotoSil(index) {
 
 // 2. SUPABASE STORAGE'A YÜKLEME VE KAYDETME
 async function galeriKaydet() {
+    const db = getGaleriSupabase();
+    if (!db) {
+        alert("Supabase bağlantısı kurulamadı!");
+        return;
+    }
+
     const baslik = document.getElementById('galeri_baslik').value.trim();
     const makine = document.getElementById('galeri_makine').value.trim();
     const tarih = document.getElementById('galeri_tarih').value;
@@ -1200,24 +1214,21 @@ async function galeriKaydet() {
     try {
         let yuklenenUrlListesi = [];
 
-        // Fotoğrafları Supabase Storage'a Yükle
         for (let foto of secilenFotograflar) {
-            const { data, error } = await _supabase.storage
+            const { data, error } = await db.storage
                 .from('makine-fotograflari')
                 .upload(foto.name, foto.file);
 
             if (error) throw error;
 
-            // Public URL Al
-            const { data: urlData } = _supabase.storage
+            const { data: urlData } = db.storage
                 .from('makine-fotograflari')
                 .getPublicUrl(foto.name);
 
             yuklenenUrlListesi.push(urlData.publicUrl);
         }
 
-        // Veritabanına Kaydet
-        const { error: dbError } = await _supabase
+        const { error: dbError } = await db
             .from('makine_galeri')
             .insert([{
                 baslik: baslik,
@@ -1239,11 +1250,153 @@ async function galeriKaydet() {
     }
 }
 
+// 3. KAYITLI GALERİLERİ GETİRME
+async function galerileriGetir() {
+    const db = getGaleriSupabase();
+    if (!db) return;
+
+    try {
+        const select = document.getElementById('kayitliGalerilerSelect');
+        if (!select) return;
+
+        select.innerHTML = '<option value="">-- Yükleniyor... --</option>';
+
+        const { data, error } = await db
+            .from('makine_galeri')
+            .select('*')
+            .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        select.innerHTML = '<option value="">-- Bir Galeri Seçin veya Yeni Oluşturun --</option>';
+
+        data.forEach(item => {
+            const option = document.createElement('option');
+            option.value = item.id;
+            option.textContent = `${item.baslik} (${item.makine_adi || 'Genel'}) - ${item.tarih || ''}`;
+            option.dataset.json = JSON.stringify(item);
+            select.appendChild(option);
+        });
+
+    } catch (err) {
+        console.error("Galeriler getirilirken hata:", err);
+    }
+}
+
+function galeriSecildigindeDoldur(galeriId) {
+    if (!galeriId) {
+        galeriFormTemizle();
+        return;
+    }
+
+    const select = document.getElementById('kayitliGalerilerSelect');
+    const selectedOption = select.options[select.selectedIndex];
+    if (!selectedOption || !selectedOption.dataset.json) return;
+
+    const data = JSON.parse(selectedOption.dataset.json);
+
+    document.getElementById('galeri_baslik').value = data.baslik || '';
+    document.getElementById('galeri_makine').value = data.makine_adi || '';
+    document.getElementById('galeri_tarih').value = data.tarih || '';
+    document.getElementById('galeri_notlar').value = data.notlar || '';
+
+    const container = document.getElementById('fotoOnizlemeContainer');
+    if (!container) return;
+    container.innerHTML = '';
+
+    if (data.fotograflar && data.fotograflar.length > 0) {
+        data.fotograflar.forEach(url => {
+            const div = document.createElement('div');
+            div.style.cssText = 'position: relative; width: 100px; height: 100px; border-radius: 6px; overflow: hidden; border: 1px solid #ccc;';
+            div.innerHTML = `<img src="${url}" style="width: 100%; height: 100%; object-fit: cover; cursor: pointer;" onclick="window.open('${url}', '_blank')">`;
+            container.appendChild(div);
+        });
+    }
+}
+
+async function galeriSil() {
+    const db = getGaleriSupabase();
+    if (!db) return;
+
+    const select = document.getElementById('kayitliGalerilerSelect');
+    const galeriId = select.value;
+
+    if (!galeriId) {
+        alert("Lütfen silinecek galeriyi listeden seçin!");
+        return;
+    }
+
+    if (!confirm("Bu galeriyi silmek istediğinize emin misiniz?")) return;
+
+    try {
+        const { error } = await db
+            .from('makine_galeri')
+            .delete()
+            .eq('id', galeriId);
+
+        if (error) throw error;
+
+        alert("Galeri başarıyla silindi!");
+        galeriFormTemizle();
+        galerileriGetir();
+
+    } catch (err) {
+        alert("Silme hatası: " + err.message);
+    }
+}
+
+async function galeriGuncelle() {
+    const db = getGaleriSupabase();
+    if (!db) return;
+
+    const select = document.getElementById('kayitliGalerilerSelect');
+    const galeriId = select.value;
+
+    if (!galeriId) {
+        alert("Lütfen güncellenecek galeriyi önce listeden seçin!");
+        return;
+    }
+
+    const baslik = document.getElementById('galeri_baslik').value.trim();
+    const makine = document.getElementById('galeri_makine').value.trim();
+    const tarih = document.getElementById('galeri_tarih').value;
+    const notlar = document.getElementById('galeri_notlar').value.trim();
+
+    try {
+        const { error } = await db
+            .from('makine_galeri')
+            .update({
+                baslik: baslik,
+                makine_adi: makine,
+                tarih: tarih || null,
+                notlar: notlar
+            })
+            .eq('id', galeriId);
+
+        if (error) throw error;
+
+        alert("Galeri bilgileri güncellendi!");
+        galerileriGetir();
+
+    } catch (err) {
+        alert("Güncelleme hatası: " + err.message);
+    }
+}
+
 function galeriFormTemizle() {
-    document.getElementById('galeri_baslik').value = '';
-    document.getElementById('galeri_makine').value = '';
-    document.getElementById('galeri_tarih').value = '';
-    document.getElementById('galeri_notlar').value = '';
+    if (document.getElementById('galeri_baslik')) document.getElementById('galeri_baslik').value = '';
+    if (document.getElementById('galeri_makine')) document.getElementById('galeri_makine').value = '';
+    if (document.getElementById('galeri_tarih')) document.getElementById('galeri_tarih').value = '';
+    if (document.getElementById('galeri_notlar')) document.getElementById('galeri_notlar').value = '';
     secilenFotograflar = [];
     fotoOnizlemeGuncelle();
 }
+
+function galeriYazdirModal() {
+    window.print();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    galerileriGetir();
+});
+                                          
