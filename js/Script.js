@@ -919,66 +919,16 @@ function getParcaSupabase() {
     return null;
 }
 
-// 1. Parça Listesini Kaydetme
-async function parcaKaydet() {
-    const baslikEl = document.getElementById('parca_liste_baslik');
-    const baslik = baslikEl ? baslikEl.value.trim() : '';
-    
-    if (!baslik) {
-        alert('Lütfen liste için bir genel başlık giriniz!');
-        return;
-    }
+// Global değişkenler
+let tumParcaListeleri = [];
+let seciliParcaId = null;
 
-    const veriler = [];
-    for (let i = 1; i <= 8; i++) {
-        const ait1 = document.getElementById(`p_ait_${(i*2)-1}`)?.value || '';
-        const olc1 = document.getElementById(`p_olc_${(i*2)-1}`)?.value || '';
-        const ait2 = document.getElementById(`p_ait_${i*2}`)?.value || '';
-        const olc2 = document.getElementById(`p_olc_${i*2}`)?.value || '';
-
-        veriler.push({ ait1, olc1, ait2, olc2 });
-    }
-
-    const db = getParcaSupabase();
-    if (!db) {
-        alert("Veritabanı bağlantısı kurulamadı.");
-        return;
-    }
-
-    const { data, error } = await db
-        .from('parca_listeleri')
-        .insert([{ baslik: baslik, veriler: veriler }]);
-
-    if (error) {
-        alert('Kaydedilirken hata oluştu: ' + error.message);
-    } else {
-        alert('Parça listesi başarıyla kaydedildi!');
-        parcaFormTemizle();
-        parcaListeleriniGetir();
-    }
-}
-
-// Formu Temizleme
-function parcaFormTemizle() {
-    if (document.getElementById('parca_liste_baslik')) {
-        document.getElementById('parca_liste_baslik').value = '';
-    }
-    for (let i = 1; i <= 16; i++) {
-        if (document.getElementById(`p_ait_${i}`)) document.getElementById(`p_ait_${i}`).value = '';
-        if (document.getElementById(`p_olc_${i}`)) document.getElementById(`p_olc_${i}`).value = '';
-    }
-}
-
-// Sayfa veya sekme yüklendiğinde listeyi açılır kutuya doldur
+// Sayfa yüklendediğinde listeleri açılır kutuya getir
 document.addEventListener("DOMContentLoaded", function() {
     parcaListeleriniGetir();
 });
 
-// Global değişkenler (Seçili kaydı hafızada tutar)
-let tumParcaListeleri = [];
-let seciliParcaId = null;
-
-// 1. Kayıtlı Parça Listelerini Getir ve Dropdown/Açılır Kutuyu Doldur
+// 1. Listeleri Supabase'den Getir ve Dropdown'ı Doldur
 async function parcaListeleriniGetir() {
     const select = document.getElementById('kayitliParcaListesiSelect');
     if (!select) return;
@@ -1005,7 +955,7 @@ async function parcaListeleriniGetir() {
     });
 }
 
-// 2. Açılır Kutudan Seçim Yapıldığında Tablodaki Kutucukları Doldur
+// 2. Açılır Kutudan Seçildiğinde Tablodaki 32 Kutucuğu Otomatik Doldur
 function parcaSecildigindeDoldur(id) {
     if (!id) {
         seciliParcaId = null;
@@ -1018,12 +968,10 @@ function parcaSecildigindeDoldur(id) {
 
     seciliParcaId = secilen.id;
 
-    // Genel Başlık Varsa Doldur
     if (document.getElementById('parca_liste_baslik')) {
         document.getElementById('parca_liste_baslik').value = secilen.baslik || '';
     }
 
-    // Tablodaki Kutucukları (p_ait_1, p_olc_1 vb.) Doldur
     if (secilen.veriler && Array.isArray(secilen.veriler)) {
         secilen.veriler.forEach((satir, idx) => {
             const i = idx + 1;
@@ -1040,12 +988,12 @@ function parcaSecildigindeDoldur(id) {
     }
 }
 
-// 3. YENİ KAYDET
+// 3. YENİ KAYDET (16 Satır / 32 Kutucuk)
 async function parcaKaydet() {
     const baslik = document.getElementById('parca_liste_baslik')?.value.trim() || 'Parça Listesi';
 
     const veriler = [];
-    for (let i = 1; i <= 8; i++) {
+    for (let i = 1; i <= 16; i++) {
         const ait1 = document.getElementById(`p_ait_${(i*2)-1}`)?.value || '';
         const olc1 = document.getElementById(`p_olc_${(i*2)-1}`)?.value || '';
         const ait2 = document.getElementById(`p_ait_${i*2}`)?.value || '';
@@ -1076,7 +1024,7 @@ async function parcaGuncelle() {
 
     const baslik = document.getElementById('parca_liste_baslik')?.value.trim() || 'Parça Listesi';
     const veriler = [];
-    for (let i = 1; i <= 8; i++) {
+    for (let i = 1; i <= 16; i++) {
         const ait1 = document.getElementById(`p_ait_${(i*2)-1}`)?.value || '';
         const olc1 = document.getElementById(`p_olc_${(i*2)-1}`)?.value || '';
         const ait2 = document.getElementById(`p_ait_${i*2}`)?.value || '';
@@ -1100,7 +1048,7 @@ async function parcaGuncelle() {
 // 5. KAYDI SİL
 async function parcaSil() {
     if (!seciliParcaId) {
-        alert('Lütfen önce silmek istediğiniz parça listesini seçin!');
+        alert('Lütfen önce silinecek bir kayıt seçin!');
         return;
     }
 
@@ -1114,13 +1062,13 @@ async function parcaSil() {
     if (error) {
         alert('Silinirken hata oluştu: ' + error.message);
     } else {
-        alert('Kayıt başarıyla silindi.');
+        alert('Kayıt silindi.');
         parcaFormTemizle();
         parcaListeleriniGetir();
     }
 }
 
-// 6. FORM TEMİZLEME
+// 6. FORM TEMİZLEME (32 Kutucuğu Temizler)
 function parcaFormTemizle() {
     seciliParcaId = null;
     if (document.getElementById('kayitliParcaListesiSelect')) {
@@ -1129,7 +1077,7 @@ function parcaFormTemizle() {
     if (document.getElementById('parca_liste_baslik')) {
         document.getElementById('parca_liste_baslik').value = '';
     }
-    for (let i = 1; i <= 16; i++) {
+    for (let i = 1; i <= 32; i++) {
         if (document.getElementById(`p_ait_${i}`)) document.getElementById(`p_ait_${i}`).value = '';
         if (document.getElementById(`p_olc_${i}`)) document.getElementById(`p_olc_${i}`).value = '';
     }
