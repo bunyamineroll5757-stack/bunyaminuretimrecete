@@ -132,6 +132,7 @@
 <div class="tab-buttons" style="display: flex; gap: 10px; margin-bottom: 15px; justify-content: center;">
     <button id="btnReceteTab" type="button" class="btn btn-tab" onclick="sekmeDegistir('receteTab', this)" style="padding: 10px 20px; font-weight: bold; background: #1976d2; color: white;">Reçete Yönetimi</button>
     <button id="btnBakimTab" type="button" class="btn btn-tab" onclick="sekmeDegistir('bakimTab', this)" style="padding: 10px 20px; font-weight: bold; background: #666; color: white;">Bakım Kayıtları ve Takibi</button>
+    <button id="btnParcaTab" type="button" class="btn btn-tab" onclick="sekmeDegistir('parcaListesiSekmesi')">⚙️ Parça Listesi</button>
 </div>
     <div id="durum" class="durum"></div>
 <div id="receteTab" class="tab-content" style="display: block;">
@@ -637,6 +638,82 @@
         <button class="btn-danger" type="button" onclick="pdfIndir()">PDF İndir</button>
         <button class="btn-warning" type="button" onclick="paylas()">Paylaş</button>
         <button class="btn-secondary" type="button" onclick="detayKapat()">Kapat</button>
+    </div>
+</div>
+    <!-- PARÇA LİSTESİ SEKMESİ -->
+<div id="parcaListesiSekmesi" class="tab-content" style="display: none;">
+    <div class="panel">
+        <h2>⚙️ Makina Parça Listesi Formu</h2>
+
+        <!-- DİNAMİK LİSTE BAŞLIĞI -->
+        <div style="margin-bottom: 15px;">
+            <label style="font-weight: bold; display: block; margin-bottom: 5px;">Liste Genel Başlığı:</label>
+            <input type="text" id="parca_liste_baslik" placeholder="Örn: Tarak Rulman Listesi / Bıçak Ölçüleri" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px;">
+        </div>
+
+        <!-- TEK SAYFA TABLO -->
+        <div id="parcaIcerikAlani" class="excel-container">
+            <h3 id="ekran_liste_basligi" style="text-align: center; color: #1b5e20; margin: 10px 0;">MAKİNA PARÇA LİSTESİ</h3>
+            
+            <table class="excel-table" style="width: 100%;">
+                <colgroup>
+                    <col style="width: 30%;">
+                    <col style="width: 20%;">
+                    <col style="width: 30%;">
+                    <col style="width: 20%;">
+                </colgroup>
+                <thead>
+                    <tr style="background-color: #2e7d32; color: #fff; text-align: center; font-weight: bold;">
+                        <td>NEREYE AİT</td>
+                        <td>ÖLÇÜLER</td>
+                        <td>NEREYE AİT</td>
+                        <td>ÖLÇÜLER</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><input type="text" id="p_ait_1"></td>
+                        <td><input type="text" id="p_olc_1"></td>
+                        <td><input type="text" id="p_ait_2"></td>
+                        <td><input type="text" id="p_olc_2"></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" id="p_ait_3"></td>
+                        <td><input type="text" id="p_olc_3"></td>
+                        <td><input type="text" id="p_ait_4"></td>
+                        <td><input type="text" id="p_olc_4"></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" id="p_ait_5"></td>
+                        <td><input type="text" id="p_olc_5"></td>
+                        <td><input type="text" id="p_ait_6"></td>
+                        <td><input type="text" id="p_olc_6"></td>
+                    </tr>
+                    <tr>
+                        <td><input type="text" id="p_ait_7"></td>
+                        <td><input type="text" id="p_olc_7"></td>
+                        <td><input type="text" id="p_ait_8"></td>
+                        <td><input type="text" id="p_olc_8"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- İŞLEM BUTONLARI -->
+        <div style="margin-top: 15px; display: flex; gap: 8px; flex-wrap: wrap;">
+            <button type="button" class="btn-success" onclick="parcaKaydet()">💾 Kaydet</button>
+            <button type="button" class="btn" onclick="parcaYazdir()">🖨️ Yazdır</button>
+            <button type="button" class="btn-danger" onclick="parcaPdfIndir()">📄 PDF İndir</button>
+            <button type="button" class="btn-warning" onclick="parcaPaylas()">📤 Paylaş</button>
+        </div>
+    </div>
+
+    <!-- KAYITLI PARÇA LİSTELERİ GRID -->
+    <div class="panel" style="margin-top: 20px;">
+        <h3>📋 Kayıtlı Parça Listeleri</h3>
+        <div id="parcaListesiGrid" class="belge-grid">
+            <p>Henüz kayıtlı liste bulunmuyor...</p>
+        </div>
     </div>
 </div>
 <!-- BAKIM DETAY PENCERESİ (MODAL) -->
