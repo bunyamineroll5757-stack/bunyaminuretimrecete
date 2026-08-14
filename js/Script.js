@@ -1089,13 +1089,86 @@ function parcaFormTemizle() {
     }
 }
 
-// 7. YAZDIR, PDF, PAYLAŞ
-function parcaYazdir() { window.print(); }
-function parcaPdfIndir() { window.print(); }
-function parcaPaylas() {
-    if (navigator.share) {
-        navigator.share({ title: 'Parça Listesi', url: window.location.href });
-    } else {
-        alert('Tarayıcınız paylaşımı desteklemiyor.');
+// ==============================================================
+// SADECE PARÇA LİSTESİNİ YAZDIRMA & PAYLAŞMA KODLARI
+// ==============================================================
+
+function parcaYazdirModal() {
+    const baslik = document.getElementById('parca_liste_baslik')?.value.trim() || 'MAKİNA PARÇA LİSTESİ';
+    
+    // Satırları tara ve sadece dolu olanları A4 Tablosuna hazırla
+    let tabloSatirlari = '';
+    let doluSatirSayisi = 0;
+
+    for (let i = 1; i <= 16; i++) {
+        let ait1 = document.getElementById(`p_ait_${(i*2)-1}`)?.value || '';
+        let olc1 = document.getElementById(`p_olc_${(i*2)-1}`)?.value || '';
+        let ait2 = document.getElementById(`p_ait_${i*2}`)?.value || '';
+        let olc2 = document.getElementById(`p_olc_${i*2}`)?.value || '';
+
+        if (ait1 || olc1 || ait2 || olc2) {
+            doluSatirSayisi++;
+            tabloSatirlari += `
+                <tr>
+                    <td style="padding: 6px; text-align: left;">${ait1}</td>
+                    <td style="padding: 6px; text-align: center; font-weight: bold;">${olc1}</td>
+                    <td style="padding: 6px; text-align: left;">${ait2}</td>
+                    <td style="padding: 6px; text-align: center; font-weight: bold;">${olc2}</td>
+                </tr>
+            `;
+        }
     }
+
+    if (doluSatirSayisi === 0) {
+        alert("Yazdırılacak veya incelenecek boş olmayan bir parça bilgisi bulunamadı!");
+        return;
+    }
+
+    // A4 boyutunda sadece tabloyu içeren özel pencere açar
+    const pencere = window.open('', '_blank', 'width=900,height=700');
+    pencere.document.write(`
+        <html>
+        <head>
+            <title>${baslik}</title>
+            <style>
+                body { font-family: 'Segoe UI', Arial, sans-serif; padding: 20px; color: #333; }
+                .baslik { text-align: center; color: #2e7d32; text-transform: uppercase; margin-bottom: 20px; border-bottom: 2px solid #2e7d32; padding-bottom: 10px; }
+                table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+                th, td { border: 1px solid #444; font-size: 13px; }
+                th { background-color: #f0f4f1; color: #1b5e20; padding: 8px; }
+                .footer { margin-top: 30px; text-align: right; font-size: 11px; color: #777; }
+                @media print {
+                    .no-print { display: none; }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="no-print" style="margin-bottom: 15px; background: #e8f5e9; padding: 10px; border-radius: 5px; display: flex; gap: 10px;">
+                <button onclick="window.print()" style="background: #2e7d32; color: white; border: none; padding: 8px 15px; cursor: pointer; border-radius: 4px; font-weight: bold;">🖨️ Yazdır / PDF Yap</button>
+                <button onclick="window.close()" style="background: #c62828; color: white; border: none; padding: 8px 15px; cursor: pointer; border-radius: 4px;">❌ Pencereyi Kapat</button>
+            </div>
+
+            <h2 class="baslik">${baslik}</h2>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 35%;">NEREYE AİT</th>
+                        <th style="width: 15%;">ÖLÇÜLER</th>
+                        <th style="width: 35%;">NEREYE AİT</th>
+                        <th style="width: 15%;">ÖLÇÜLER</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${tabloSatirlari}
+                </tbody>
+            </table>
+
+            <div class="footer">
+                Tarih: ${new Date().toLocaleDateString('tr-TR')} | Üretim Reçete Yönetim Sistemi
+            </div>
+        </body>
+        </html>
+    `);
+    pencere.document.close();
 }
