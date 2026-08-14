@@ -888,12 +888,23 @@ function sekmeDegistir(tabId, btnElement) {
     }
 }
 // ==========================================
-// PARÇA LİSTESİ İŞLEMLERİ
+// PARÇA LİSTESİ İŞLEMLERİ (GÜNCELLENMİŞ)
 // ==========================================
+
+// Supabase istemcisini güvenli alma fonksiyonu
+function getParcaSupabase() {
+    if (typeof _supabase !== 'undefined') return _supabase;
+    if (typeof supabase !== 'undefined') return supabase;
+    if (typeof getSupabase === 'function') return getSupabase();
+    console.error("Supabase istemcisi bulunamadı!");
+    return null;
+}
 
 // 1. Parça Listesini Kaydetme
 async function parcaKaydet() {
-    const baslik = document.getElementById('parca_liste_baslik').value.trim();
+    const baslikEl = document.getElementById('parca_liste_baslik');
+    const baslik = baslikEl ? baslikEl.value.trim() : '';
+    
     if (!baslik) {
         alert('Lütfen liste için bir genel başlık giriniz!');
         return;
@@ -901,15 +912,21 @@ async function parcaKaydet() {
 
     const veriler = [];
     for (let i = 1; i <= 8; i++) {
-        const ait1 = document.getElementById(`p_ait_${(i*2)-1}`).value;
-        const olc1 = document.getElementById(`p_olc_${(i*2)-1}`).value;
-        const ait2 = document.getElementById(`p_ait_${i*2}`).value;
-        const olc2 = document.getElementById(`p_olc_${i*2}`).value;
+        const ait1 = document.getElementById(`p_ait_${(i*2)-1}`)?.value || '';
+        const olc1 = document.getElementById(`p_olc_${(i*2)-1}`)?.value || '';
+        const ait2 = document.getElementById(`p_ait_${i*2}`)?.value || '';
+        const olc2 = document.getElementById(`p_olc_${i*2}`)?.value || '';
 
         veriler.push({ ait1, olc1, ait2, olc2 });
     }
 
-    const { data, error } = await _supabase
+    const db = getParcaSupabase();
+    if (!db) {
+        alert("Veritabanı bağlantısı kurulamadı.");
+        return;
+    }
+
+    const { data, error } = await db
         .from('parca_listeleri')
         .insert([{ baslik: baslik, veriler: veriler }]);
 
@@ -924,10 +941,12 @@ async function parcaKaydet() {
 
 // Formu Temizleme
 function parcaFormTemizle() {
-    document.getElementById('parca_liste_baslik').value = '';
-    for (let i = 1; i <= 8; i++) {
-        document.getElementById(`p_ait_${i}`).value = '';
-        document.getElementById(`p_olc_${i}`).value = '';
+    if (document.getElementById('parca_liste_baslik')) {
+        document.getElementById('parca_liste_baslik').value = '';
+    }
+    for (let i = 1; i <= 16; i++) {
+        if (document.getElementById(`p_ait_${i}`)) document.getElementById(`p_ait_${i}`).value = '';
+        if (document.getElementById(`p_olc_${i}`)) document.getElementById(`p_olc_${i}`).value = '';
     }
 }
 
@@ -937,13 +956,20 @@ async function parcaListeleriniGetir() {
     if (!grid) return;
     grid.innerHTML = '<p>Yükleniyor...</p>';
 
-    const { data, error } = await _supabase
+    const db = getParcaSupabase();
+    if (!db) {
+        grid.innerHTML = '<p>Veritabanı bağlantı hatası!</p>';
+        return;
+    }
+
+    const { data, error } = await db
         .from('parca_listeleri')
         .select('*')
         .order('created_at', { ascending: false });
 
     if (error) {
-        grid.innerHTML = '<p>Listeler yüklenemedi.</p>';
+        console.error("Supabase Hata:", error);
+        grid.innerHTML = '<p>Listeler yüklenemedi: ' + error.message + '</p>';
         return;
     }
 
@@ -967,14 +993,16 @@ async function parcaListeleriniGetir() {
     });
 }
 
-// Global değişken (Detay ekranında işlem yapabilmek için)
+// Global değişken
 let aktifParcaKaydi = null;
 
 // 3. Detay Modal Gösterme
 function parcaDetayGoster(item) {
     aktifParcaKaydi = item;
     
-    document.getElementById('parca_modal_baslik').innerText = item.baslik;
+    if (document.getElementById('parca_modal_baslik')) {
+        document.getElementById('parca_modal_baslik').innerText = item.baslik;
+    }
     
     let html = `
         <table class="excel-table" style="width:100%; border-collapse:collapse;" border="1">
@@ -989,39 +1017,57 @@ function parcaDetayGoster(item) {
             <tbody>
     `;
 
-    item.veriler.forEach(satir => {
-        html += `
-            <tr>
-                <td>${satir.ait1 || '-'}</td>
-                <td>${satir.olc1 || '-'}</td>
-                <td>${satir.ait2 || '-'}</td>
-                <td>${satir.olc2 || '-'}</td>
-            </tr>
-        `;
-    });
+    if (item.veriler && Array.isArray(item.veriler)) {
+        item.veriler.forEach(satir => {
+            html += `
+                <tr>
+                    <td>${satir.ait1 || '-'}</td>
+                    <td>${satir.olc1 || '-'}</td>
+                    <td>${satir.ait2 || '-'}</td>
+                    <td>${satir.olc2 || '-'}</td>
+                </tr>
+            `;
+        });
+    }
 
     html += `</tbody></table>`;
-    document.getElementById('parca_modal_icerik').innerHTML = html;
-    document.getElementById('parcaDetayModal').style.display = 'block';
+    
+    if (document.getElementById('parca_modal_icerik')) {
+        document.getElementById('parca_modal_icerik').innerHTML = html;
+    }
+    if (document.getElementById('parcaDetayModal')) {
+        document.getElementById('parcaDetayModal').style.display = 'block';
+    }
 }
 
 function parcaModalKapat() {
-    document.getElementById('parcaDetayModal').style.display = 'none';
+    if (document.getElementById('parcaDetayModal')) {
+        document.getElementById('parcaDetayModal').style.display = 'none';
+    }
 }
 
 // 4. Düzenle
 function parcaDetayDuzenle() {
     if (!aktifParcaKaydi) return;
     
-    document.getElementById('parca_liste_baslik').value = aktifParcaKaydi.baslik;
+    if (document.getElementById('parca_liste_baslik')) {
+        document.getElementById('parca_liste_baslik').value = aktifParcaKaydi.baslik;
+    }
     
-    aktifParcaKaydi.veriler.forEach((satir, idx) => {
-        const i = idx + 1;
-        document.getElementById(`p_ait_${(i*2)-1}`).value = satir.ait1;
-        document.getElementById(`p_olc_${(i*2)-1}`).value = satir.olc1;
-        document.getElementById(`p_ait_${i*2}`).value = satir.ait2;
-        document.getElementById(`p_olc_${i*2}`).value = satir.olc2;
-    });
+    if (aktifParcaKaydi.veriler && Array.isArray(aktifParcaKaydi.veriler)) {
+        aktifParcaKaydi.veriler.forEach((satir, idx) => {
+            const i = idx + 1;
+            const elAit1 = document.getElementById(`p_ait_${(i*2)-1}`);
+            const elOlc1 = document.getElementById(`p_olc_${(i*2)-1}`);
+            const elAit2 = document.getElementById(`p_ait_${i*2}`);
+            const elOlc2 = document.getElementById(`p_olc_${i*2}`);
+
+            if (elAit1) elAit1.value = satir.ait1 || '';
+            if (elOlc1) elOlc1.value = satir.olc1 || '';
+            if (elAit2) elAit2.value = satir.ait2 || '';
+            if (elOlc2) elOlc2.value = satir.olc2 || '';
+        });
+    }
 
     parcaModalKapat();
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1032,7 +1078,10 @@ async function parcaDetaySil() {
     if (!aktifParcaKaydi) return;
     if (!confirm('Bu parça listesini silmek istediğinize emin misiniz?')) return;
 
-    const { error } = await _supabase
+    const db = getParcaSupabase();
+    if (!db) return;
+
+    const { error } = await db
         .from('parca_listeleri')
         .delete()
         .eq('id', aktifParcaKaydi.id);
@@ -1050,13 +1099,14 @@ async function parcaDetaySil() {
 function parcaYazdir() { window.print(); }
 function parcaPdfIndir() { window.print(); }
 function parcaPaylas() {
+    const baslik = document.getElementById('parca_liste_baslik')?.value || 'Parça Listesi';
     if (navigator.share) {
         navigator.share({
-            title: document.getElementById('parca_liste_baslik').value || 'Parça Listesi',
+            title: baslik,
             text: 'Makina Parça Listesi Detayları',
             url: window.location.href
         });
     } else {
-        alert('Tarayıcınız doğrudan paylaşımı desteklemiyor. Bağlantıyı kopyalayabilirsiniz.');
+        alert('Tarayıcınız doğrudan paylaşımı desteklemiyor.');
     }
 }
