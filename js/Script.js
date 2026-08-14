@@ -891,12 +891,31 @@ function sekmeDegistir(tabId, btnElement) {
 // PARÇA LİSTESİ İŞLEMLERİ (GÜNCELLENMİŞ)
 // ==========================================
 
-// Supabase istemcisini güvenli alma fonksiyonu
+// Supabase istemcisini tespit eden ve yoksa oluşturan fonksiyon
 function getParcaSupabase() {
-    if (typeof _supabase !== 'undefined') return _supabase;
-    if (typeof supabase !== 'undefined') return supabase;
-    if (typeof getSupabase === 'function') return getSupabase();
-    console.error("Supabase istemcisi bulunamadı!");
+    // 1. Hazır tanımlanmış istemcileri kontrol et (en çok kullanılan isimler)
+    if (typeof _supabase !== 'undefined' && typeof _supabase.from === 'function') return _supabase;
+    if (typeof supabaseClient !== 'undefined' && typeof supabaseClient.from === 'function') return supabaseClient;
+    if (window.supabaseClient && typeof window.supabaseClient.from === 'function') return window.supabaseClient;
+    
+    // 2. Eğer projedeki ana 'supabase' değişkeni bir istemciyse onu döndür
+    if (typeof supabase !== 'undefined' && typeof supabase.from === 'function') return supabase;
+
+    // 3. Eğer getSupabase() fonksiyonun varsa onu çağır
+    if (typeof getSupabase === 'function') {
+        const temp = getSupabase();
+        if (temp && typeof temp.from === 'function') return temp;
+    }
+
+    // 4. Bulunamadıysa js/supabase.js içindeki bilgileri kullanarak sıfırdan oluştur
+    if (typeof SUPABASE_URL !== 'undefined' && typeof SUPABASE_KEY !== 'undefined') {
+        if (typeof supabase !== 'undefined' && typeof supabase.createClient === 'function') {
+            window._supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            return window._supabase;
+        }
+    }
+
+    console.error("Supabase istemcisi bağlanamadı!");
     return null;
 }
 
