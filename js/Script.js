@@ -1099,3 +1099,151 @@ function parcaPaylas() {
         alert('Tarayıcınız paylaşımı desteklemiyor.');
     }
 }
+// ==============================================================
+// MAKİNE FOTO GALERİ MANTIĞI & SUPABASE STORAGE INTEGRASYONU
+// ==============================================================
+
+let secilenFotograflar = []; // Base64 / Blob verilerini tutar
+
+// 1. FOTOĞRAF SEÇME VE SIKIŞTIRMA (MAX 10 ADET)
+async function fotoSecildi(event) {
+    const files = Array.from(event.target.files);
+    
+    if (secilenFotograflar.length + files.length > 10) {
+        alert("En fazla 10 adet fotoğraf yükleyebilirsiniz!");
+        return;
+    }
+
+    for (let file of files) {
+        const compressedBlob = await fotoSikistir(file);
+        secilenFotograflar.push({
+            file: compressedBlob,
+            name: `foto_${Date.now()}_${Math.random().toString(36).substring(7)}.jpg`,
+            previewUrl: URL.createObjectURL(compressedBlob)
+        });
+    }
+
+    fotoOnizlemeGuncelle();
+}
+
+// Görsel Sıkıştırma Motoru (Max 1200px, Quality 0.7)
+function fotoSikistir(file) {
+    return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (event) => {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+                const maxDim = 1200;
+
+                if (width > height && width > maxDim) {
+                    height *= maxDim / width;
+                    width = maxDim;
+                } else if (height > maxDim) {
+                    width *= maxDim / height;
+                    height = maxDim;
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                canvas.toBlob((blob) => resolve(blob), 'image/jpeg', 0.7);
+            };
+        };
+    });
+}
+
+// Önizleme Izgarasını Çizme
+function fotoOnizlemeGuncelle() {
+    const container = document.getElementById('fotoOnizlemeContainer');
+    container.innerHTML = '';
+
+    secilenFotograflar.forEach((foto, index) => {
+        const div = document.createElement('div');
+        div.style.cssText = 'position: relative; width: 100px; height: 100px; border-radius: 6px; overflow: hidden; border: 1px solid #ccc;';
+        
+        div.innerHTML = `
+            <img src="${foto.previewUrl}" style="width: 100%; height: 100%; object-fit: cover; cursor: pointer;" onclick="fotoTamEkranAc('${foto.previewUrl}')">
+            <button type="button" onclick="fotoSil(${index})" style="position: absolute; top: 2px; right: 2px; background: rgba(255,0,0,0.8); color: white; border: none; border-radius: 50%; width: 20px; height: 20px; font-size: 11px; cursor: pointer;">✕</button>
+        `;
+        container.appendChild(div);
+    });
+}
+
+function fotoSil(index) {
+    secilenFotograflar.splice(index, 1);
+    fotoOnizlemeGuncelle();
+}
+
+// 2. SUPABASE STORAGE'A YÜKLEME VE KAYDETME
+async function galeriKaydet() {
+    const baslik = document.getElementById('galeri_baslik').value.trim();
+    const makine = document.getElementById('galeri_makine').value.trim();
+    const tarih = document.getElementById('galeri_tarih').value;
+    const notlar = document.getElementById('galeri_notlar').value.trim();
+
+    if (!baslik) {
+        alert("Lütfen galeri başlığı giriniz!");
+        return;
+    }
+
+    if (secilenFotograflar.length === 0) {
+        alert("Lütfen en az 1 adet fotoğraf yükleyin!");
+        return;
+    }
+
+    try {
+        let yuklenenUrlListesi = [];
+
+        // Fotoğrafları Supabase Storage'a Yükle
+        for (let foto of secilenFotograflar) {
+            const { data, error } = await _supabase.storage
+                .from('makine-fotograflari')
+                .upload(foto.name, foto.file);
+
+            if (error) throw error;
+
+            // Public URL Al
+            const { data: urlData } = _supabase.storage
+                .from('makine-fotograflari')
+                .getPublicUrl(foto.name);
+
+            yuklenenUrlListesi.push(urlData.publicUrl);
+        }
+
+        // Veritabanına Kaydet
+        const { error: dbError } = await _supabase
+            .from('makine_galeri')
+            .insert([{
+                baslik: baslik,
+                makine_adi: makine,
+                tarih: tarih || null,
+                notlar: notlar,
+                fotograflar: yuklenenUrlListesi
+            }]);
+
+        if (dbError) throw dbError;
+
+        alert("Galeri başarıyla kaydedildi! 🚀");
+        galeriFormTemizle();
+        galerileriGetir();
+
+    } catch (err) {
+        console.error(err);
+        alert("Kaydetme sırasında bir hata oluştu: " + err.message);
+    }
+}
+
+function galeriFormTemizle() {
+    document.getElementById('galeri_baslik').value = '';
+    document.getElementById('galeri_makine').value = '';
+    document.getElementById('galeri_tarih').value = '';
+    document.getElementById('galeri_notlar').value = '';
+    secilenFotograflar = [];
+    fotoOnizlemeGuncelle();
+}
