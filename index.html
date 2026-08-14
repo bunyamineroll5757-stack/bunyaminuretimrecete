@@ -641,32 +641,55 @@
     </div>
 </div>
 <!-- ============================================================== -->
-<!-- MAKİNA PARÇA LİSTESİ SEKMESİ (TEMİZLENDİ) -->
+<!-- MAKİNA PARÇA LİSTESİ SEKMESİ -->
 <!-- ============================================================== -->
-<div id="parcaListesiSekmesi" class="tab-content" style="display: none;">
+<div id="parcalistesiSekmesi" class="tab-content" style="display: none;">
     <div class="panel" style="margin-top: 15px;">
         <h2>⚙️ Makina Parça Listesi Formu</h2>
-        
-        <div style="margin-bottom: 15px;">
-            <label for="parca_liste_baslik" style="font-weight: bold; display: block; margin-bottom: 5px;">Liste Genel Başlığı:</label>
-            <input type="text" id="parca_liste_baslik" placeholder="Örn: Tarak Rulman Listesi / Bıçak Ölçüleri" style="width: 100%; padding: 8px; box-sizing: border-box; border-radius: 4px; border: 1px solid #ccc;">
+
+        <!-- 1. ÜST KISIM: KAYITLI LİSTELER VE BUTONLAR -->
+        <div style="background: #f4f6f8; padding: 12px; border-radius: 8px; border: 1px solid #ddd; margin-bottom: 15px;">
+            <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                <label for="kayitliParcaListesiSelect" style="font-weight: bold; color: #2e7d32; font-size: 14px;">📋 Kayıtlı Parça Listeleri:</label>
+                <select id="kayitliParcaListesiSelect" onchange="parcaSecildigindeDoldur(this.value)" style="flex: 1; min-width: 180px; padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+                    <option value="">-- Bir Kayıt Seçin veya Yeni Oluşturun --</option>
+                </select>
+                <button type="button" class="btn" onclick="parcaListeleriniGetir()" style="background: #2e7d32; color: #fff; padding: 8px 12px;">🔄 Yenile</button>
+            </div>
+
+            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                <button type="button" class="btn btn-success" onclick="parcaKaydet()">💾 Kaydet</button>
+                <button type="button" class="btn btn-warning" onclick="parcaGuncelle()">✏️ Güncelle</button>
+                <button type="button" class="btn btn-danger" onclick="parcaSil()">🗑️ Sil</button>
+                <button type="button" class="btn btn-info" onclick="parcaYazdirModal()" style="background:#0288d1; color:#fff;">🖨️ Yazdır / İncele</button>
+                <button type="button" class="btn" onclick="parcaFormTemizle()" style="background: #757575; color: #fff;">🧹 Temizle</button>
+            </div>
         </div>
 
-     <div style="background: #f4f6f8; padding: 12px; border-radius: 8px; border: 1px solid #ddd; margin-top: 10px;">
-    <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-        <label for="kayitliParcaListesiSelect" style="font-weight: bold; color: #2e7d32; font-size: 14px;">📋 Kayıtlı Parça Listeleri:</label>
-        <select id="kayitliParcaListesiSelect" onchange="parcaSecildigindeDoldur(this.value)" style="flex: 1; min-width: 180px; padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
-            <option value="">-- Bir Kayıt Seçin veya Yeni Oluşturun --</option>
-        </select>
-        <button type="button" class="btn" onclick="parcaListeleriniGetir()" style="background: #2e7d32; color: #fff; padding: 8px 12px;">🔄 Yenile</button>
-    </div>
+        <!-- 2. ANA BAŞLIK ALANI (Geri Geldi) -->
+        <div style="margin-bottom: 15px;">
+            <label for="parca_liste_baslik" style="font-weight: bold; display: block; margin-bottom: 5px;">Liste Genel Başlığı:</label>
+            <input type="text" id="parca_liste_baslik" placeholder="Örn: Balkan Kayış Listesi / Balkan Rulman Listesi" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-weight: bold; font-size: 16px; color: #2e7d32;">
+        </div>
 
-    <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-        <button type="button" class="btn btn-success" onclick="parcaKaydet()">💾 Kaydet</button>
-        <button type="button" class="btn btn-warning" onclick="parcaGuncelle()">✏️ Güncelle</button>
-        <button type="button" class="btn btn-danger" onclick="parcaSil()">🗑️ Sil</button>
-        <button type="button" class="btn btn-info" onclick="parcaYazdirModal()" style="background:#0288d1; color:#fff;">🖨️ Yazdır / İncele</button>
-        <button type="button" class="btn" onclick="parcaFormTemizle()" style="background: #757575; color: #fff;">🧹 Temizle</button>
+        <!-- 3. MOBİL UYUMLU 16 SATIR x 2 SÜTUN (32 VERİ GİRİŞLİ TABLO) -->
+        <div style="overflow-x: auto; margin-bottom: 15px;">
+            <table border="1" style="width: 100%; border-collapse: collapse; text-align: center;">
+                <thead>
+                    <tr style="background: #f0f0f0;">
+                        <th style="padding: 6px; width: 35%;">NEREYE AİT</th>
+                        <th style="padding: 6px; width: 15%;">ÖLÇÜLER</th>
+                        <th style="padding: 6px; width: 35%;">NEREYE AİT</th>
+                        <th style="padding: 6px; width: 15%;">ÖLÇÜLER</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Satır 1-16 arası JavaScript tarafında otomatik id'ler ile kontrol edilir -->
+                    <!-- p_ait_1, p_olc_1, p_ait_2, p_olc_2 ... şeklinde sıralı HTML yapınız burada kalacaktır -->
+                </tbody>
+            </table>
+        </div>
+
     </div>
 </div>
 
