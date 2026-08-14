@@ -957,6 +957,9 @@ async function parcaListeleriniGetir() {
 
 // 2. Açılır Kutudan Seçildiğinde Tablodaki 32 Kutucuğu Otomatik Doldur
 function parcaSecildigindeDoldur(id) {
+    if (document.getElementById('ekran_liste_basligi')) {
+    document.getElementById('ekran_liste_basligi').value = 'MAKİNA PARÇA LİSTESİ';
+}
     if (!id) {
         seciliParcaId = null;
         parcaFormTemizle();
@@ -1071,6 +1074,9 @@ async function parcaSil() {
 // 6. FORM TEMİZLEME (32 Kutucuğu Temizler)
 function parcaFormTemizle() {
     seciliParcaId = null;
+    if (document.getElementById('ekran_liste_basligi')) {
+    document.getElementById('ekran_liste_basligi').value = 'MAKİNA PARÇA LİSTESİ';
+}
     if (document.getElementById('kayitliParcaListesiSelect')) {
         document.getElementById('kayitliParcaListesiSelect').value = '';
     }
