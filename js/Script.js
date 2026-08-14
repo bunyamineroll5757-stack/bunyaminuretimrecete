@@ -969,112 +969,63 @@ function parcaFormTemizle() {
     }
 }
 
-// 2. Kayıtlı Listeleri Getirme
+// Sayfa veya sekme yüklendiğinde listeyi açılır kutuya doldur
+document.addEventListener("DOMContentLoaded", function() {
+    parcaListeleriniGetir();
+});
+
+// Global değişkenler (Seçili kaydı hafızada tutar)
+let tumParcaListeleri = [];
+let seciliParcaId = null;
+
+// 1. Kayıtlı Parça Listelerini Getir ve Dropdown/Açılır Kutuyu Doldur
 async function parcaListeleriniGetir() {
-    const grid = document.getElementById('parcaListesiGrid');
-    if (!grid) return;
-    grid.innerHTML = '<p>Yükleniyor...</p>';
+    const select = document.getElementById('kayitliParcaListesiSelect');
+    if (!select) return;
 
     const db = getParcaSupabase();
-    if (!db) {
-        grid.innerHTML = '<p>Veritabanı bağlantı hatası!</p>';
-        return;
-    }
+    if (!db) return;
 
-    const { data, error } = await db
-        .from('parca_listeleri')
-        .select('*')
-        .order('created_at', { ascending: false });
+    const { data, error } = await db.from('parca_listeleri').select('*').order('created_at', { ascending: false });
 
     if (error) {
-        console.error("Supabase Hata:", error);
-        grid.innerHTML = '<p>Listeler yüklenemedi: ' + error.message + '</p>';
+        console.error('Listeler çekilemedi:', error.message);
         return;
     }
 
-    if (!data || data.length === 0) {
-        grid.innerHTML = '<p>Henüz kayıtlı parça listesi bulunmuyor.</p>';
-        return;
-    }
+    tumParcaListeleri = data || [];
+    select.innerHTML = '<option value="">-- Bir Kayıt Seçin veya Yeni Oluşturun --</option>';
 
-    grid.innerHTML = '';
-    data.forEach(item => {
+    tumParcaListeleri.forEach(item => {
         const tarih = new Date(item.created_at).toLocaleDateString('tr-TR');
-        const kart = document.createElement('div');
-        kart.style.cssText = 'border:1px solid #ccc; padding:12px; border-radius:8px; background:#fff; cursor:pointer; margin-bottom:10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);';
-        kart.onclick = () => parcaDetayGoster(item);
-
-        kart.innerHTML = `
-            <h4 style="margin:0 0 5px 0; color:#2e7d32;">⚙️ ${item.baslik}</h4>
-            <small style="color:#666;">📅 Tarih: ${tarih}</small>
-        `;
-        grid.appendChild(kart);
+        const option = document.createElement('option');
+        option.value = item.id;
+        option.textContent = `${item.baslik} (${tarih})`;
+        select.appendChild(option);
     });
 }
 
-// Global değişken
-let aktifParcaKaydi = null;
-
-// 3. Detay Modal Gösterme
-function parcaDetayGoster(item) {
-    aktifParcaKaydi = item;
-    
-    if (document.getElementById('parca_modal_baslik')) {
-        document.getElementById('parca_modal_baslik').innerText = item.baslik;
-    }
-    
-    let html = `
-        <table class="excel-table" style="width:100%; border-collapse:collapse;" border="1">
-            <thead>
-                <tr style="background:#2e7d32; color:#fff; text-align:center;">
-                    <th>NEREYE AİT</th>
-                    <th>ÖLÇÜLER</th>
-                    <th>NEREYE AİT</th>
-                    <th>ÖLÇÜLER</th>
-                </tr>
-            </thead>
-            <tbody>
-    `;
-
-    if (item.veriler && Array.isArray(item.veriler)) {
-        item.veriler.forEach(satir => {
-            html += `
-                <tr>
-                    <td>${satir.ait1 || '-'}</td>
-                    <td>${satir.olc1 || '-'}</td>
-                    <td>${satir.ait2 || '-'}</td>
-                    <td>${satir.olc2 || '-'}</td>
-                </tr>
-            `;
-        });
+// 2. Açılır Kutudan Seçim Yapıldığında Tablodaki Kutucukları Doldur
+function parcaSecildigindeDoldur(id) {
+    if (!id) {
+        seciliParcaId = null;
+        parcaFormTemizle();
+        return;
     }
 
-    html += `</tbody></table>`;
-    
-    if (document.getElementById('parca_modal_icerik')) {
-        document.getElementById('parca_modal_icerik').innerHTML = html;
-    }
-    if (document.getElementById('parcaDetayModal')) {
-        document.getElementById('parcaDetayModal').style.display = 'block';
-    }
-}
+    const secilen = tumParcaListeleri.find(x => x.id == id);
+    if (!secilen) return;
 
-function parcaModalKapat() {
-    if (document.getElementById('parcaDetayModal')) {
-        document.getElementById('parcaDetayModal').style.display = 'none';
-    }
-}
+    seciliParcaId = secilen.id;
 
-// 4. Düzenle
-function parcaDetayDuzenle() {
-    if (!aktifParcaKaydi) return;
-    
+    // Genel Başlık Varsa Doldur
     if (document.getElementById('parca_liste_baslik')) {
-        document.getElementById('parca_liste_baslik').value = aktifParcaKaydi.baslik;
+        document.getElementById('parca_liste_baslik').value = secilen.baslik || '';
     }
-    
-    if (aktifParcaKaydi.veriler && Array.isArray(aktifParcaKaydi.veriler)) {
-        aktifParcaKaydi.veriler.forEach((satir, idx) => {
+
+    // Tablodaki Kutucukları (p_ait_1, p_olc_1 vb.) Doldur
+    if (secilen.veriler && Array.isArray(secilen.veriler)) {
+        secilen.veriler.forEach((satir, idx) => {
             const i = idx + 1;
             const elAit1 = document.getElementById(`p_ait_${(i*2)-1}`);
             const elOlc1 = document.getElementById(`p_olc_${(i*2)-1}`);
@@ -1087,45 +1038,110 @@ function parcaDetayDuzenle() {
             if (elOlc2) elOlc2.value = satir.olc2 || '';
         });
     }
-
-    parcaModalKapat();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// 5. Sil
-async function parcaDetaySil() {
-    if (!aktifParcaKaydi) return;
-    if (!confirm('Bu parça listesini silmek istediğinize emin misiniz?')) return;
+// 3. YENİ KAYDET
+async function parcaKaydet() {
+    const baslik = document.getElementById('parca_liste_baslik')?.value.trim() || 'Parça Listesi';
+
+    const veriler = [];
+    for (let i = 1; i <= 8; i++) {
+        const ait1 = document.getElementById(`p_ait_${(i*2)-1}`)?.value || '';
+        const olc1 = document.getElementById(`p_olc_${(i*2)-1}`)?.value || '';
+        const ait2 = document.getElementById(`p_ait_${i*2}`)?.value || '';
+        const olc2 = document.getElementById(`p_olc_${i*2}`)?.value || '';
+        veriler.push({ ait1, olc1, ait2, olc2 });
+    }
 
     const db = getParcaSupabase();
     if (!db) return;
 
-    const { error } = await db
-        .from('parca_listeleri')
-        .delete()
-        .eq('id', aktifParcaKaydi.id);
+    const { error } = await db.from('parca_listeleri').insert([{ baslik, veriler }]);
+
+    if (error) {
+        alert('Kaydedilirken hata oluştu: ' + error.message);
+    } else {
+        alert('Yeni parça listesi başarıyla kaydedildi!');
+        parcaFormTemizle();
+        parcaListeleriniGetir();
+    }
+}
+
+// 4. MEVCUT KAYDI GÜNCELLE
+async function parcaGuncelle() {
+    if (!seciliParcaId) {
+        alert('Lütfen önce güncellenecek bir kayıt seçin!');
+        return;
+    }
+
+    const baslik = document.getElementById('parca_liste_baslik')?.value.trim() || 'Parça Listesi';
+    const veriler = [];
+    for (let i = 1; i <= 8; i++) {
+        const ait1 = document.getElementById(`p_ait_${(i*2)-1}`)?.value || '';
+        const olc1 = document.getElementById(`p_olc_${(i*2)-1}`)?.value || '';
+        const ait2 = document.getElementById(`p_ait_${i*2}`)?.value || '';
+        const olc2 = document.getElementById(`p_olc_${i*2}`)?.value || '';
+        veriler.push({ ait1, olc1, ait2, olc2 });
+    }
+
+    const db = getParcaSupabase();
+    if (!db) return;
+
+    const { error } = await db.from('parca_listeleri').update({ baslik, veriler }).eq('id', seciliParcaId);
+
+    if (error) {
+        alert('Güncellenirken hata oluştu: ' + error.message);
+    } else {
+        alert('Parça listesi başarıyla güncellendi!');
+        parcaListeleriniGetir();
+    }
+}
+
+// 5. KAYDI SİL
+async function parcaSil() {
+    if (!seciliParcaId) {
+        alert('Lütfen önce silmek istediğiniz parça listesini seçin!');
+        return;
+    }
+
+    if (!confirm('Seçili parça listesini silmek istediğinize emin misiniz?')) return;
+
+    const db = getParcaSupabase();
+    if (!db) return;
+
+    const { error } = await db.from('parca_listeleri').delete().eq('id', seciliParcaId);
 
     if (error) {
         alert('Silinirken hata oluştu: ' + error.message);
     } else {
         alert('Kayıt başarıyla silindi.');
-        parcaModalKapat();
+        parcaFormTemizle();
         parcaListeleriniGetir();
     }
 }
 
-// 6. Yazdır, PDF ve Paylaş
+// 6. FORM TEMİZLEME
+function parcaFormTemizle() {
+    seciliParcaId = null;
+    if (document.getElementById('kayitliParcaListesiSelect')) {
+        document.getElementById('kayitliParcaListesiSelect').value = '';
+    }
+    if (document.getElementById('parca_liste_baslik')) {
+        document.getElementById('parca_liste_baslik').value = '';
+    }
+    for (let i = 1; i <= 16; i++) {
+        if (document.getElementById(`p_ait_${i}`)) document.getElementById(`p_ait_${i}`).value = '';
+        if (document.getElementById(`p_olc_${i}`)) document.getElementById(`p_olc_${i}`).value = '';
+    }
+}
+
+// 7. YAZDIR, PDF, PAYLAŞ
 function parcaYazdir() { window.print(); }
 function parcaPdfIndir() { window.print(); }
 function parcaPaylas() {
-    const baslik = document.getElementById('parca_liste_baslik')?.value || 'Parça Listesi';
     if (navigator.share) {
-        navigator.share({
-            title: baslik,
-            text: 'Makina Parça Listesi Detayları',
-            url: window.location.href
-        });
+        navigator.share({ title: 'Parça Listesi', url: window.location.href });
     } else {
-        alert('Tarayıcınız doğrudan paylaşımı desteklemiyor.');
+        alert('Tarayıcınız paylaşımı desteklemiyor.');
     }
 }
