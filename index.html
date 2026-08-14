@@ -699,14 +699,30 @@
             </table>
         </div>
 
-        <!-- İŞLEM BUTONLARI -->
-        <div style="margin-top: 15px; display: flex; gap: 8px; flex-wrap: wrap;">
-            <button type="button" class="btn-success" onclick="parcaKaydet()">💾 Kaydet</button>
-            <button type="button" class="btn" onclick="parcaYazdir()">🖨️ Yazdır</button>
-            <button type="button" class="btn-danger" onclick="parcaPdfIndir()">📄 PDF İndir</button>
-            <button type="button" class="btn-warning" onclick="parcaPaylas()">📤 Paylaş</button>
-        </div>
+    <!-- REÇETE BİLGİLERİ TARZI SEÇİM VE İŞLEM ALANI -->
+<div style="background: #f4f6f8; padding: 15px; border-radius: 8px; border: 1px solid #ccc; margin-top: 15px;">
+    
+    <!-- KAYITLI PARÇA LİSTELERİ SEÇİMİ (AÇILIR KUTU) -->
+    <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+        <label for="kayitliParcaListesiSelect" style="font-weight: bold; color: #2e7d32;">📋 Kayıtlı Parça Listeleri:</label>
+        <select id="kayitliParcaListesiSelect" onchange="parcaSecildigindeDoldur(this.value)" style="flex: 1; min-width: 200px; padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+            <option value="">-- Bir Kayıt Seçin veya Yeni Oluşturun --</option>
+        </select>
+        <button type="button" class="btn" onclick="parcaListeleriniGetir()" style="background: #2e7d32; color: #fff;">🔄 Yenile</button>
     </div>
+
+    <!-- İŞLEM BUTONLARI -->
+    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <button type="button" class="btn btn-success" onclick="parcaKaydet()">💾 Kaydet</button>
+        <button type="button" class="btn btn-warning" onclick="parcaGuncelle()">✏️ Güncelle</button>
+        <button type="button" class="btn btn-danger" onclick="parcaSil()">🗑️ Sil</button>
+        <button type="button" class="btn" onclick="parcaYazdir()">🖨️ Yazdır</button>
+        <button type="button" class="btn btn-danger" onclick="parcaPdfIndir()">📄 PDF İndir</button>
+        <button type="button" class="btn btn-warning" onclick="parcaPaylas()">📲 Paylaş</button>
+        <button type="button" class="btn" onclick="parcaFormTemizle()" style="background: #757575; color: #fff;">🧹 Temizle</button>
+    </div>
+
+</div>
 
     <!-- KAYITLI PARÇA LİSTELERİ GRID -->
     <div class="panel" style="margin-top: 20px;">
