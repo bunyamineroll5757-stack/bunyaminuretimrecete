@@ -1275,43 +1275,32 @@ async function galeriKaydet() {
         alert("Kaydetme hatası: " + err.message);
     }
 }
-// GALERİLERİ GETİR
 async function galerileriGetir() {
-    const db = getGaleriSupabase();
+    // Doğrudan istemciye erişim garantisi
+    const client = window.supabaseClient || window.sbClient || (typeof supabase !== 'undefined' && typeof supabase.from === 'function' ? supabase : null);
 
-    if (!db) {
-        console.error("Veritabanı bağlantısı bulunamadı.");
+    if (!client || typeof client.from !== 'function') {
+        console.error("Galeriler getirilemedi: Supabase istemcisi hazır değil.");
         return;
     }
 
     try {
-        const select = document.getElementById('kayitliGalerilerSelect');
-        if (!select) return;
-
-        select.innerHTML = '<option value="">-- Yükleniyor... --</option>';
-
-        const { data, error } = await db
+        const { data, error } = await client
             .from('makine_galeri')
             .select('*')
-            .order('created_at', { ascending: false });
+            .order('id', { ascending: false });
 
         if (error) throw error;
 
-        select.innerHTML = '<option value="">-- Bir Galeri Seçin veya Yeni Oluşturun --</option>';
-
-        if (data) {
-            data.forEach(item => {
-                const option = document.createElement('option');
-                option.value = item.id;
-                option.textContent = `${item.baslik} (${item.makine_adi || 'Genel'}) - ${item.tarih || ''}`;
-                option.dataset.json = JSON.stringify(item);
-                select.appendChild(option);
-            });
+        // Galerileri ekrana/listeye basma kodlarınız (örnek)
+        if (typeof galerileriEkranaBas === 'function') {
+            galerileriEkranaBas(data);
         }
 
     } catch (err) {
         console.error("Galeriler getirilirken hata:", err);
     }
+}
 }
 function galeriFormTemizle() {
     const baslik = document.getElementById('galeri_baslik');
