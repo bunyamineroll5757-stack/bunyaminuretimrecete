@@ -1301,7 +1301,6 @@ async function galerileriGetir() {
         console.error("Galeriler getirilirken hata:", err);
     }
 }
-}
 function galeriFormTemizle() {
     const baslik = document.getElementById('galeri_baslik');
     const makine = document.getElementById('galeri_makine');
