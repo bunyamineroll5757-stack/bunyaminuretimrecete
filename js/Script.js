@@ -1276,7 +1276,6 @@ async function galeriKaydet() {
     }
 }
 async function galerileriGetir() {
-    // Doğrudan istemciye erişim garantisi
     const client = window.supabaseClient || window.sbClient || (typeof supabase !== 'undefined' && typeof supabase.from === 'function' ? supabase : null);
 
     if (!client || typeof client.from !== 'function') {
@@ -1292,11 +1291,36 @@ async function galerileriGetir() {
 
         if (error) throw error;
 
-        // Galerileri ekrana/listeye basma kodlarınız (örnek)
-        if (typeof galerileriEkranaBas === 'function') {
-            galerileriEkranaBas(data);
-        }
+        // HTML üzerindeki liste konteynerini bul
+        const galeriListesi = document.getElementById('galeriListesi') || document.getElementById('galeri_listesi');
+        
+        if (galeriListesi) {
+            galeriListesi.innerHTML = '';
 
+            if (data.length === 0) {
+                galeriListesi.innerHTML = '<p style="text-align:center; padding:15px;">Henüz kayıtlı galeri bulunmuyor.</p>';
+                return;
+            }
+
+            data.forEach(item => {
+                let fotoHtml = '';
+                if (item.fotograflar && item.fotograflar.length > 0) {
+                    fotoHtml = item.fotograflar.map(url => 
+                        `<img src="${url}" style="width:80px; height:80px; object-fit:cover; margin:3px; border-radius:6px; cursor:pointer;" onclick="window.open('${url}', '_blank')" />`
+                    ).join('');
+                }
+
+                galeriListesi.innerHTML += `
+                    <div style="border:1px solid #ddd; padding:12px; margin-bottom:12px; border-radius:8px; background:#fff;">
+                        <h4 style="margin:0 0 5px 0;">${item.baslik || 'Başlıksız'}</h4>
+                        <p style="margin:3px 0; font-size:13px;"><strong>Makine:</strong> ${item.makine_adi || '-'}</p>
+                        <p style="margin:3px 0; font-size:13px;"><strong>Tarih:</strong> ${item.tarih || '-'}</p>
+                        <p style="margin:3px 0; font-size:13px;"><strong>Not:</strong> ${item.notlar || '-'}</p>
+                        <div style="display:flex; flex-wrap:wrap; margin-top:8px;">${fotoHtml}</div>
+                    </div>
+                `;
+            });
+        }
     } catch (err) {
         console.error("Galeriler getirilirken hata:", err);
     }
