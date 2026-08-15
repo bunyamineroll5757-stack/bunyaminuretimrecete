@@ -13,23 +13,20 @@ let detaydakiId = null;
 // SUPABASE KONTROLÜ
 // ======================================================
 function getSupabase() {
-    // 1. Doğrudan window.supabaseClient'ı kontrol et
+    // 1. window.supabaseClient kontrolü
     if (window.supabaseClient && typeof window.supabaseClient.from === 'function') {
         return window.supabaseClient;
     }
-    // 2. Eğer kütüphane CDN üzerinden 'supabase' olarak kurulduysa
-    if (typeof supabase !== 'undefined' && typeof supabase.from === 'function') {
-        return supabase;
-    }
-    // 3. Alternatif global değişkenler
+    // 2. window.sbClient kontrolü
     if (window.sbClient && typeof window.sbClient.from === 'function') {
         return window.sbClient;
     }
-    if (typeof _supabase !== 'undefined' && typeof _supabase.from === 'function') {
-        return _supabase;
+    // 3. Doğrudan supabase nesnesi kontrolü
+    if (typeof supabase !== 'undefined' && typeof supabase.from === 'function') {
+        return supabase;
     }
 
-    console.error("Supabase istemcisi geçerli bir 'from' metoduna sahip değil!");
+    alert("Supabase istemcisi yüklenemedi! Lütfen sayfayı yenileyin veya internet bağlantınızı kontrol edin.");
     return null;
 }
 
