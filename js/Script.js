@@ -1345,53 +1345,69 @@ function galeriFormTemizle() {
     const onizlemeAlani = document.getElementById('foto_onizleme');
     if (onizlemeAlani) onizlemeAlani.innerHTML = '';
 }
-async function galerileriGetir() {
-    const client = window.supabaseClient || window.sbClient || (typeof supabase !== 'undefined' && typeof supabase.from === 'function' ? supabase : null);
+<!-- MAKİNE FOTO GALERİ SEKMESİ -->
+<!-- ============================================================== -->
+<div id="fotoGaleriSekmesi" class="tab-content" style="display: none;">
+    <div class="panel" style="margin-top: 15px;">
+        <h2>📷 Makine Görsel Dokümantasyon & Galeri</h2>
 
-    if (!client || typeof client.from !== 'function') {
-        console.error("Galeriler getirilemedi: Supabase istemcisi hazır değil.");
-        return;
-    }
+        <!-- ÜST KONTROL & ARAMA PANENELİ -->
+        <div style="background: #f4f6f8; padding: 12px; border-radius: 8px; border: 1px solid #ddd; margin-bottom: 15px;">
+            <div style="margin-bottom: 12px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                <label for="kayitliGalerilerSelect" style="font-weight: bold; color: #0288d1; font-size: 14px;">📋 Kayıtlı Galeriler:</label>
+                <select id="kayitliGalerilerSelect" onchange="galeriSecildigindeDoldur(this.value)" style="flex: 1; min-width: 180px; padding: 8px; border-radius: 4px; border: 1px solid #ccc;">
+                    <option value="">-- Bir Galeri Seçin veya Yeni Oluşturun --</option>
+                </select>
+                <button type="button" class="btn" onclick="galerileriGetir()" style="background: #0288d1; color: #fff; padding: 8px 12px;">🔄 Yenile</button>
+            </div>
 
-    try {
-        const { data, error } = await client
-            .from('makine_galeri')
-            .select('*')
-            .order('id', { ascending: false });
+            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                <button type="button" class="btn btn-success" onclick="galeriKaydet()">💾 Kaydet</button>
+                <button type="button" class="btn btn-warning" onclick="galeriGuncelle()">✏️ Güncelle</button>
+                <button type="button" class="btn btn-danger" onclick="galeriSil()">🗑️ Sil</button>
+                <button type="button" class="btn btn-info" onclick="galeriYazdirModal()" style="background:#0288d1; color:#fff;">🖨️ Yazdır / İncele</button>
+                <button type="button" class="btn" onclick="galeriFormTemizle()" style="background: #757575; color: #fff;">🧹 Temizle</button>
+            </div>
+        </div>
 
-        if (error) throw error;
+        <!-- FORM ALANLARI -->
+        <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 15px;">
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <div style="flex: 2; min-width: 200px;">
+                    <label style="font-weight: bold; display: block; margin-bottom: 5px;">Galeri / Çalışma Başlığı:</label>
+                    <input type="text" id="galeri_baslik" placeholder="Örn: Balkan 2 Bıçak Değişimi ve Ayarlar" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                </div>
+                <div style="flex: 1; min-width: 150px;">
+                    <label style="font-weight: bold; display: block; margin-bottom: 5px;">Makine / Bölüm Adı:</label>
+                    <input type="text" id="galeri_makine" placeholder="Örn: Balkan 2" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                </div>
+                <div style="flex: 1; min-width: 130px;">
+                    <label style="font-weight: bold; display: block; margin-bottom: 5px;">Tarih:</label>
+                    <input type="date" id="galeri_tarih" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                </div>
+            </div>
 
-        // HTML üzerindeki liste konteynerini bul
-        const galeriListesi = document.getElementById('galeriListesi') || document.getElementById('galeri_listesi');
-        
-        if (galeriListesi) {
-            galeriListesi.innerHTML = '';
+            <div>
+                <label style="font-weight: bold; display: block; margin-bottom: 5px;">Açıklama / Notlar:</label>
+                <textarea id="galeri_notlar" rows="2" placeholder="Yapılan işlem veya fotoğraflarla ilgili detaylar..." style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; resize: vertical;"></textarea>
+            </div>
 
-            if (data.length === 0) {
-                galeriListesi.innerHTML = '<p style="text-align:center; padding:15px;">Henüz kayıtlı galeri bulunmuyor.</p>';
-                return;
-            }
+            <!-- FOTOĞRAF YÜKLEME ALANI -->
+            <div style="border: 2px dashed #0288d1; background: #e1f5fe; padding: 15px; border-radius: 8px; text-align: center;">
+                <label for="fotoInput" style="cursor: pointer; font-weight: bold; color: #0288d1; display: block; margin-bottom: 8px;">
+                    📁 Fotoğraf Seç (En fazla 10 Adet)
+                </label>
+                <input type="file" id="fotoInput" accept="image/*" multiple onchange="fotoSecildi(event)" style="display: none;">
+                <button type="button" class="btn" onclick="document.getElementById('fotoInput').click()" style="background: #0288d1; color: white;">📸 Fotoğraf Ekle</button>
+                <small style="display: block; color: #555; margin-top: 5px;">* Fotoğraflar yüklenirken otomatik olarak optimize edilecektir.</small>
+            </div>
 
-            data.forEach(item => {
-                let fotoHtml = '';
-                if (item.fotograflar && item.fotograflar.length > 0) {
-                    fotoHtml = item.fotograflar.map(url => 
-                        `<img src="${url}" style="width:80px; height:80px; object-fit:cover; margin:3px; border-radius:6px; cursor:pointer;" onclick="window.open('${url}', '_blank')" />`
-                    ).join('');
-                }
+            <!-- FOTOĞRAF ÖNİZLEME ALANI (GRID) -->
+            <div id="fotoOnizlemeContainer" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; margin-top: 10px;">
+                <!-- Seçilen fotoğrafların küçük önizlemeleri buraya dinamik gelecek -->
+            </div>
+        </div>
 
-                galeriListesi.innerHTML += `
-                    <div style="border:1px solid #ddd; padding:12px; margin-bottom:12px; border-radius:8px; background:#fff;">
-                        <h4 style="margin:0 0 5px 0;">${item.baslik || 'Başlıksız'}</h4>
-                        <p style="margin:3px 0; font-size:13px;"><strong>Makine:</strong> ${item.makine_adi || '-'}</p>
-                        <p style="margin:3px 0; font-size:13px;"><strong>Tarih:</strong> ${item.tarih || '-'}</p>
-                        <p style="margin:3px 0; font-size:13px;"><strong>Not:</strong> ${item.notlar || '-'}</p>
-                        <div style="display:flex; flex-wrap:wrap; margin-top:8px;">${fotoHtml}</div>
-                    </div>
-                `;
-            });
-        }
-    } catch (err) {
-        console.error("Galeriler getirilirken hata:", err);
-    }
-}
+    </div>
+</div>
+
