@@ -13,23 +13,23 @@ let detaydakiId = null;
 // SUPABASE KONTROLÜ
 // ======================================================
 function getSupabase() {
-    // 1. window.supabaseClient tanımlıysa onu döndür
+    // 1. Doğrudan window.supabaseClient'ı kontrol et
     if (window.supabaseClient && typeof window.supabaseClient.from === 'function') {
         return window.supabaseClient;
     }
-    // 2. window.sbClient tanımlıysa onu döndür
-    if (window.sbClient && typeof window.sbClient.from === 'function') {
-        return window.sbClient;
-    }
-    // 3. Global supabase nesnesi varsa onu döndür
+    // 2. Eğer kütüphane CDN üzerinden 'supabase' olarak kurulduysa
     if (typeof supabase !== 'undefined' && typeof supabase.from === 'function') {
         return supabase;
     }
-    // 4. _supabase tanımlıysa onu döndür
+    // 3. Alternatif global değişkenler
+    if (window.sbClient && typeof window.sbClient.from === 'function') {
+        return window.sbClient;
+    }
     if (typeof _supabase !== 'undefined' && typeof _supabase.from === 'function') {
         return _supabase;
     }
 
+    console.error("Supabase istemcisi geçerli bir 'from' metoduna sahip değil!");
     return null;
 }
 
