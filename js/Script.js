@@ -1313,3 +1313,23 @@ async function galerileriGetir() {
         console.error("Galeriler getirilirken hata:", err);
     }
 }
+function galeriFormTemizle() {
+    const baslik = document.getElementById('galeri_baslik');
+    const makine = document.getElementById('galeri_makine');
+    const tarih = document.getElementById('galeri_tarih');
+    const notlar = document.getElementById('galeri_notlar');
+
+    if (baslik) baslik.value = '';
+    if (makine) makine.value = '';
+    if (tarih) tarih.value = '';
+    if (notlar) notlar.value = '';
+
+    // Seçilen fotoğrafları temizle
+    if (typeof secilenFotograflar !== 'undefined') {
+        secilenFotograflar = [];
+    }
+    
+    // Önizleme alanını temizle
+    const onizlemeAlani = document.getElementById('foto_onizleme');
+    if (onizlemeAlani) onizlemeAlani.innerHTML = '';
+}
