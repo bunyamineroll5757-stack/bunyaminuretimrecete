@@ -1194,72 +1194,37 @@ function fotoSil(index) {
     fotoOnizlemeGuncelle();
 }
 
-// 2. SUPABASE STORAGE'A YÜKLEME VE KAYDETME
+// GALERİ KAYDET
 async function galeriKaydet() {
     const db = getGaleriSupabase();
+    
     if (!db) {
-        alert("Supabase bağlantısı kurulamadı!");
-        return;
-    }
-
-    const baslik = document.getElementById('galeri_baslik').value.trim();
-    const makine = document.getElementById('galeri_makine').value.trim();
-    const tarih = document.getElementById('galeri_tarih').value;
-    const notlar = document.getElementById('galeri_notlar').value.trim();
-
-    if (!baslik) {
-        alert("Lütfen galeri başlığı giriniz!");
-        return;
-    }
-
-    if (secilenFotograflar.length === 0) {
-        alert("Lütfen en az 1 adet fotoğraf yükleyin!");
+        alert("Supabase bağlantısı kurulamadı. Lütfen js/supabase.js dosyasını kontrol edin.");
         return;
     }
 
     try {
-        let yuklenenUrlListesi = [];
-
-        for (let foto of secilenFotograflar) {
-            const { data, error } = await db.storage
-                .from('makine-fotograflari')
-                .upload(foto.name, foto.file);
-
-            if (error) throw error;
-
-            const { data: urlData } = db.storage
-                .from('makine-fotograflari')
-                .getPublicUrl(foto.name);
-
-            yuklenenUrlListesi.push(urlData.publicUrl);
-        }
-
-        const { error: dbError } = await db
+        // İşlemlerinizi db.from('makine_galeri').insert(...) şeklinde yapabilirsiniz
+        const { data, error } = await db
             .from('makine_galeri')
-            .insert([{
-                baslik: baslik,
-                makine_adi: makine,
-                tarih: tarih || null,
-                notlar: notlar,
-                fotograflar: yuklenenUrlListesi
-            }]);
+            .insert([/* verileriniz */]);
 
-        if (dbError) throw dbError;
-
-        alert("Galeri başarıyla kaydedildi! 🚀");
-        galeriFormTemizle();
-        galerileriGetir();
+        if (error) throw error;
+        alert("Başarıyla kaydedildi!");
 
     } catch (err) {
-        console.error(err);
         alert("Kaydetme sırasında bir hata oluştu: " + err.message);
     }
 }
 
-// 3. KAYITLI GALERİLERİ GETİRME
+// GALERİLERİ GETİR
 async function galerileriGetir() {
     const db = getGaleriSupabase();
-    if (!db) return;
+
+    if (!db) {
+        console.error("Veritabanı bağlantısı bulunamadı.");
+        return;
+    }
 
     try {
         const select = document.getElementById('kayitliGalerilerSelect');
@@ -1276,166 +1241,17 @@ async function galerileriGetir() {
 
         select.innerHTML = '<option value="">-- Bir Galeri Seçin veya Yeni Oluşturun --</option>';
 
-        data.forEach(item => {
-            const option = document.createElement('option');
-            option.value = item.id;
-            option.textContent = `${item.baslik} (${item.makine_adi || 'Genel'}) - ${item.tarih || ''}`;
-            option.dataset.json = JSON.stringify(item);
-            select.appendChild(option);
-        });
+        if (data) {
+            data.forEach(item => {
+                const option = document.createElement('option');
+                option.value = item.id;
+                option.textContent = `${item.baslik} (${item.makine_adi || 'Genel'}) - ${item.tarih || ''}`;
+                option.dataset.json = JSON.stringify(item);
+                select.appendChild(option);
+            });
+        }
 
     } catch (err) {
         console.error("Galeriler getirilirken hata:", err);
     }
 }
-
-function galeriSecildigindeDoldur(galeriId) {
-    if (!galeriId) {
-        galeriFormTemizle();
-        return;
-    }
-
-    const select = document.getElementById('kayitliGalerilerSelect');
-    const selectedOption = select.options[select.selectedIndex];
-    if (!selectedOption || !selectedOption.dataset.json) return;
-
-    const data = JSON.parse(selectedOption.dataset.json);
-
-    document.getElementById('galeri_baslik').value = data.baslik || '';
-    document.getElementById('galeri_makine').value = data.makine_adi || '';
-    document.getElementById('galeri_tarih').value = data.tarih || '';
-    document.getElementById('galeri_notlar').value = data.notlar || '';
-
-    // Form seçildiğinde önbellekteki yüklenmemiş geçici görselleri temizle
-    secilenFotograflar.forEach(foto => URL.revokeObjectURL(foto.previewUrl));
-    secilenFotograflar = [];
-
-    const container = document.getElementById('fotoOnizlemeContainer');
-    if (!container) return;
-    container.innerHTML = '';
-
-    if (data.fotograflar && data.fotograflar.length > 0) {
-        data.fotograflar.forEach(url => {
-            const div = document.createElement('div');
-            div.style.cssText = 'position: relative; width: 100px; height: 100px; border-radius: 6px; overflow: hidden; border: 1px solid #ccc;';
-            div.innerHTML = `<img src="${url}" style="width: 100%; height: 100%; object-fit: cover; cursor: pointer;" onclick="window.open('${url}', '_blank')">`;
-            container.appendChild(div);
-        });
-    }
-}
-
-async function galeriSil() {
-    const db = getGaleriSupabase();
-    if (!db) return;
-
-    const select = document.getElementById('kayitliGalerilerSelect');
-    const galeriId = select.value;
-
-    if (!galeriId) {
-        alert("Lütfen silinecek galeriyi listeden seçin!");
-        return;
-    }
-
-    if (!confirm("Bu galeriyi silmek istediğinize emin misiniz?")) return;
-
-    try {
-        const { error } = await db
-            .from('makine_galeri')
-            .delete()
-            .eq('id', galeriId);
-
-        if (error) throw error;
-
-        alert("Galeri başarıyla silindi!");
-        galeriFormTemizle();
-        galerileriGetir();
-
-    } catch (err) {
-        alert("Silme hatası: " + err.message);
-    }
-}
-
-async function galeriGuncelle() {
-    const db = getGaleriSupabase();
-    if (!db) return;
-
-    const select = document.getElementById('kayitliGalerilerSelect');
-    const galeriId = select.value;
-
-    if (!galeriId) {
-        alert("Lütfen güncellenecek galeriyi önce listeden seçin!");
-        return;
-    }
-
-    const baslik = document.getElementById('galeri_baslik').value.trim();
-    const makine = document.getElementById('galeri_makine').value.trim();
-    const tarih = document.getElementById('galeri_tarih').value;
-    const notlar = document.getElementById('galeri_notlar').value.trim();
-
-    try {
-        let guncellenecekVeri = {
-            baslik: baslik,
-            makine_adi: makine,
-            tarih: tarih || null,
-            notlar: notlar
-        };
-
-        // Eğer güncelleme esnasında yeni fotoğraflar eklenmişse Storage'a yükle ve listeyi birleştir
-        if (secilenFotograflar.length > 0) {
-            const selectedOption = select.options[select.selectedIndex];
-            const mevcutData = JSON.parse(selectedOption.dataset.json);
-            let mevcutFotograflar = mevcutData.fotograflar || [];
-
-            for (let foto of secilenFotograflar) {
-                const { data, error } = await db.storage
-                    .from('makine-fotograflari')
-                    .upload(foto.name, foto.file);
-
-                if (error) throw error;
-
-                const { data: urlData } = db.storage
-                    .from('makine-fotograflari')
-                    .getPublicUrl(foto.name);
-
-                mevcutFotograflar.push(urlData.publicUrl);
-            }
-
-            guncellenecekVeri.fotograflar = mevcutFotograflar;
-        }
-
-        const { error } = await db
-            .from('makine_galeri')
-            .update(guncellenecekVeri)
-            .eq('id', galeriId);
-
-        if (error) throw error;
-
-        alert("Galeri bilgileri güncellendi!");
-        galeriFormTemizle();
-        galerileriGetir();
-
-    } catch (err) {
-        alert("Güncelleme hatası: " + err.message);
-    }
-}
-
-function galeriFormTemizle() {
-    if (document.getElementById('galeri_baslik')) document.getElementById('galeri_baslik').value = '';
-    if (document.getElementById('galeri_makine')) document.getElementById('galeri_makine').value = '';
-    if (document.getElementById('galeri_tarih')) document.getElementById('galeri_tarih').value = '';
-    if (document.getElementById('galeri_notlar')) document.getElementById('galeri_notlar').value = '';
-    
-    // Bellek temizliği
-    secilenFotograflar.forEach(foto => URL.revokeObjectURL(foto.previewUrl));
-    secilenFotograflar = [];
-    
-    fotoOnizlemeGuncelle();
-}
-
-function galeriYazdirModal() {
-    window.print();
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-    galerileriGetir();
-});                                   
