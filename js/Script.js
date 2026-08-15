@@ -1421,3 +1421,109 @@ async function galerileriGetir() {
         console.error("Galeriler getirilirken hata:", err);
     }
 }
+// 1. GLOBAL DEĞİŞKEN (Hafızada verileri tutmak için)
+let tumGaleriler = [];
+
+// 2. AÇILIR LİSTEDEN SEÇİLİNCE FORMU DOLDUR
+function galeriSecildigindeDoldur(id) {
+    if (!id) {
+        galeriFormTemizle();
+        return;
+    }
+    const secilen = tumGaleriler.find(g => g.id == id);
+    if (secilen) {
+        if (document.getElementById('galeri_baslik')) document.getElementById('galeri_baslik').value = secilen.baslik || '';
+        if (document.getElementById('galeri_makine')) document.getElementById('galeri_makine').value = secilen.makine_adi || '';
+        if (document.getElementById('galeri_tarih')) document.getElementById('galeri_tarih').value = secilen.tarih || '';
+        if (document.getElementById('galeri_notlar')) document.getElementById('galeri_notlar').value = secilen.notlar || '';
+    }
+}
+
+// 3. GALERİ SİLME
+async function galeriSil() {
+    const selectBox = document.getElementById('kayitliGalerilerSelect');
+    const id = selectBox ? selectBox.value : null;
+
+    if (!id) {
+        alert("Lütfen önce listeden silinecek bir galeri seçin!");
+        return;
+    }
+
+    if (!confirm("Bu galeriyi silmek istediğinize emin misiniz?")) return;
+
+    const client = window.supabaseClient || window.sbClient || (typeof supabase !== 'undefined' && typeof supabase.from === 'function' ? supabase : null);
+
+    try {
+        const { error } = await client.from('makine_galeri').delete().eq('id', id);
+        if (error) throw error;
+
+        alert("Galeri başarıyla silindi! 🗑️");
+        galeriFormTemizle();
+        galerileriGetir();
+    } catch (err) {
+        alert("Silme hatası: " + err.message);
+    }
+}
+
+// 4. GALERİ GÜNCELLEME
+async function galeriGuncelle() {
+    const selectBox = document.getElementById('kayitliGalerilerSelect');
+    const id = selectBox ? selectBox.value : null;
+
+    if (!id) {
+        alert("Lütfen önce listeden güncellenecek bir galeri seçin!");
+        return;
+    }
+
+    const client = window.supabaseClient || window.sbClient || (typeof supabase !== 'undefined' && typeof supabase.from === 'function' ? supabase : null);
+
+    try {
+        const { error } = await client.from('makine_galeri').update({
+            baslik: document.getElementById('galeri_baslik')?.value.trim(),
+            makine_adi: document.getElementById('galeri_makine')?.value.trim(),
+            tarih: document.getElementById('galeri_tarih')?.value || null,
+            notlar: document.getElementById('galeri_notlar')?.value.trim()
+        }).eq('id', id);
+
+        if (error) throw error;
+
+        alert("Galeri başarıyla güncellendi! ✏️");
+        galerileriGetir();
+    } catch (err) {
+        alert("Güncelleme hatası: " + err.message);
+    }
+}
+
+// 5. YAZDIR / İNCELE
+function galeriYazdirModal() {
+    const baslik = document.getElementById('galeri_baslik')?.value || 'Galeri Detayı';
+    const makine = document.getElementById('galeri_makine')?.value || '-';
+    const tarih = document.getElementById('galeri_tarih')?.value || '-';
+    const notlar = document.getElementById('galeri_notlar')?.value || '-';
+
+    const yazdirPenceresi = window.open('', '_blank');
+    yazdirPenceresi.document.write(`
+        <html>
+        <head>
+            <title>${baslik}</title>
+            <style>
+                body { font-family: Arial, sans-serif; padding: 20px; line-height: 1.6; }
+                h2 { color: #0288d1; border-bottom: 2px solid #0288d1; padding-bottom: 5px; }
+                .info { margin-bottom: 15px; }
+                button { background: #0288d1; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; }
+                @media print { button { display: none; } }
+            </style>
+        </head>
+        <body>
+            <button onclick="window.print()">🖨️ Yazdır</button>
+            <h2>📷 ${baslik}</h2>
+            <div class="info">
+                <p><strong>Makine / Bölüm:</strong> ${makine}</p>
+                <p><strong>Tarih:</strong> ${tarih}</p>
+                <p><strong>Açıklama / Notlar:</strong> ${notlar}</p>
+            </div>
+        </body>
+        </html>
+    `);
+    yazdirPenceresi.document.close();
+}
