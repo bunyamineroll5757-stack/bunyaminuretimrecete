@@ -13,10 +13,23 @@ let detaydakiId = null;
 // SUPABASE KONTROLÜ
 // ======================================================
 function getSupabase() {
-    if (window.sbClient) return window.sbClient;
-    if (window.supabaseClient) return window.supabaseClient;
-    if (window.supabase && typeof window.supabase.from === 'function') return window.supabase;
-    console.error("Supabase bağlantısı bulunamadı.");
+    // 1. window.supabaseClient tanımlıysa onu döndür
+    if (window.supabaseClient && typeof window.supabaseClient.from === 'function') {
+        return window.supabaseClient;
+    }
+    // 2. window.sbClient tanımlıysa onu döndür
+    if (window.sbClient && typeof window.sbClient.from === 'function') {
+        return window.sbClient;
+    }
+    // 3. Global supabase nesnesi varsa onu döndür
+    if (typeof supabase !== 'undefined' && typeof supabase.from === 'function') {
+        return supabase;
+    }
+    // 4. _supabase tanımlıysa onu döndür
+    if (typeof _supabase !== 'undefined' && typeof _supabase.from === 'function') {
+        return _supabase;
+    }
+
     return null;
 }
 
