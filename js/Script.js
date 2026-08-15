@@ -1204,29 +1204,77 @@ function fotoSil(index) {
     fotoOnizlemeGuncelle();
 }
 
-// GALERİ KAYDET
 async function galeriKaydet() {
-    const db = getGaleriSupabase();
+    // Doğrudan istemciye erişim garantisi
+    const db = window.supabaseClient || window.sbClient || (typeof supabase !== 'undefined' && supabase.createClient ? null : supabase); 
     
-    if (!db) {
-        alert("Supabase bağlantısı kurulamadı. Lütfen js/supabase.js dosyasını kontrol edin.");
+    // Eğer istemci henüz oluşturulmadıysa anında oluştur
+    let client = db;
+    if (!client || typeof client.from !== 'function') {
+        if (typeof SUPABASE_URL !== 'undefined' && typeof SUPABASE_ANON_KEY !== 'undefined') {
+            client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        } else {
+            alert("Supabase bağlantısı kurulamadı! Lütfen sayfayı yenileyin.");
+            return;
+        }
+    }
+
+    const baslik = document.getElementById('galeri_baslik')?.value.trim();
+    const makine = document.getElementById('galeri_makine')?.value.trim();
+    const tarih = document.getElementById('galeri_tarih')?.value;
+    const notlar = document.getElementById('galeri_notlar')?.value.trim();
+
+    if (!baslik) {
+        alert("Lütfen galeri başlığı giriniz!");
+        return;
+    }
+
+    if (secilenFotograflar.length === 0) {
+        alert("Lütfen en az 1 adet fotoğraf yükleyin!");
         return;
     }
 
     try {
-        // İşlemlerinizi db.from('makine_galeri').insert(...) şeklinde yapabilirsiniz
-        const { data, error } = await db
-            .from('makine_galeri')
-            .insert([/* verileriniz */]);
+        let yuklenenUrlListesi = [];
 
-        if (error) throw error;
-        alert("Başarıyla kaydedildi!");
+        // Fotoğrafları Storage Bucket'a Yükle
+        for (let foto of secilenFotograflar) {
+            const { data, error } = await client.storage
+                .from('makine-fotograflari')
+                .upload(foto.name, foto.file);
+
+            if (error) throw error;
+
+            // Görsel Public URL Adresini Al
+            const { data: urlData } = client.storage
+                .from('makine-fotograflari')
+                .getPublicUrl(foto.name);
+
+            yuklenenUrlListesi.push(urlData.publicUrl);
+        }
+
+        // Veritabanı Tablosuna Kaydet
+        const { error: dbError } = await client
+            .from('makine_galeri')
+            .insert([{
+                baslik: baslik,
+                makine_adi: makine,
+                tarih: tarih || null,
+                notlar: notlar,
+                fotograflar: yuklenenUrlListesi
+            }]);
+
+        if (dbError) throw dbError;
+
+        alert("Galeri başarıyla kaydedildi! 🚀");
+        galeriFormTemizle();
+        galerileriGetir();
 
     } catch (err) {
-        alert("Kaydetme sırasında bir hata oluştu: " + err.message);
+        console.error(err);
+        alert("Kaydetme hatası: " + err.message);
     }
 }
-
 // GALERİLERİ GETİR
 async function galerileriGetir() {
     const db = getGaleriSupabase();
