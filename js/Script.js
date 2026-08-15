@@ -1133,6 +1133,8 @@ async function fotoSecildi(event) {
     }
 
     fotoOnizlemeGuncelle();
+    // Input değerini sıfırla ki aynı dosya tekrar seçilebilsin
+    event.target.value = '';
 }
 
 function fotoSikistir(file) {
@@ -1184,6 +1186,10 @@ function fotoOnizlemeGuncelle() {
 }
 
 function fotoSil(index) {
+    // Bellek sızıntısını önlemek için URL'yi serbest bırak
+    if (secilenFotograflar[index] && secilenFotograflar[index].previewUrl) {
+        URL.revokeObjectURL(secilenFotograflar[index].previewUrl);
+    }
     secilenFotograflar.splice(index, 1);
     fotoOnizlemeGuncelle();
 }
@@ -1300,6 +1306,10 @@ function galeriSecildigindeDoldur(galeriId) {
     document.getElementById('galeri_tarih').value = data.tarih || '';
     document.getElementById('galeri_notlar').value = data.notlar || '';
 
+    // Form seçildiğinde önbellekteki yüklenmemiş geçici görselleri temizle
+    secilenFotograflar.forEach(foto => URL.revokeObjectURL(foto.previewUrl));
+    secilenFotograflar = [];
+
     const container = document.getElementById('fotoOnizlemeContainer');
     if (!container) return;
     container.innerHTML = '';
@@ -1363,19 +1373,45 @@ async function galeriGuncelle() {
     const notlar = document.getElementById('galeri_notlar').value.trim();
 
     try {
+        let guncellenecekVeri = {
+            baslik: baslik,
+            makine_adi: makine,
+            tarih: tarih || null,
+            notlar: notlar
+        };
+
+        // Eğer güncelleme esnasında yeni fotoğraflar eklenmişse Storage'a yükle ve listeyi birleştir
+        if (secilenFotograflar.length > 0) {
+            const selectedOption = select.options[select.selectedIndex];
+            const mevcutData = JSON.parse(selectedOption.dataset.json);
+            let mevcutFotograflar = mevcutData.fotograflar || [];
+
+            for (let foto of secilenFotograflar) {
+                const { data, error } = await db.storage
+                    .from('makine-fotograflari')
+                    .upload(foto.name, foto.file);
+
+                if (error) throw error;
+
+                const { data: urlData } = db.storage
+                    .from('makine-fotograflari')
+                    .getPublicUrl(foto.name);
+
+                mevcutFotograflar.push(urlData.publicUrl);
+            }
+
+            guncellenecekVeri.fotograflar = mevcutFotograflar;
+        }
+
         const { error } = await db
             .from('makine_galeri')
-            .update({
-                baslik: baslik,
-                makine_adi: makine,
-                tarih: tarih || null,
-                notlar: notlar
-            })
+            .update(guncellenecekVeri)
             .eq('id', galeriId);
 
         if (error) throw error;
 
         alert("Galeri bilgileri güncellendi!");
+        galeriFormTemizle();
         galerileriGetir();
 
     } catch (err) {
@@ -1388,7 +1424,11 @@ function galeriFormTemizle() {
     if (document.getElementById('galeri_makine')) document.getElementById('galeri_makine').value = '';
     if (document.getElementById('galeri_tarih')) document.getElementById('galeri_tarih').value = '';
     if (document.getElementById('galeri_notlar')) document.getElementById('galeri_notlar').value = '';
+    
+    // Bellek temizliği
+    secilenFotograflar.forEach(foto => URL.revokeObjectURL(foto.previewUrl));
     secilenFotograflar = [];
+    
     fotoOnizlemeGuncelle();
 }
 
@@ -1398,5 +1438,4 @@ function galeriYazdirModal() {
 
 document.addEventListener('DOMContentLoaded', () => {
     galerileriGetir();
-});
-                                          
+});                                   
