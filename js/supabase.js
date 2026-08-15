@@ -1,10 +1,15 @@
-// Supabase Bilgileri
+// Supabase Yapılandırması
 const SUPABASE_URL = "https://ihsetoxxggiaeulpqhzg.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_HoqAcz7S0ANBNyQTj6fjew_YCa_71nb"
+const SUPABASE_ANON_KEY = "sb_publishable_HoqAcz7S0ANBNyQTj6fjew_YCa_71nb"; 
 
-// İstemciyi doğrudan küresel window.sbClient nesnesine atıyoruz
-if (typeof supabase !== 'undefined') {
-   window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-} else {
-    console.error("Supabase SDK kütüphanesi yüklenemedi!");
+// Doğrudan Supabase Client Oluşturma
+try {
+    if (typeof supabase !== 'undefined' && supabase.createClient) {
+        window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        console.log("Supabase Başarıyla Başlatıldı:", window.supabaseClient);
+    } else {
+        console.error("Supabase CDN kütüphanesi henüz yüklenmedi!");
+    }
+} catch (err) {
+    console.error("Supabase Başlatma Hatası:", err);
 }
