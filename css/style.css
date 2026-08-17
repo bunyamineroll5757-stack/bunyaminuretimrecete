@@ -987,25 +987,26 @@ table.excel-table td.section-header,
   }
 }
 @media print {
-  /* Üretim reçetesi açıkken test modalı yazdırma kurallarının karışmasını önler */
-  body:has(#testDetayModal[style*="display: block"]) * {
-    visibility: hidden;
-  }
-  
-  /* Sadece Test Detay Modalı ve içindekileri görünür yap */
-  #testDetayModal, 
-  #testDetayModal * {
-    visibility: visible;
+  /* Renklerin ve arka plan dolgularının (gri başlıklar) kağıda basılmasını sağlar */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
-  /* Test Modalı Özel Konumlandırma */
-  #testDetayModal {
-    position: absolute;
-    left: 0;
-    top: 0;
+  /* Sadece Test Detay Modalı açıkken arka planı temizle ve testi öne çıkar */
+  body:has(#testDetayModal[style*="display: block"]) > *:not(#testDetayModal) {
+    display: none !important;
+  }
+
+  /* Test Raporu Modalı Yazdırma Kuralları */
+  #testDetayModal[style*="display: block"] {
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
     width: 100% !important;
     margin: 0 !important;
     padding: 0 !important;
+    display: block !important;
   }
 
   #testDetayModal .modal-content {
@@ -1014,21 +1015,21 @@ table.excel-table td.section-header,
     width: 100% !important;
   }
 
-  /* Butonları ve tıklama uyarısını gizle */
+  /* Test Modalı İçindeki Butonları Gizle */
   #testDetayModal button,
   #testDetayModal .modal-footer,
-  #testDetayModal p:contains("Tam ekran") {
+  #testDetayModal p {
     display: none !important;
   }
 
-  /* Görseli A4'e göre Büyüt */
+  /* Test Görselini Büyüt ve Sığdır */
   #testDetayModal #mdl_gorsel {
     display: block !important;
     width: 100% !important;
-    max-width: 650px !important;
+    max-width: 600px !important;
     height: auto !important;
-    max-height: 750px !important;
+    max-height: 700px !important;
     object-fit: contain !important;
-    margin: 15px auto !important;
+    margin: 20px auto !important;
   }
 }
