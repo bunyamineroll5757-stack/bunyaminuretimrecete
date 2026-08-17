@@ -1567,12 +1567,18 @@ async function testRaporuKaydet(e) {
         const temizIsim = dosyaAdiniTemizle(file.name);
         const fileName = `test_${Date.now()}_${temizIsim}`;
         
+        // 1. Dosyayı Yükle
         const { data, error } = await client.storage.from('recipe-images').upload(fileName, file);
-        if (!error) {
-            const { data: urlData } = client.storage.from('recipe-images').getPublicUrl(fileName);
-            gorselUrl = urlData.publicUrl;
-        } else {
+        if (error) {
             console.error("Görsel yükleme hatası:", error);
+            alert("Görsel yüklenemedi: " + error.message);
+            return;
+        }
+
+        // 2. Public Linki Al
+        const { data: urlData } = client.storage.from('recipe-images').getPublicUrl(fileName);
+        if (urlData && urlData.publicUrl) {
+            gorselUrl = urlData.publicUrl;
         }
     }
 
@@ -1581,10 +1587,9 @@ async function testRaporuKaydet(e) {
         firma: document.getElementById('test_firma').value,
         renk: document.getElementById('test_renk').value,
         ilac_orani: document.getElementById('test_ilac_orani').value,
-        hammadde_orani: document.getElementById('test_hammadde_orani').value
+        hammadde_orani: document.getElementById('test_hammadde_orani').value,
+        gorsel_url: gorselUrl
     };
-
-    if (gorselUrl) veri.gorsel_url = gorselUrl;
 
     if (window.guncellenecekTestId) {
         await client.from('test_raporlari').update(veri).eq('id', window.guncellenecekTestId);
@@ -1640,10 +1645,11 @@ function testDetayAc(id) {
     document.getElementById('mdl_hammadde').textContent = seciliTestRaporu.hammadde_orani || '-';
     
     const img = document.getElementById('mdl_gorsel');
-    if (seciliTestRaporu.gorsel_url && seciliTestRaporu.gorsel_url.trim() !== '') {
+    if (seciliTestRaporu.gorsel_url && seciliTestRaporu.gorsel_url.length > 5) {
         img.src = seciliTestRaporu.gorsel_url;
         img.style.display = 'inline-block';
     } else {
+        img.src = '';
         img.style.display = 'none';
     }
 
