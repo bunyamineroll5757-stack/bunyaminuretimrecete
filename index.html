@@ -134,6 +134,7 @@
     <button id="btnBakimTab" type="button" class="btn btn-tab" onclick="sekmeDegistir('bakimTab', this)" style="padding: 10px 20px; font-weight: bold; background: #666; color: white;">Bakım Kayıtları ve Takibi</button>
     <button id="btnParcaTab" type="button" class="btn btn-tab" onclick="sekmeDegistir('parcaListesiSekmesi')">⚙️ Parça Listesi</button>
     <button id="btnFotoTab" type="button" class="tab-btn" onclick="sekmeDegistir('fotoGaleriSekmesi')">📷 Foto Galeri</button>
+    <button id="btnTestTab" type="button" class="btn btn-tab" onclick="sekmeDegistir('testRaporSekmesi', this); testRaporlariniGetir();">🧪 Test Raporları</button>
 </div>
     <div id="durum" class="durum"></div>
 <div id="receteTab" class="tab-content" style="display: block;">
@@ -828,6 +829,101 @@
         <br>
         <button class="btn-secondary" type="button" onclick="bakimDetayKapat()">Kapat</button>
     </div>
+    <!-- TEST RAPORLARI SEKMESİ -->
+<div id="testRaporSekmesi" class="tab-content" style="display:none;">
+    <div class="panel">
+        <h2>🧪 Çekme - Kopma Test Raporu Ekle</h2>
+        <form id="testRaporFormu" onsubmit="testRaporuKaydet(event)">
+            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px;">
+                <div style="flex:1; min-width:200px;">
+                    <label>Tarih / Vardiya:</label>
+                    <input type="text" id="test_tarih" placeholder="Örn: 14.08.2026 GECE" required style="width:100%; padding:8px;">
+                </div>
+                <div style="flex:1; min-width:200px;">
+                    <label>Firma Adı:</label>
+                    <input type="text" id="test_firma" placeholder="Örn: ZEMİNKORUMA" required style="width:100%; padding:8px;">
+                </div>
+            </div>
+
+            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px;">
+                <div style="flex:1; min-width:200px;">
+                    <label>Renk:</label>
+                    <input type="text" id="test_renk" placeholder="Örn: BEYAZ" style="width:100%; padding:8px;">
+                </div>
+                <div style="flex:1; min-width:200px;">
+                    <label>İlaç Karışım Oranları:</label>
+                    <input type="text" id="test_ilac_orani" placeholder="Örn: %2 Antistatik" style="width:100%; padding:8px;">
+                </div>
+            </div>
+
+            <div style="margin-bottom:10px;">
+                <label>Hammadde Karışım Oranları:</label>
+                <input type="text" id="test_hammadde_orani" placeholder="Örn: %50 SAS1.6 %20 MELT1 %30 6,7" style="width:100%; padding:8px;">
+            </div>
+
+            <div style="margin-bottom:15px;">
+                <label>Test Kağıdı / Rapor Görseli Yükle:</label>
+                <input type="file" id="test_gorsel" accept="image/*" style="width:100%; padding:8px;">
+            </div>
+
+            <button type="submit" id="testKaydetBtn" class="btn" style="background:#16a34a; color:white;">Test Raporunu Kaydet</button>
+        </form>
+    </div>
+
+    <!-- KAYITLI TESTLER LİSTESİ -->
+    <div class="panel" style="margin-top: 20px;">
+        <h3>📋 Kayıtlı Test Raporları</h3>
+        <div class="liste">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tarih</th>
+                        <th>Firma</th>
+                        <th>Renk</th>
+                        <th>Hammadde Oranları</th>
+                        <th>İşlem</th>
+                    </tr>
+                </thead>
+                <tbody id="testRaporlariTablo"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- TEST DETAY & İNCELEME MODAL -->
+<div id="testDetayModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:9999; overflow-y:auto;">
+    <div style="background:white; max-width:700px; margin:30px auto; padding:20px; border-radius:8px;" id="yazdirilacakTestAlani">
+        <h2 style="text-align:center; border-bottom:2px solid #333; padding-bottom:10px;">RENKSAN NONWOVEN - TEST SONUÇ DETAYI</h2>
+        
+        <div style="background:#f8f9fa; padding:15px; border-radius:6px; margin-bottom:15px; border:1px solid #ddd;">
+            <h4 style="margin-top:0; color:#1f2937; border-bottom:1px solid #ccc; padding-bottom:5px;">GENEL BİLGİLER</h4>
+            <p style="margin:5px 0;"><strong>Tarih / Vardiya:</strong> <span id="mdl_tarih"></span></p>
+            <p style="margin:5px 0;"><strong>Firma Adı:</strong> <span id="mdl_firma"></span></p>
+            <p style="margin:5px 0;"><strong>Renk:</strong> <span id="mdl_renk"></span></p>
+            <p style="margin:5px 0;"><strong>İlaç Karışım Oranları:</strong> <span id="mdl_ilac"></span></p>
+            <p style="margin:5px 0;"><strong>Hammadde Karışım Oranları:</strong> <span id="mdl_hammadde"></span></p>
+        </div>
+
+        <!-- KÜÇÜK GÖRSEL ALANI -->
+        <div style="text-align:center; margin:15px 0;">
+            <p style="font-size:12px; color:#666;">(Tam ekran görmek için görsele tıklayın)</p>
+            <img id="mdl_gorsel" src="" style="max-width:220px; max-height:220px; border:1px solid #ccc; border-radius:6px; cursor:pointer; object-fit:contain;" onclick="tamEkranGoster(this.src)" />
+        </div>
+
+        <!-- BUTON TAKIMI -->
+        <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:20px; padding-top:15px; border-top:1px solid #eee;">
+            <button onclick="testDuzenleModu()" style="background:#2563eb; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer;">Düzenle</button>
+            <button onclick="testYazdir()" style="background:#0284c7; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer;">Yazdır</button>
+            <button onclick="testPdfIndir()" style="background:#dc2626; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer;">PDF İndir</button>
+            <button onclick="testPaylas()" style="background:#ea580c; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer;">Paylaş</button>
+            <button onclick="testModalKapat()" style="background:#4b5563; color:white; border:none; padding:8px 15px; border-radius:5px; cursor:pointer;">Kapat</button>
+        </div>
+    </div>
+</div>
+
+<!-- TAM EKRAN FOTOĞRAF MODAL -->
+<div id="tamEkranModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:10000; text-align:center; justify-content:center; align-items:center;" onclick="this.style.display='none'">
+    <img id="tamEkranResim" src="" style="max-width:95%; max-height:95%; margin:auto; border-radius:6px; margin-top:20px;" />
 </div>
 <!-- ADMIN GİRİŞ MODAL -->
 <div id="loginModal" class="modal" style="display: flex;">
