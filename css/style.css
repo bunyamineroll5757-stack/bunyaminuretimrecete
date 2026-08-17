@@ -987,39 +987,48 @@ table.excel-table td.section-header,
   }
 }
 @media print {
-  /* 1. Gereksiz elemanları gizle */
-  button, 
-  .modal-footer, 
-  .no-print,
-  #testDetayModal p:not(#mdl_tarih):not(#mdl_firma):not(#mdl_renk):not(#mdl_ilac):not(#mdl_hammadde) {
+  /* Üretim reçetesi açıkken test modalı yazdırma kurallarının karışmasını önler */
+  body:has(#testDetayModal[style*="display: block"]) * {
+    visibility: hidden;
+  }
+  
+  /* Sadece Test Detay Modalı ve içindekileri görünür yap */
+  #testDetayModal, 
+  #testDetayModal * {
+    visibility: visible;
+  }
+
+  /* Test Modalı Özel Konumlandırma */
+  #testDetayModal {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  #testDetayModal .modal-content {
+    border: none !important;
+    box-shadow: none !important;
+    width: 100% !important;
+  }
+
+  /* Butonları ve tıklama uyarısını gizle */
+  #testDetayModal button,
+  #testDetayModal .modal-footer,
+  #testDetayModal p:contains("Tam ekran") {
     display: none !important;
   }
 
-  /* 2. Modalı ve tüm kapsayıcı kutuları A4'e tam yay */
-  #testDetayModal, 
-  #testDetayModal .modal-dialog,
-  #testDetayModal .modal-content,
-  #testDetayModal .modal-body {
+  /* Görseli A4'e göre Büyüt */
+  #testDetayModal #mdl_gorsel {
     display: block !important;
     width: 100% !important;
-    max-width: 100% !important;
-    min-width: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    border: none !important;
-    box-shadow: none !important;
-    overflow: visible !important;
-  }
-
-  /* 3. Görseli A4 sayfasını dolduracak şekilde zorla büyüt */
-  #mdl_gorsel {
-    display: block !important;
-    width: 100% !important;
-    min-width: 100% !important;
+    max-width: 650px !important;
     height: auto !important;
     max-height: 750px !important;
     object-fit: contain !important;
     margin: 15px auto !important;
-    page-break-inside: avoid !important;
   }
 }
