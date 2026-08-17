@@ -190,25 +190,21 @@ hr {
 table {
     width: 100%;
     border-collapse: collapse;
-    table-layout: fixed; /* Sütun genişliklerini sabitleyip alt satıra geçmeyi zorlar */
+    min-width: 750px;
 }
 
 th {
     background: #1f2937;
     color: white;
-    padding: 10px 8px;
+    padding: 13px;
     text-align: left;
-    font-size: 13px;
+    white-space: nowrap;
 }
 
 td {
-    padding: 10px 8px;
+    padding: 12px;
     border-bottom: 1px solid #eee;
-    /* Metin kırarak alta geçsin, satır otomatik uzasın */
-    white-space: normal !important;
-    word-wrap: break-word;
-    word-break: break-word;
-    font-size: 13px;
+    white-space: nowrap;
 }
 
 tr:hover {
@@ -724,7 +720,7 @@ td button:last-child:hover {
     }
 
 
- /* TABLO - MOBİL UYUMLU KISIM */
+    /* TABLO */
 
     .liste {
         border-radius: 12px;
@@ -732,22 +728,17 @@ td button:last-child:hover {
     }
 
     table {
-        width: 100% !important;
-        min-width: 0 !important; /* Sabit 720px genişliği kaldırır */
-        table-layout: fixed;
+        min-width: 720px;
     }
 
     th {
-        padding: 8px 4px;
-        font-size: 12px;
+        padding: 11px;
+        font-size: 14px;
     }
 
     td {
-        padding: 8px 4px;
-        font-size: 12px;
-        white-space: normal !important;
-        word-wrap: break-word;
-        word-break: break-word;
+        padding: 10px;
+        font-size: 14px;
     }
 
 
