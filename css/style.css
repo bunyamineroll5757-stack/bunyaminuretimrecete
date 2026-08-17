@@ -949,3 +949,40 @@ table.excel-table td.section-header,
     font-weight: bold !important;
     text-align: center !important;
 }
+@media print {
+/* Sadece butonları ve tıklama uyarısını çıktıdan gizle */
+  button, 
+  .modal-footer,
+  #testDetayModal .modal-body > p {
+    display: none !important;
+  }
+
+  /* Genel Bilgiler alanı ve modal çerçevesini hizala */
+  #testDetayModal, 
+  .modal-content {
+    box-shadow: none !important;
+    border: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 10px !important;
+  }
+
+  /* Genel Bilgiler tablosunu/kutusunu koru */
+  .genel-bilgiler, 
+  #testDetayModal div {
+    display: block !important;
+  }
+
+  /* Görseli A4 sayfasına sığacak şekilde büyüt */
+  #mdl_gorsel {
+    display: block !important;
+    width: 90% !important;
+    max-width: 600px !important;
+    height: auto !important;
+    max-height: 650px !important;
+    object-fit: contain !important;
+    margin: 25px auto !important;
+    page-break-inside: avoid;
+  }
+}
