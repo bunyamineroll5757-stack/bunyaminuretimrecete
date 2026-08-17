@@ -1541,8 +1541,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 let seciliTestRaporu = null;
 
-let seciliTestRaporu = null;
-
 // DOSYA ADINDAKİ TÜRKÇE KARAKTER VEYA BOŞLUKLARI TEMİZLEYEN FONKSİYON
 function dosyaAdiniTemizle(isim) {
     return isim
