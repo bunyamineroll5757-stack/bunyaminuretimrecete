@@ -986,3 +986,40 @@ table.excel-table td.section-header,
     page-break-inside: avoid;
   }
 }
+@media print {
+  /* 1. Gereksiz elemanları gizle */
+  button, 
+  .modal-footer, 
+  .no-print,
+  #testDetayModal p:not(#mdl_tarih):not(#mdl_firma):not(#mdl_renk):not(#mdl_ilac):not(#mdl_hammadde) {
+    display: none !important;
+  }
+
+  /* 2. Modalı ve tüm kapsayıcı kutuları A4'e tam yay */
+  #testDetayModal, 
+  #testDetayModal .modal-dialog,
+  #testDetayModal .modal-content,
+  #testDetayModal .modal-body {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+  }
+
+  /* 3. Görseli A4 sayfasını dolduracak şekilde zorla büyüt */
+  #mdl_gorsel {
+    display: block !important;
+    width: 100% !important;
+    min-width: 100% !important;
+    height: auto !important;
+    max-height: 750px !important;
+    object-fit: contain !important;
+    margin: 15px auto !important;
+    page-break-inside: avoid !important;
+  }
+}
