@@ -1527,3 +1527,15 @@ function galeriYazdirModal() {
     `);
     yazdirPenceresi.document.close();
 }
+// Sayfa veya DOM tamamen yüklendiğinde çalışır
+document.addEventListener('DOMContentLoaded', () => {
+    // Supabase istemcisinin yüklenmesi için kısa bir gecikme garantisi
+    setTimeout(() => {
+        if (typeof galerileriGetir === 'function') {
+            galerileriGetir();
+        }
+        if (typeof bakimKayitlariniGetir === 'function') {
+            bakimKayitlariniGetir();
+        }
+    }, 300);
+});
