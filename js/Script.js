@@ -1539,3 +1539,140 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }, 300);
 });
+let seciliTestRaporu = null;
+
+// SUPABASE GÖRSEL YÜKLEME VE KAYIT
+async function testRaporuKaydet(e) {
+    e.preventDefault();
+    const client = window.supabaseClient || window.sbClient || supabase;
+
+    const gorselInput = document.getElementById('test_gorsel');
+    let gorselUrl = '';
+
+    if (gorselInput && gorselInput.files.length > 0) {
+        const file = gorselInput.files[0];
+        const fileName = `test_${Date.now()}_${file.name}`;
+        
+        const { data, error } = await client.storage.from('recipe-images').upload(fileName, file);
+        if (!error) {
+            const { data: urlData } = client.storage.from('recipe-images').getPublicUrl(fileName);
+            gorselUrl = urlData.publicUrl;
+        }
+    }
+
+    const veri = {
+        tarih: document.getElementById('test_tarih').value,
+        firma: document.getElementById('test_firma').value,
+        renk: document.getElementById('test_renk').value,
+        ilac_orani: document.getElementById('test_ilac_orani').value,
+        hammadde_orani: document.getElementById('test_hammadde_orani').value
+    };
+
+    if (gorselUrl) veri.gorsel_url = gorselUrl;
+
+    if (window.guncellenecekTestId) {
+        await client.from('test_raporlari').update(veri).eq('id', window.guncellenecekTestId);
+        window.guncellenecekTestId = null;
+        document.getElementById('testKaydetBtn').textContent = "Test Raporunu Kaydet";
+    } else {
+        await client.from('test_raporlari').insert([veri]);
+    }
+
+    document.getElementById('testRaporFormu').reset();
+    testRaporlariniGetir();
+}
+
+// VERİLERİ TABLOYA ÇEKME
+async function testRaporlariniGetir() {
+    const client = window.supabaseClient || window.sbClient || supabase;
+    if (!client) return;
+
+    const { data, error } = await client.from('test_raporlari').select('*').order('id', { ascending: false });
+
+    const tbody = document.getElementById('testRaporlariTablo');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    if (data) {
+        window.tumTestRaporlari = data;
+        data.forEach(item => {
+            tbody.innerHTML += `
+                <tr>
+                    <td>${item.tarih || '-'}</td>
+                    <td>${item.firma || '-'}</td>
+                    <td>${item.renk || '-'}</td>
+                    <td>${item.hammadde_orani || '-'}</td>
+                    <td>
+                        <button onclick="testDetayAc('${item.id}')" style="background:#0284c7; color:white; border:none; padding:4px 8px; border-radius:4px; margin-right:4px; cursor:pointer;">İncele</button>
+                        <button onclick="testSil('${item.id}')" style="background:#dc2626; color:white; border:none; padding:4px 8px; border-radius:4px; cursor:pointer;">Sil</button>
+                    </td>
+                </tr>
+            `;
+        });
+    }
+}
+
+// MODAL AÇMA VE DETAY GÖSTERME
+function testDetayAc(id) {
+    seciliTestRaporu = window.tumTestRaporlari ? window.tumTestRaporlari.find(t => t.id == id) : null;
+    if (!seciliTestRaporu) return;
+
+    document.getElementById('mdl_tarih').textContent = seciliTestRaporu.tarih || '-';
+    document.getElementById('mdl_firma').textContent = seciliTestRaporu.firma || '-';
+    document.getElementById('mdl_renk').textContent = seciliTestRaporu.renk || '-';
+    document.getElementById('mdl_ilac').textContent = seciliTestRaporu.ilac_orani || '-';
+    document.getElementById('mdl_hammadde').textContent = seciliTestRaporu.hammadde_orani || '-';
+    
+    const img = document.getElementById('mdl_gorsel');
+    img.src = seciliTestRaporu.gorsel_url || 'https://via.placeholder.com/150?text=Gorsel+Yok';
+
+    document.getElementById('testDetayModal').style.display = 'block';
+}
+
+// BÜYÜK FOTOĞRAF MODALI
+function tamEkranGoster(src) {
+    if (!src || src.includes('placeholder')) return;
+    document.getElementById('tamEkranResim').src = src;
+    document.getElementById('tamEkranModal').style.display = 'flex';
+}
+
+function testModalKapat() {
+    document.getElementById('testDetayModal').style.display = 'none';
+}
+
+function testYazdir() {
+    window.print();
+}
+
+function testPdfIndir() {
+    window.print();
+}
+
+function testPaylas() {
+    if (navigator.share) {
+        navigator.share({ title: 'Test Raporu', text: `${seciliTestRaporu.firma} Test Sonucu`, url: window.location.href });
+    } else {
+        alert("Bağlantı kopyalandı.");
+    }
+}
+
+function testDuzenleModu() {
+    if (!seciliTestRaporu) return;
+    window.guncellenecekTestId = seciliTestRaporu.id;
+    document.getElementById('test_tarih').value = seciliTestRaporu.tarih || '';
+    document.getElementById('test_firma').value = seciliTestRaporu.firma || '';
+    document.getElementById('test_renk').value = seciliTestRaporu.renk || '';
+    document.getElementById('test_ilac_orani').value = seciliTestRaporu.ilac_orani || '';
+    document.getElementById('test_hammadde_orani').value = seciliTestRaporu.hammadde_orani || '';
+    
+    document.getElementById('testKaydetBtn').textContent = "Test Raporunu Güncelle";
+    testModalKapat();
+}
+
+async function testSil(id) {
+    if (confirm("Silmek istediğinize emin misiniz?")) {
+        const client = window.supabaseClient || window.sbClient || supabase;
+        await client.from('test_raporlari').delete().eq('id', id);
+        testRaporlariniGetir();
+    }
+}
