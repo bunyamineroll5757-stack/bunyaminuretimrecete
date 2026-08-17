@@ -1541,6 +1541,21 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 let seciliTestRaporu = null;
 
+let seciliTestRaporu = null;
+
+// DOSYA ADINDAKİ TÜRKÇE KARAKTER VEYA BOŞLUKLARI TEMİZLEYEN FONKSİYON
+function dosyaAdiniTemizle(isim) {
+    return isim
+        .replace(/Ğ/g, "G").replace(/ğ/g, "g")
+        .replace(/Ü/g, "U").replace(/ü/g, "u")
+        .replace(/Ş/g, "S").replace(/ş/g, "s")
+        .replace(/İ/g, "I").replace(/ı/g, "i")
+        .replace(/Ö/g, "O").replace(/ö/g, "o")
+        .replace(/Ç/g, "C").replace(/ç/g, "c")
+        .replace(/\s+/g, "_")
+        .replace(/[^a-zA-Z0-9._-]/g, "");
+}
+
 // SUPABASE GÖRSEL YÜKLEME VE KAYIT
 async function testRaporuKaydet(e) {
     e.preventDefault();
@@ -1551,12 +1566,15 @@ async function testRaporuKaydet(e) {
 
     if (gorselInput && gorselInput.files.length > 0) {
         const file = gorselInput.files[0];
-        const fileName = `test_${Date.now()}_${file.name}`;
+        const temizIsim = dosyaAdiniTemizle(file.name);
+        const fileName = `test_${Date.now()}_${temizIsim}`;
         
         const { data, error } = await client.storage.from('recipe-images').upload(fileName, file);
         if (!error) {
             const { data: urlData } = client.storage.from('recipe-images').getPublicUrl(fileName);
             gorselUrl = urlData.publicUrl;
+        } else {
+            console.error("Görsel yükleme hatası:", error);
         }
     }
 
@@ -1624,14 +1642,19 @@ function testDetayAc(id) {
     document.getElementById('mdl_hammadde').textContent = seciliTestRaporu.hammadde_orani || '-';
     
     const img = document.getElementById('mdl_gorsel');
-    img.src = seciliTestRaporu.gorsel_url || 'https://via.placeholder.com/150?text=Gorsel+Yok';
+    if (seciliTestRaporu.gorsel_url && seciliTestRaporu.gorsel_url.trim() !== '') {
+        img.src = seciliTestRaporu.gorsel_url;
+        img.style.display = 'inline-block';
+    } else {
+        img.style.display = 'none';
+    }
 
     document.getElementById('testDetayModal').style.display = 'block';
 }
 
 // BÜYÜK FOTOĞRAF MODALI
 function tamEkranGoster(src) {
-    if (!src || src.includes('placeholder')) return;
+    if (!src) return;
     document.getElementById('tamEkranResim').src = src;
     document.getElementById('tamEkranModal').style.display = 'flex';
 }
@@ -1649,7 +1672,7 @@ function testPdfIndir() {
 }
 
 function testPaylas() {
-    if (navigator.share) {
+    if (navigator.share && seciliTestRaporu) {
         navigator.share({ title: 'Test Raporu', text: `${seciliTestRaporu.firma} Test Sonucu`, url: window.location.href });
     } else {
         alert("Bağlantı kopyalandı.");
