@@ -1668,7 +1668,51 @@ function testModalKapat() {
 }
 
 function testYazdir() {
-    window.print();
+    const modalEl = document.getElementById('testDetayModal');
+    if (!modalEl) return;
+    
+    // Modal içeriğinin bir kopyasını al
+    const modalIcerik = modalEl.innerHTML;
+    const yazdirPenceresi = window.open('', '_blank', 'width=850,height=1100');
+    
+    yazdirPenceresi.document.write(`
+        <html>
+        <head>
+            <title>Test Raporu Yazdır</title>
+            <style>
+                body { font-family: Arial, sans-serif; padding: 20px; color: #000; background: #fff; }
+                h2, h3, h4, div, p { margin-bottom: 10px; }
+                button, .modal-footer, .btn, .no-print { display: none !important; }
+                .genel-bilgiler, .modal-body { border: none !important; padding: 0 !important; }
+                #mdl_gorsel { 
+                    display: block !important; 
+                    width: 100% !important; 
+                    max-width: 700px !important; 
+                    height: auto !important; 
+                    max-height: 800px !important; 
+                    object-fit: contain !important; 
+                    margin: 20px auto !important; 
+                }
+            </style>
+        </head>
+        <body>
+            ${modalIcerik}
+            <script>
+                // Yazdırma öncesi butonları ve tıklama yönlendirme metnini temizle
+                document.querySelectorAll('button, .modal-footer').forEach(el => el.remove());
+                document.querySelectorAll('p').forEach(p => {
+                    if (p.innerText.includes('Tam ekran')) p.remove();
+                });
+                
+                window.onload = function() {
+                    window.print();
+                    window.close();
+                };
+            </script>
+        </body>
+        </html>
+    `);
+    yazdirPenceresi.document.close();
 }
 
 function testPdfIndir() {
