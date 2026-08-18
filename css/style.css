@@ -840,20 +840,112 @@ td button:last-child:hover {
     }
 
 }
-/* ==========================================
-   REÇETE DETAY TABLOSU RENK DÜZENLEMESİ
-   ========================================== */
-
-/* 1. Şablon Üzerindeki Sabit Başlıklar (Açık Yeşil ve Kalın) */
+/* MOBİL DİKEY (EKRANA SIĞAN) DÜZEN */
+@media (max-width: 600px) {
+    .excel-container {
+        overflow-x: hidden !important; /* Sağa/sola kaydırmayı kapatır */
+        width: 100% !important;
+    }
+    .excel-table {
+        table-layout: auto !important; /* Sütunları dikey ekrana sığdırır */
+        width: 100% !important;
+        min-width: 0 !important;
+        font-size: 8.5px !important;
+    }
+    .excel-table td {
+        padding: 2px 1px !important;
+        word-break: break-word !important;
+    }
+    .excel-table .label, .excel-table td.label {
+        font-size: 8px !important;
+        font-weight: bold !important;
+    }
+    .excel-table input {
+        font-size: 8.5px !important;
+        padding: 0 !important;
+        height: 18px !important;
+    }
+/* TÜM TABLO VE YAZDIRILABİLİR ALAN METİNLERİNİ KOYU SİYAH YAPMA */
+.excel-table, 
+.excel-table td, 
 .excel-table td.label, 
-.excel-table .section-header, 
-.excel-table th {
-    font-weight: bold !important;
-    color: #2e7d32 !important; /* Canlı Açık Yeşil */
+.excel-table .section-header,
+.excel-table input,
+.excel-table span {
+    color: #000000 !important;
+    font-weight: 900 !important;
+    opacity: 1 !important;
 }
 
-/* 2. Sizin Doldurduğunuz Veriler (Koyu Siyah) */
+/* YAZDIRMA (PRINT & PDF) AYARLARI */
+@media print {
+    * {
+        color: #000000 !important;
+        font-weight: 900 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+    .excel-table td.label {
+        color: #000000 !important;
+    }
+}
+/* ==========================================
+   REÇETE & BAKIM TABLOSU SABİT ETİKET DOLGU RENGİ
+   ========================================== */
+
+/* 1. Tüm sabit etiket hücrelerinin dolgu (arka plan) ve yazı rengi */
+.excel-table td.label,
+#detayModal .excel-table td.label,
+#bakimDetayModal .excel-table td.label {
+    background-color: #28a745 !important; /* Yeşil Dolgu Rengi */
+    color: #ffffff !important;            /* Beyaz Yazı Rengi */
+    font-weight: bold !important;
+}
+
+/* 2. Ana Başlıkların (GENEL BİLGİLER, TARAK AYARLARI vb.) Değişmeden Kalması İçin */
+.excel-table td.section-header,
+#detayModal .excel-table td.section-header,
+#bakimDetayModal .excel-table td.section-header {
+    /* Ana başlıklar kendi orijinal stilini korur */
+    color: inherit;
+}
+
+/* 3. Veri Hücrelerinin (Span) Arka Planının Şeffaf/Beyaz Kalması */
 .excel-table td:not(.label):not(.section-header) {
-    font-weight: 600 !important;
-    color: #000000 !important; /* Net Koyu Siyah */
+    background-color: #ffffff !important;
+    color: #000000 !important;
+}
+/* ==========================================
+   EKTET HÜCRELERİ İÇİN YEŞİL DOLGU RENGİ
+   ========================================== */
+
+/* 1. Hem ana tablodaki hem de detay pencerelerindeki tüm etiket hücreleri */
+table.excel-table td.label,
+.excel-table td.label,
+#detayModal table.excel-table td.label,
+#bakimDetayModal table.excel-table td.label {
+    background: #28a745 !important;      /* Yeşil Dolgu */
+    background-color: #28a745 !important;/* Garantilemek için arka plan */
+    color: #ffffff !important;            /* Beyaz Yazı Rengi */
+    font-weight: bold !important;
+}
+
+/* 2. Bölüm Başlıklarının (GENEL BİLGİLER, TARAK AYARLARI vb.) Dokunulmadan Kalması */
+table.excel-table td.section-header,
+.excel-table td.section-header {
+    /* Orijinal sarı/gri dolgusu ve kendi yazı stili aynen kalır */
+}
+/* ==========================================
+   ANA BÖLÜM BAŞLIKLARI TURUNCU TEMA
+   ========================================== */
+
+/* Hem ana tablodaki hem de detay pencerelerindeki bölüm başlıkları */
+table.excel-table td.section-header,
+.excel-table td.section-header,
+#detayModal table.excel-table td.section-header,
+#bakimDetayModal table.excel-table td.section-header {
+    background-color: #fd7e14 !important; /* Turuncu Arka Plan (Turuncu Buton Tonu) */
+    color: #ffffff !important;            /* Beyaz Yazı Rengi */
+    font-weight: bold !important;
+    text-align: center !important;
 }
