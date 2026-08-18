@@ -1671,10 +1671,7 @@ function testYazdir() {
     const modalEl = document.getElementById('testDetayModal');
     if (!modalEl) return;
     
-    // Modal içeriğini al
     const modalClone = modalEl.cloneNode(true);
-    
-    // Temizlik: Butonları ve tıklama uyarısını kaldır
     modalClone.querySelectorAll('button, .modal-footer, .btn').forEach(el => el.remove());
     modalClone.querySelectorAll('p').forEach(p => {
         if (p.innerText.includes('Tam ekran')) p.remove();
@@ -1690,7 +1687,6 @@ function testYazdir() {
             <style>
                 body { font-family: Arial, sans-serif; padding: 20px; color: #000; background: #fff; margin: 0; }
                 .genel-bilgiler { border: 1px solid #ccc; padding: 15px; border-radius: 6px; margin-bottom: 20px; }
-                .genel-bilgiler p { margin: 5px 0; font-size: 14px; }
                 #mdl_gorsel { 
                     display: block !important; 
                     width: 100% !important; 
