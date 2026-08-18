@@ -1672,6 +1672,8 @@ function testYazdir() {
     if (!modalEl) return;
     
     const modalClone = modalEl.cloneNode(true);
+    
+    // Temizlik: Butonları ve yönlendirme yazılarını temizle
     modalClone.querySelectorAll('button, .modal-footer, .btn').forEach(el => el.remove());
     modalClone.querySelectorAll('p').forEach(p => {
         if (p.innerText.includes('Tam ekran')) p.remove();
@@ -1679,6 +1681,7 @@ function testYazdir() {
 
     const yazdirPenceresi = window.open('', '_blank', 'width=850,height=1100');
     
+    // İçeriği yeni pencereye yaz
     yazdirPenceresi.document.write(`
         <!DOCTYPE html>
         <html>
@@ -1700,18 +1703,19 @@ function testYazdir() {
         </head>
         <body>
             ${modalClone.innerHTML}
-            <script>
-                window.onload = function() {
-                    window.print();
-                    window.close();
-                };
-            </script>
         </body>
         </html>
     `);
+    
     yazdirPenceresi.document.close();
-}
 
+    // Görselin ve HTML'in pencereye tam yüklenmesi için 250ms bekleip yazdır
+    setTimeout(function() {
+        yazdirPenceresi.focus();
+        yazdirPenceresi.print();
+        yazdirPenceresi.close();
+    }, 250);
+}
 function testPdfIndir() {
     window.print();
 }
